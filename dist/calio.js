@@ -780,7 +780,7 @@ var methods = {
         if (index > -1) {
             selection.splice(index, 1);
             this.set({selection});
-        } else if (selection.length < limit) {
+        } else if (!limit || selection.length < limit) {
             this.set({
                 selection: [...selection, day.clone()].sort((a, b) => {
                     return a.timestamp() - b.timestamp();
