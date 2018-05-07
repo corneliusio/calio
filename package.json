@@ -21,6 +21,10 @@
   "main": "dist/calio.js",
   "unpkg": "dist/calio.min.js",
   "license": "MIT",
+  "files": [
+    "dist/",
+    "src/"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "lint": "eslint -c .eslintrc.json src/** --fix",
