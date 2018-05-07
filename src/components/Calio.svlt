@@ -267,9 +267,9 @@
 <style>
     .calio {
         display: inline-grid;
-        grid-template-columns: repeat(7, var(--x, var(--size, 2.25em)));
-        grid-auto-rows: var(--y, var(--size, 2em));
-        line-height: var(--y, var(--size, 2em));
+        grid-template-columns: repeat(7, var(--size-x, var(--size, 2.25em)));
+        grid-auto-rows: var(--size-y, var(--size, 2em));
+        line-height: var(--size-y, var(--size, 2em));
         text-align: center;
         user-select: none;
     }
