@@ -1,7 +1,7 @@
 {
   "name": "calio",
-  "version": "1.0.0",
-  "description": "🗓 Just a date picker. Simple, lightweight.",
+  "version": "1.0.1",
+  "description": "🗓 A modern date picker—simple and lightweight.",
   "repository": "corneliusio/calio",
   "bugs": {
     "url": "https://github.com/corneliusio/calio/issues"
@@ -11,9 +11,11 @@
     "email": "guy@cornelius.io"
   },
   "keywords": [
-    "calendar",
     "datepicker",
-    "date-picker"
+    "date-picker",
+    "date",
+    "calendar",
+    "lightweight"
   ],
   "side-effects": false,
   "main": "dist/calio.js",
