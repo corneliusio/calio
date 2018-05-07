@@ -5,6 +5,8 @@
 Calio is an unopinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
 What does that mean? Zero-dependency, vanilla JS that is lean and ready to use where ever you need a date picker.
 
+![Calio](media/calio.png)
+
 ---
 
 ## Browser support
