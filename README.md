@@ -43,9 +43,9 @@ You may notice at this point that this really is **just a date picker**. Where's
 
 ### Navigation
 ```html
-<button class="prev">«</button>
-<button class="today">•</button>
-<button class="next">»</button>
+<button class="prev">&laquo;</button>
+<button class="today">&bull;</button>
+<button class="next">&raquo;</button>
 
 <div id="calio"></div>
 
@@ -116,7 +116,7 @@ new Calio(el, {
 ### mode *`single|multi|range`*
 `single` - *(default)* acts as a basic date picker, the user picks a single date at any given time.  
 `multi` - allows the user select multiple dates at once.  
-`range` - allows the user to select only two dates at a time—highlighting all dates between their selections.
+`range` - allows the user to select only two dates at a time&mdash;highlighting all dates between their selections.
 
 ```js
 new Calio(el, {
@@ -164,7 +164,7 @@ new Calio(el, {
 
 ---
 ### limit
-*Only applies to mode: 'multi'*
+*Only applies to mode: 'multi'*  
 The number of selections that can be made in `multi` mode. Has no effect in `single` or `range` modes.
 
 ```js
