@@ -881,6 +881,8 @@ function oncreate() {
         min: this.makeMyDay(min),
         max: this.makeMyDay(max)
     });
+
+    this.fire('view', this.get().view.clone());
 }
 function onstate({changed, previous, current: {mode, view, value, selection}}) {
 
