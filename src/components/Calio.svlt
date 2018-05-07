@@ -1,0 +1,281 @@
+<div class="calio">
+    {#each head as day}
+        <span class="calio-head">{day}</span>
+    {/each}
+    {#each dates as day (day.timestamp())}
+        <Day {selection} {mode} {view} {min} {max} {day} on:select="select(day)" />
+    {/each}
+</div>
+
+<script>
+    import LilEpoch from '../modules/LilEpoch';
+    import Day from './Day.svlt';
+
+    const today = new LilEpoch();
+
+    export default {
+        components: {
+            Day
+        },
+
+        data() {
+            return {
+                headers: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                view: new LilEpoch(),
+                mode: 'single',
+                selection: null,
+                value: null,
+                limit: null,
+                min: null,
+                max: null
+            };
+        },
+
+        oncreate() {
+            const {value, min, max} = this.get();
+
+            new Array().concat(value).forEach(v => {
+                this.select(v || null);
+            });
+
+            this.set({
+                min: this.makeMyDay(min),
+                max: this.makeMyDay(max)
+            });
+        },
+
+        // eslint-disable-next-line complexity
+        onstate({changed, previous, current: {mode, view, value, selection}}) {
+
+            if (changed.view) {
+                this.fire('view', view.clone());
+            }
+
+            if (previous && selection && changed.selection) {
+
+                if (mode === 'single') {
+                    this.fire('select', selection.clone());
+
+                    if (!selection.isSameMonth(view)) {
+                        view = selection.clone();
+                        this.set({view});
+                        this.fire('view', view.clone());
+                    }
+                } else {
+                    this.fire('select', selection.map(s => s.clone()));
+                }
+            }
+
+            if (previous && changed.value) {
+                const selection = this.makeMyDay(value);
+
+                view = selection.clone();
+                this.set({view, selection});
+                this.fire('view', view.clone());
+            }
+        },
+
+        computed: {
+
+            head({headers}) {
+                return headers.length
+                    ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
+                    : [];
+            },
+
+            dates({view}) {
+                let current = view.clone().startOfMonth(),
+                    dates = [],
+                    dayOfFirst,
+                    dayOfLast;
+
+                dayOfFirst = current.dayOfWeek();
+
+                for (let i = 0; i < dayOfFirst; i++) {
+                    dates.unshift(current.clone().date(-i));
+                }
+
+                current.endOfMonth();
+
+                for (let i = 1, days = current.date(); i <= days; i++) {
+                    dates.push(current.clone().date(i));
+                }
+
+                dayOfLast = current.dayOfWeek();
+                current.startOfMonth().addMonth();
+
+                for (let i = 1; i < (7 - dayOfLast); i++) {
+                    dates.push(current.clone().date(i));
+                }
+
+                return dates;
+            }
+        },
+
+        methods: {
+
+            makeMyDay(day = null) {
+                return day
+                    ? (day instanceof LilEpoch)
+                        ? day : Array.isArray(day)
+                            ? new LilEpoch(...day) : new LilEpoch(day)
+                    : null;
+            },
+
+            select(day) {
+                const {mode} = this.get();
+
+                day = this.makeMyDay(day);
+
+                if (day) {
+                    switch (mode) {
+                    case 'range' :
+                        this.updateRange(day);
+                        break;
+                    case 'multi' :
+                        this.updateMulti(day);
+                        break;
+                    default :
+                        this.updateSingle(day);
+                        break;
+                    }
+                }
+            },
+
+            updateRange(day) {
+                let {selection} = this.get();
+
+                selection = selection || [];
+
+                if (selection.length > 1) {
+                    this.set({
+                        selection: [day.clone()]
+                    });
+                } else {
+                    selection.push(day.clone());
+
+                    this.set({
+                        selection: selection.sort((a, b) => {
+                            return a.timestamp() - b.timestamp();
+                        })
+                    });
+                }
+            },
+
+            updateMulti(day) {
+                let {selection, limit} = this.get(),
+                    index;
+
+                selection = selection || [];
+                index = selection.findIndex(s => s.isSame(day));
+
+                if (index > -1) {
+                    selection.splice(index, 1);
+                    this.set({selection});
+                } else if (selection.length < limit) {
+                    this.set({
+                        selection: [...selection, day.clone()].sort((a, b) => {
+                            return a.timestamp() - b.timestamp();
+                        })
+                    });
+                }
+            },
+
+            updateSingle(day) {
+                this.set({
+                    selection: day.clone()
+                });
+            },
+
+            goToYear(y) {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().year(y)
+                });
+            },
+
+            goToNextYear() {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().addYear()
+                });
+            },
+
+            goToLastYear() {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().subYear()
+                });
+            },
+
+            goToMonth(m) {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().date(1).month(m - 1)
+                });
+            },
+
+            goToNextMonth() {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().date(1).addMonth()
+                });
+            },
+
+            goToLastMonth() {
+                const {view} = this.get();
+
+                this.set({
+                    view: view.clone().date(1).subMonth()
+                });
+            },
+
+            goToToday() {
+                this.set({
+                    view: today.clone()
+                });
+            },
+
+            goToSelection() {
+                const {selection, mode} = this.get();
+
+                if (mode === 'single' && selection) {
+                    this.set({
+                        view: selection.clone()
+                    });
+                }
+            },
+
+            goTo(day) {
+                day = this.makeMyDay(day);
+
+                if (day) {
+                    this.set({
+                        view: day.clone()
+                    });
+                }
+            }
+        }
+    };
+</script>
+
+<style>
+    .calio {
+        display: inline-grid;
+        grid-template-columns: repeat(7, var(--x, var(--size, 2.25em)));
+        grid-auto-rows: var(--y, var(--size, 2em));
+        line-height: var(--y, var(--size, 2em));
+        text-align: center;
+        user-select: none;
+    }
+
+    .calio-head {
+        color: var(--color, #333);
+        font-weight: bold;
+    }
+</style>
