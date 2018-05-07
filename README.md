@@ -15,6 +15,8 @@ What does that mean? Zero-dependency, vanilla JS that is lean and ready to use w
 
 **Note: This module does not support IE.**
 
+---
+
 ## Usage
 
 ```shell
@@ -37,15 +39,17 @@ Then, instantiate your date picker!
 new Calio('#calio');
 ```
 
+---
+
 ## Examples
 
 You may notice at this point that this really is **just a date picker**. Where's the navigation? What about the currently month being viewed? These are not imposed on you out of the box, but can easily be added in *whatever way works best for your design*. Here are a couple striped down examples of how you may integrate Calio into your project, more API details can be found further below.
 
 ### Navigation
 ```html
-<button class="prev">&laquo;</button>
-<button class="today">&bull;</button>
-<button class="next">&raquo;</button>
+<button class="prev">Prev</button>
+<button class="today">Today</button>
+<button class="next">Next</button>
 
 <div id="calio"></div>
 
@@ -86,9 +90,10 @@ Displaying things like the current selection or view is pretty easy too.
 </script>
 ```
 
+---
+
 ## Options
 
----
 ### Defaults:
 
 ```js
@@ -102,7 +107,6 @@ new Calio(el, {
 });
 ```
 
----
 ### headers
 An array of values you would like to use as the days of the week. You can also disable headers all together by passing `false`.
 
@@ -112,7 +116,6 @@ new Calio(el, {
 });
 ```
 
----
 ### mode *`single|multi|range`*
 `single` - *(default)* acts as a basic date picker, the user picks a single date at any given time.  
 `multi` - allows the user select multiple dates at once.  
@@ -124,7 +127,6 @@ new Calio(el, {
 });
 ```
 
----
 ### value
 An initial value for the date picker. This can be:  
 - a Javascript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object  
@@ -162,9 +164,8 @@ new Calio(el, {
 });
 ```
 
----
 ### limit
-*Only applies to mode: 'multi'*  
+##### *Only applies to mode: 'multi'*  
 The number of selections that can be made in `multi` mode. Has no effect in `single` or `range` modes.
 
 ```js
@@ -174,7 +175,6 @@ new Calio(el, {
 });
 ```
 
----
 ### min
 A minimum date that can be selected. Can accept any type that `value` does. Any date on the datepicker before the provided minimum will not be selectable.
 
@@ -184,7 +184,6 @@ new Calio(el, {
 });
 ```
 
----
 ### max
 A maximum date that can be selected. Can accept any type that `value` does. Any date on the datepicker after the provided maximum will not be selectable.
 
@@ -194,10 +193,63 @@ new Calio(el, {
 });
 ```
 
+> ## The rest of this readme is still a WIP.
+
+## Events
+
+### view
+
+### select
+
+---
+
 ## API
+
+### goToYear(y)
+
+### goToNextYear()
+
+### goToLastYear()
+
+### goToMonth(m)
+
+### goToNextMonth()
+
+### goToLastMonth()
+
+### goToToday()
+
+### goToSelection()
+##### *Only works in mode: 'single'*  
+
+### goTo(day)
+
+### makeMyDay(day)
+
+### select(day)
+
+---
 
 ## Styling
 
----
+```css
+#calio {
+    --size;
+    --size-x;
+    --size-y;
+    --color;
+    --color-hover;
+    --bg-hover;
+    --color-inactive;
+    --bg-inactive;
+    --color-disabled;
+    --bg-disabled;
+    --opacity-disabled;
+    --color-ranged;
+    --bg-ranged;
+    --color-active;
+    --bg-active;
+}
+```
 
 [MIT License](LICENSE). &copy; 2017 [Cornelius Ukena](https://cornelius.io).
