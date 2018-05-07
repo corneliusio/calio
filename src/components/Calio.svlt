@@ -42,8 +42,6 @@
                 min: this.makeMyDay(min),
                 max: this.makeMyDay(max)
             });
-
-            this.fire('view', this.get().view.clone());
         },
 
         // eslint-disable-next-line complexity
