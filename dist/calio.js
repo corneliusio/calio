@@ -913,8 +913,8 @@ function onstate({changed, previous, current: {mode, view, value, selection}}) {
 }
 function add_css$1() {
 	var style = createElement("style");
-	style.id = 'svelte-l5s8cw-style';
-	style.textContent = ".calio.svelte-l5s8cw{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--x, var(--size, 2.25em)));grid-auto-rows:var(--y, var(--size, 2em));line-height:var(--y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head.svelte-l5s8cw{color:var(--color, #333);font-weight:bold}";
+	style.id = 'svelte-ui4b82-style';
+	style.textContent = ".calio.svelte-ui4b82{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head.svelte-ui4b82{color:var(--color, #333);font-weight:bold}";
 	appendNode(style, document.head);
 }
 
@@ -950,7 +950,7 @@ function create_main_fragment$1(component, ctx) {
 			text = createText("\n    ");
 
 			for (i = 0; i < each_1_blocks_1.length; i += 1) each_1_blocks_1[i].c();
-			div.className = "calio svelte-l5s8cw";
+			div.className = "calio svelte-ui4b82";
 		},
 
 		m(target, anchor) {
@@ -1012,7 +1012,7 @@ function create_each_block(component, ctx) {
 		c() {
 			span = createElement("span");
 			text = createText(text_value);
-			span.className = "calio-head svelte-l5s8cw";
+			span.className = "calio-head svelte-ui4b82";
 		},
 
 		m(target, anchor) {
@@ -1116,7 +1116,7 @@ function Calio(options) {
 
 	this._handlers.state = [onstate];
 
-	if (!document.getElementById("svelte-l5s8cw-style")) add_css$1();
+	if (!document.getElementById("svelte-ui4b82-style")) add_css$1();
 
 	if (!options.root) {
 		this._oncreate = [];
