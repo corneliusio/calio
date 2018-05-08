@@ -1,6 +1,9 @@
 # Calio
 
-[![Github file size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)]() [![gzip file size](http://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)]() [![license](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/calio.svg?style=flat-square)](http://npmjs.com/package/calio)
+[![Github file size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)]()
+[![gzip file size](http://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)]()
+[![license](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
 
 Calio is an unopinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
 What does that mean? Zero-dependency, vanilla JS that is lean and ready to use where ever you need a date picker.
