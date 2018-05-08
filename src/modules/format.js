@@ -1,18 +1,18 @@
 const token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
 const formats = {
     masks: {
-        default: 'ddd mmm dd yyyy HH:MM:ss',
+        default: 'ddd mmm dd yyyy 00:00:00',
         shortDate: 'm/d/yy',
         mediumDate: 'mmm d, yyyy',
         longDate: 'mmmm d, yyyy',
         fullDate: 'dddd, mmmm d, yyyy',
-        shortTime: 'h:MM TT',
-        mediumTime: 'h:MM:ss TT',
-        longTime: 'h:MM:ss TT Z',
+        shortTime: '0:00 AM',
+        mediumTime: '0:00:00 AM',
+        longTime: '0:00:00 AM Z',
         isoDate: 'yyyy-mm-dd',
-        isoTime: 'HH:MM:ss',
-        isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
-        isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+        isoTime: '00:00:00',
+        isoDateTime: "yyyy-mm-dd'T'00:00:00",
+        isoUtcDateTime: "UTC:yyyy-mm-dd'T'00:00:00'Z'"
     },
     i18n: {
         dayNames: [

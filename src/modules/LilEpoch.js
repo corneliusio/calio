@@ -6,7 +6,7 @@ class LilEpoch {
         const [a, b, c] = args;
 
         if (args.length > 1) {
-            this.value = new Date(a, b, c);
+            this.value = new Date(a, b, c || 1);
         } else if (a) {
             if (a instanceof LilEpoch) {
                 this.value = a.clone().value;
