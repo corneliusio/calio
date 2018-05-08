@@ -77,6 +77,7 @@ Displaying things like the current selection or view is pretty easy too.
 <script src="https://unpkg.com/calio/dist/calio.min.js"></script>
 <script>
     const calio = new Calio('#calio');
+    const {selection, view} = calio.get();
     const viewing = document.querySelector('.viewing');
     const selected = document.querySelector('.selected');
 
@@ -88,7 +89,9 @@ Displaying things like the current selection or view is pretty easy too.
         selected.textContent = selection.format('mediumDate');
     });
 
-    calio.fire('view', calio.get().view); // Fire this so we update our view text when loaded.
+    // Fire these so we update our text when loaded.
+    calio.fire('view', view);
+    calio.fire('select', selection);
 </script>
 ```
 
@@ -102,6 +105,8 @@ Displaying things like the current selection or view is pretty easy too.
 new Calio(el, {
     headers: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
     mode: 'single',
+    disabled: [],
+    strict: false,
     value: null,
     limit: null,
     min: null,
@@ -174,6 +179,30 @@ The number of selections that can be made in `multi` mode. Has no effect in `sin
 new Calio(el, {
     mode: 'multi',
     limit: 3
+});
+```
+
+### disabled
+A date or array of dates that cannot be selected.
+
+```js
+new Calio(el, {
+    disabled: new Date()
+});
+```
+
+### strict
+##### *Only applies to mode: 'range' with a disabled date or dates*  
+Whether to allow a date range to pass through a disabled date. If `true` a user will not be able to select a second date if a disabled date falls within the created range.
+
+```js
+new Calio(el, {
+    mode: 'range',
+    strict: true,
+    disabled: [
+        new Date(2018, 5, 1),
+        new Date(2018, 5, 3)
+    ]
 });
 ```
 
