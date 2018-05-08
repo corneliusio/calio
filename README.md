@@ -2,7 +2,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/calio.svg?style=flat-square)](http://npmjs.com/package/calio)
 [![Github file size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)]()
-[![gzip file size](http://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)]()
+[![gzip file size](https://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)]()
 [![license](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
 
 Calio is an unopinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
@@ -228,15 +228,54 @@ new Calio(el, {
 });
 ```
 
-> ## The rest of this readme is still a WIP.
+---
 
 ## Events
 
 ### view
+This event fires whenever the currently displayed month is updated and is passed the class representing the 1st of the displayed month.
+
+```js
+const calio = new Calio(el);
+
+calio.on('view', view => {
+    // Do something with the value of "view"
+});
+```
 
 ### select
+This event fires whenever the selects a new date and is passed the full selection of the current Calio instance.
+
+```js
+const calio = new Calio(el);
+
+calio.on('select', selection => {
+    // Do something with the value of "selection"
+    // Note that in the case of range and multi modes, "selection" includes all dates currently selected.
+});
+```
 
 ---
+
+These events can also be fired manually to trigger an event on the initial load.
+
+```js
+const calio = new Calio(el);
+const {view, selection} = calio.get();
+
+calio.on('view', view => {
+    // Do something with the value of "view"
+});
+
+calio.on('select', selection => {
+    // Do something with the value of "selection"
+});
+
+calio.fire('view', view);
+calio.fire('selection', selection);
+```
+
+> ## The rest of this readme is still a WIP.
 
 ## API
 
