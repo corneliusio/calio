@@ -9,11 +9,11 @@
 
     export default {
         props: [
-            'selection', 'mode', 'view', 'disabled', 'min', 'max', 'day'
+            'day', 'props'
         ],
 
         computed: {
-            classes({view, day, isActive, isDisabled, isRanged}) {
+            classes({props: {view}, day, isActive, isDisabled, isRanged}) {
                 return [
                     day.isSame(today) && 'is-today',
                     view.endOfMonth().isBefore(day) && 'is-next',
@@ -24,19 +24,19 @@
                 ].filter(Boolean).join(' ');
             },
 
-            isActive({selection, day}) {
+            isActive({props: {selection}, day}) {
                 selection = new Array().concat(selection).filter(Boolean);
 
                 return selection.find(s => day.isSame(s));
             },
 
-            isDisabled({min, max, disabled, day}) {
+            isDisabled({props: {min, max, disabled}, day}) {
                 return (disabled.find(d => d.isSame && d.isSame(day)))
                     || (min && day.isBefore(min))
                     || (max && day.isAfter(max));
             },
 
-            isRanged({selection, mode, day}) {
+            isRanged({props: {selection, mode}, day}) {
                 if (mode === 'range' && selection) {
                     let [start, end] = selection;
 

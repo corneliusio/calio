@@ -2,8 +2,8 @@
     {#each head as day}
         <span class="calio-head">{day}</span>
     {/each}
-    {#each dates as day (day.timestamp())}
-        <Day {selection} {mode} {view} {disabled} {min} {max} {day} on:select="select(day)" />
+    {#each dates as day}
+        <Day {day} {props} on:select="select(day)" />
     {/each}
 </div>
 
@@ -80,6 +80,10 @@
         },
 
         computed: {
+
+            props({selection, mode, view, disabled, min, max}) {
+                return {selection, mode, view, disabled, min, max};
+            },
 
             head({headers}) {
                 return headers.length

@@ -36,194 +36,12 @@ function createText(data) {
 	return document.createTextNode(data);
 }
 
-function createComment() {
-	return document.createComment('');
-}
-
 function addListener(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
 
 function removeListener(node, event, handler) {
 	node.removeEventListener(event, handler, false);
-}
-
-var transitionManager = {
-	running: false,
-	transitions: [],
-	bound: null,
-	stylesheet: null,
-	activeRules: {},
-
-	add(transition) {
-		this.transitions.push(transition);
-
-		if (!this.running) {
-			this.running = true;
-			requestAnimationFrame(this.bound || (this.bound = this.next.bind(this)));
-		}
-	},
-
-	addRule(rule, name) {
-		if (!this.stylesheet) {
-			const style = createElement('style');
-			document.head.appendChild(style);
-			transitionManager.stylesheet = style.sheet;
-		}
-
-		if (!this.activeRules[name]) {
-			this.activeRules[name] = true;
-			this.stylesheet.insertRule(`@keyframes ${name} ${rule}`, this.stylesheet.cssRules.length);
-		}
-	},
-
-	next() {
-		this.running = false;
-
-		const now = window.performance.now();
-		let i = this.transitions.length;
-
-		while (i--) {
-			const transition = this.transitions[i];
-
-			if (transition.program && now >= transition.program.end) {
-				transition.done();
-			}
-
-			if (transition.pending && now >= transition.pending.start) {
-				transition.start(transition.pending);
-			}
-
-			if (transition.running) {
-				transition.update(now);
-				this.running = true;
-			} else if (!transition.pending) {
-				this.transitions.splice(i, 1);
-			}
-		}
-
-		if (this.running) {
-			requestAnimationFrame(this.bound);
-		} else if (this.stylesheet) {
-			let i = this.stylesheet.cssRules.length;
-			while (i--) this.stylesheet.deleteRule(i);
-			this.activeRules = {};
-		}
-	},
-
-	deleteRule(node, name) {
-		node.style.animation = node.style.animation
-			.split(', ')
-			.filter(anim => anim && anim.indexOf(name) === -1)
-			.join(', ');
-	},
-
-	groupOutros() {
-		this.outros = {
-			remaining: 0,
-			callbacks: []
-		};
-	}
-};
-
-function destroyBlock(block, lookup) {
-	block.d(1);
-	lookup[block.key] = null;
-}
-
-function outroAndDestroyBlock(block, lookup) {
-	block.o(function() {
-		destroyBlock(block, lookup);
-	});
-}
-
-function updateKeyedEach(old_blocks, component, changed, get_key, dynamic, ctx, list, lookup, node, has_outro, create_each_block, intro_method, next, get_context) {
-	var o = old_blocks.length;
-	var n = list.length;
-
-	var i = o;
-	var old_indexes = {};
-	while (i--) old_indexes[old_blocks[i].key] = i;
-
-	var new_blocks = [];
-	var new_lookup = {};
-	var deltas = {};
-
-	var i = n;
-	while (i--) {
-		var child_ctx = get_context(ctx, list, i);
-		var key = get_key(child_ctx);
-		var block = lookup[key];
-
-		if (!block) {
-			block = create_each_block(component, key, child_ctx);
-			block.c();
-		} else if (dynamic) {
-			block.p(changed, child_ctx);
-		}
-
-		new_blocks[i] = new_lookup[key] = block;
-
-		if (key in old_indexes) deltas[key] = Math.abs(i - old_indexes[key]);
-	}
-
-	var will_move = {};
-	var did_move = {};
-
-	var destroy = has_outro ? outroAndDestroyBlock : destroyBlock;
-	if (has_outro) transitionManager.groupOutros();
-
-	function insert(block) {
-		block[intro_method](node, next);
-		lookup[block.key] = block;
-		next = block.first;
-		n--;
-	}
-
-	while (o && n) {
-		var new_block = new_blocks[n - 1];
-		var old_block = old_blocks[o - 1];
-		var new_key = new_block.key;
-		var old_key = old_block.key;
-
-		if (new_block === old_block) {
-			// do nothing
-			next = new_block.first;
-			o--;
-			n--;
-		}
-
-		else if (!new_lookup[old_key]) {
-			// remove old block
-			destroy(old_block, lookup);
-			o--;
-		}
-
-		else if (!lookup[new_key] || will_move[new_key]) {
-			insert(new_block);
-		}
-
-		else if (did_move[old_key]) {
-			o--;
-
-		} else if (deltas[new_key] > deltas[old_key]) {
-			did_move[new_key] = true;
-			insert(new_block);
-
-		} else {
-			will_move[old_key] = true;
-			o--;
-		}
-	}
-
-	while (o--) {
-		var old_block = old_blocks[o];
-		if (!new_lookup[old_block.key]) destroy(old_block, lookup);
-	}
-
-	while (n) insert(new_blocks[n - 1]);
-
-	return new_blocks;
 }
 
 function blankObject() {
@@ -560,7 +378,7 @@ class LilEpoch {
 
 const today = new LilEpoch();
 
-function classes({view, day, isActive, isDisabled, isRanged}) {
+function classes({props: {view}, day, isActive, isDisabled, isRanged}) {
     return [
         day.isSame(today) && 'is-today',
         view.endOfMonth().isBefore(day) && 'is-next',
@@ -570,17 +388,17 @@ function classes({view, day, isActive, isDisabled, isRanged}) {
         isActive && 'is-active'
     ].filter(Boolean).join(' ');
 }
-function isActive({selection, day}) {
+function isActive({props: {selection}, day}) {
     selection = new Array().concat(selection).filter(Boolean);
 
     return selection.find(s => day.isSame(s));
 }
-function isDisabled({min, max, disabled, day}) {
+function isDisabled({props: {min, max, disabled}, day}) {
     return (disabled.find(d => d.isSame && d.isSame(day)))
         || (min && day.isBefore(min))
         || (max && day.isAfter(max));
 }
-function isRanged({selection, mode, day}) {
+function isRanged({props: {selection, mode}, day}) {
     if (mode === 'range' && selection) {
         let [start, end] = selection;
 
@@ -642,7 +460,7 @@ function create_main_fragment(component, ctx) {
 function Day(options) {
 	init(this, options);
 	this._state = assign({}, options.data);
-	this._recompute({ selection: 1, day: 1, min: 1, max: 1, disabled: 1, mode: 1, view: 1, isActive: 1, isDisabled: 1, isRanged: 1 }, this._state);
+	this._recompute({ props: 1, day: 1, isActive: 1, isDisabled: 1, isRanged: 1 }, this._state);
 
 	if (!document.getElementById("svelte-1mp2c5z-style")) add_css();
 
@@ -657,19 +475,13 @@ function Day(options) {
 assign(Day.prototype, proto);
 
 Day.prototype._recompute = function _recompute(changed, state) {
-	if (changed.selection || changed.day) {
+	if (changed.props || changed.day) {
 		if (this._differs(state.isActive, (state.isActive = isActive(state)))) changed.isActive = true;
-	}
-
-	if (changed.min || changed.max || changed.disabled || changed.day) {
 		if (this._differs(state.isDisabled, (state.isDisabled = isDisabled(state)))) changed.isDisabled = true;
-	}
-
-	if (changed.selection || changed.mode || changed.day) {
 		if (this._differs(state.isRanged, (state.isRanged = isRanged(state)))) changed.isRanged = true;
 	}
 
-	if (changed.view || changed.day || changed.isActive || changed.isDisabled || changed.isRanged) {
+	if (changed.props || changed.day || changed.isActive || changed.isDisabled || changed.isRanged) {
 		if (this._differs(state.classes, (state.classes = classes(state)))) changed.classes = true;
 	}
 };
@@ -678,6 +490,9 @@ Day.prototype._recompute = function _recompute(changed, state) {
 
 const today$1 = new LilEpoch();
 
+function props({selection, mode, view, disabled, min, max}) {
+    return {selection, mode, view, disabled, min, max};
+}
 function head({headers}) {
     return headers.length
         ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
@@ -947,7 +762,7 @@ function add_css$1() {
 }
 
 function create_main_fragment$1(component, ctx) {
-	var div, text, each_1_blocks_1 = [], each_1_lookup = blankObject();
+	var div, text;
 
 	var each_value = ctx.head;
 
@@ -959,12 +774,10 @@ function create_main_fragment$1(component, ctx) {
 
 	var each_value_1 = ctx.dates;
 
-	const get_key = ctx => ctx.day.timestamp();
+	var each_1_blocks = [];
 
 	for (var i = 0; i < each_value_1.length; i += 1) {
-		let child_ctx = get_each_1_context(ctx, each_value_1, i);
-		let key = get_key(child_ctx);
-		each_1_blocks_1[i] = each_1_lookup[key] = create_each_block_1(component, key, child_ctx);
+		each_1_blocks[i] = create_each_block_1(component, get_each_1_context(ctx, each_value_1, i));
 	}
 
 	return {
@@ -977,7 +790,9 @@ function create_main_fragment$1(component, ctx) {
 
 			text = createText("\n    ");
 
-			for (i = 0; i < each_1_blocks_1.length; i += 1) each_1_blocks_1[i].c();
+			for (var i = 0; i < each_1_blocks.length; i += 1) {
+				each_1_blocks[i].c();
+			}
 			div.className = "calio svelte-ui4b82";
 		},
 
@@ -990,7 +805,9 @@ function create_main_fragment$1(component, ctx) {
 
 			appendNode(text, div);
 
-			for (i = 0; i < each_1_blocks_1.length; i += 1) each_1_blocks_1[i].m(div, null);
+			for (var i = 0; i < each_1_blocks.length; i += 1) {
+				each_1_blocks[i].m(div, null);
+			}
 		},
 
 		p(changed, ctx) {
@@ -1015,9 +832,26 @@ function create_main_fragment$1(component, ctx) {
 				each_blocks.length = each_value.length;
 			}
 
-			var each_value_1 = ctx.dates;
+			if (changed.dates || changed.props) {
+				each_value_1 = ctx.dates;
 
-			each_1_blocks_1 = updateKeyedEach(each_1_blocks_1, component, changed, get_key, 1, ctx, each_value_1, each_1_lookup, div, false, create_each_block_1, "m", null, get_each_1_context);
+				for (var i = 0; i < each_value_1.length; i += 1) {
+					const child_ctx = get_each_1_context(ctx, each_value_1, i);
+
+					if (each_1_blocks[i]) {
+						each_1_blocks[i].p(changed, child_ctx);
+					} else {
+						each_1_blocks[i] = create_each_block_1(component, child_ctx);
+						each_1_blocks[i].c();
+						each_1_blocks[i].m(div, null);
+					}
+				}
+
+				for (; i < each_1_blocks.length; i += 1) {
+					each_1_blocks[i].d(1);
+				}
+				each_1_blocks.length = each_value_1.length;
+			}
 		},
 
 		d(detach) {
@@ -1027,7 +861,7 @@ function create_main_fragment$1(component, ctx) {
 
 			destroyEach(each_blocks, detach);
 
-			for (i = 0; i < each_1_blocks_1.length; i += 1) each_1_blocks_1[i].d();
+			destroyEach(each_1_blocks, detach);
 		}
 	};
 }
@@ -1062,19 +896,10 @@ function create_each_block(component, ctx) {
 	};
 }
 
-// (5:4) {#each dates as day (day.timestamp())}
-function create_each_block_1(component, key_1, ctx) {
-	var first;
+// (5:4) {#each dates as day}
+function create_each_block_1(component, ctx) {
 
-	var day_initial_data = {
-	 	selection: ctx.selection,
-	 	mode: ctx.mode,
-	 	view: ctx.view,
-	 	disabled: ctx.disabled,
-	 	min: ctx.min,
-	 	max: ctx.max,
-	 	day: ctx.day
-	 };
+	var day_initial_data = { day: ctx.day, props: ctx.props };
 	var day = new Day({
 		root: component.root,
 		data: day_initial_data
@@ -1085,39 +910,23 @@ function create_each_block_1(component, key_1, ctx) {
 	});
 
 	return {
-		key: key_1,
-
-		first: null,
-
 		c() {
-			first = createComment();
 			day._fragment.c();
-			this.first = first;
 		},
 
 		m(target, anchor) {
-			insertNode(first, target, anchor);
 			day._mount(target, anchor);
 		},
 
 		p(changed, _ctx) {
 			ctx = _ctx;
 			var day_changes = {};
-			if (changed.selection) day_changes.selection = ctx.selection;
-			if (changed.mode) day_changes.mode = ctx.mode;
-			if (changed.view) day_changes.view = ctx.view;
-			if (changed.disabled) day_changes.disabled = ctx.disabled;
-			if (changed.min) day_changes.min = ctx.min;
-			if (changed.max) day_changes.max = ctx.max;
 			if (changed.dates) day_changes.day = ctx.day;
+			if (changed.props) day_changes.props = ctx.props;
 			day._set(day_changes);
 		},
 
 		d(detach) {
-			if (detach) {
-				detachNode(first);
-			}
-
 			day.destroy(detach);
 		}
 	};
@@ -1142,7 +951,7 @@ function get_each_1_context(ctx, list, i) {
 function Calio(options) {
 	init(this, options);
 	this._state = assign(data(), options.data);
-	this._recompute({ headers: 1, view: 1, disabled: 1 }, this._state);
+	this._recompute({ selection: 1, mode: 1, view: 1, disabled: 1, min: 1, max: 1, headers: 1 }, this._state);
 
 	this._handlers.state = [onstate];
 
@@ -1178,6 +987,10 @@ assign(Calio.prototype, proto);
 assign(Calio.prototype, methods);
 
 Calio.prototype._recompute = function _recompute(changed, state) {
+	if (changed.selection || changed.mode || changed.view || changed.disabled || changed.min || changed.max) {
+		if (this._differs(state.props, (state.props = props(state)))) changed.props = true;
+	}
+
 	if (changed.headers) {
 		if (this._differs(state.head, (state.head = head(state)))) changed.head = true;
 	}
