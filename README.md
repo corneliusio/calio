@@ -8,7 +8,7 @@
 Calio is an unopinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
 What does that mean? Zero-dependency, vanilla JS that is lean and ready to use where ever you need a date picker.
 
-![Calio](media/calio.png)
+![Calio](extra/calio.png)
 
 ---
 
@@ -18,7 +18,8 @@ What does that mean? Zero-dependency, vanilla JS that is lean and ready to use w
 | ------ | ---- | ------- | ------------ | ---------- | ------- |
 | 60+    | 14+  | 53+     | 10+          | 11+        | 6+      |
 
-**Note: This module does not support IE.**
+**Note: This module does not support IE out of the box.  
+But if you're looking for IE11 support, here's [what you need](extra/IE.md).**
 
 ---
 
