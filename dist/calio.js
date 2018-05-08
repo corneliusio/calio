@@ -575,8 +575,10 @@ function isActive({selection, day}) {
 
     return selection.find(s => day.isSame(s));
 }
-function isDisabled({min, max, day}) {
-    return (min && day.isBefore(min)) || (max && day.isAfter(max));
+function isDisabled({min, max, disabled, day}) {
+    return (disabled.find(d => d.isSame && d.isSame(day)))
+        || (min && day.isBefore(min))
+        || (max && day.isAfter(max));
 }
 function isRanged({selection, mode, day}) {
     if (mode === 'range' && selection) {
@@ -640,7 +642,7 @@ function create_main_fragment(component, ctx) {
 function Day(options) {
 	init(this, options);
 	this._state = assign({}, options.data);
-	this._recompute({ selection: 1, day: 1, min: 1, max: 1, mode: 1, view: 1, isActive: 1, isDisabled: 1, isRanged: 1 }, this._state);
+	this._recompute({ selection: 1, day: 1, min: 1, max: 1, disabled: 1, mode: 1, view: 1, isActive: 1, isDisabled: 1, isRanged: 1 }, this._state);
 
 	if (!document.getElementById("svelte-1mp2c5z-style")) add_css();
 
@@ -659,7 +661,7 @@ Day.prototype._recompute = function _recompute(changed, state) {
 		if (this._differs(state.isActive, (state.isActive = isActive(state)))) changed.isActive = true;
 	}
 
-	if (changed.min || changed.max || changed.day) {
+	if (changed.min || changed.max || changed.disabled || changed.day) {
 		if (this._differs(state.isDisabled, (state.isDisabled = isDisabled(state)))) changed.isDisabled = true;
 	}
 
@@ -681,11 +683,15 @@ function head({headers}) {
         ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
         : [];
 }
-function dates({view}) {
+function dates({view, disabled}) {
     let current = view.clone().startOfMonth(),
         dates = [],
         dayOfFirst,
         dayOfLast;
+
+    if (!Array.isArray(disabled)) {
+        return [];
+    }
 
     dayOfFirst = current.dayOfWeek();
 
@@ -713,6 +719,8 @@ function data() {
         headers: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
         view: new LilEpoch(),
         mode: 'single',
+        strict: false,
+        disabled: [],
         selection: null,
         value: null,
         limit: null,
@@ -751,21 +759,39 @@ var methods = {
     },
 
     updateRange(day) {
-        let {selection} = this.get();
+        let {selection, disabled, strict} = this.get(),
+            index;
 
         selection = selection || [];
+        index = selection.findIndex(s => s.isSame(day));
 
-        if (selection.length > 1) {
+        if (index > -1) {
+            selection.splice(index, 1);
+            this.set({selection});
+        } else if (selection.length > 1) {
             this.set({
                 selection: [day.clone()]
             });
         } else {
-            selection.push(day.clone());
+            selection = [...selection, day.clone()];
+
+            selection = selection.sort((a, b) => {
+                return a.timestamp() - b.timestamp();
+            });
+
+            if (strict) {
+                let [start, end] = selection,
+                    isInvalid = end && !!disabled.find(d => {
+                        return d.isAfter(start) && d.isBefore(end);
+                    });
+
+                if (isInvalid) {
+                    return;
+                }
+            }
 
             this.set({
-                selection: selection.sort((a, b) => {
-                    return a.timestamp() - b.timestamp();
-                })
+                selection: selection
             });
         }
     },
@@ -871,18 +897,20 @@ var methods = {
 };
 
 function oncreate() {
-    const {value, min, max} = this.get();
-
-    new Array().concat(value).forEach(v => {
-        this.select(v || null);
-    });
+    const {value, min, max, disabled} = this.get();
 
     this.set({
         min: this.makeMyDay(min),
-        max: this.makeMyDay(max)
+        max: this.makeMyDay(max),
+        disabled: new Array()
+            .concat(disabled)
+            .filter(Boolean)
+            .map(this.makeMyDay)
     });
+
+    new Array().concat(value).forEach(v => this.select(v));
 }
-function onstate({changed, previous, current: {mode, view, value, selection}}) {
+function onstate({changed, previous, current: {mode, view, value, selection, disabled}}) {
 
     if (changed.view) {
         this.fire('view', view.clone());
@@ -1042,6 +1070,7 @@ function create_each_block_1(component, key_1, ctx) {
 	 	selection: ctx.selection,
 	 	mode: ctx.mode,
 	 	view: ctx.view,
+	 	disabled: ctx.disabled,
 	 	min: ctx.min,
 	 	max: ctx.max,
 	 	day: ctx.day
@@ -1077,6 +1106,7 @@ function create_each_block_1(component, key_1, ctx) {
 			if (changed.selection) day_changes.selection = ctx.selection;
 			if (changed.mode) day_changes.mode = ctx.mode;
 			if (changed.view) day_changes.view = ctx.view;
+			if (changed.disabled) day_changes.disabled = ctx.disabled;
 			if (changed.min) day_changes.min = ctx.min;
 			if (changed.max) day_changes.max = ctx.max;
 			if (changed.dates) day_changes.day = ctx.day;
@@ -1112,7 +1142,7 @@ function get_each_1_context(ctx, list, i) {
 function Calio(options) {
 	init(this, options);
 	this._state = assign(data(), options.data);
-	this._recompute({ headers: 1, view: 1 }, this._state);
+	this._recompute({ headers: 1, view: 1, disabled: 1 }, this._state);
 
 	this._handlers.state = [onstate];
 
@@ -1152,7 +1182,7 @@ Calio.prototype._recompute = function _recompute(changed, state) {
 		if (this._differs(state.head, (state.head = head(state)))) changed.head = true;
 	}
 
-	if (changed.view) {
+	if (changed.view || changed.disabled) {
 		if (this._differs(state.dates, (state.dates = dates(state)))) changed.dates = true;
 	}
 };

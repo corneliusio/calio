@@ -9,7 +9,7 @@
 
     export default {
         props: [
-            'selection', 'mode', 'view', 'min', 'max', 'day'
+            'selection', 'mode', 'view', 'disabled', 'min', 'max', 'day'
         ],
 
         computed: {
@@ -30,8 +30,10 @@
                 return selection.find(s => day.isSame(s));
             },
 
-            isDisabled({min, max, day}) {
-                return (min && day.isBefore(min)) || (max && day.isAfter(max));
+            isDisabled({min, max, disabled, day}) {
+                return (disabled.find(d => d.isSame && d.isSame(day)))
+                    || (min && day.isBefore(min))
+                    || (max && day.isAfter(max));
             },
 
             isRanged({selection, mode, day}) {
