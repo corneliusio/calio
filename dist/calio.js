@@ -728,7 +728,7 @@ function oncreate() {
 function onstate({changed, previous, current: {mode, view, value, selection, disabled}}) {
 
     if (changed.view) {
-        this.fire('view', view.clone());
+        this.fire('view', view.clone().date(1));
     }
 
     if (previous && selection && changed.selection) {
@@ -739,7 +739,7 @@ function onstate({changed, previous, current: {mode, view, value, selection, dis
             if (!selection.isSameMonth(view)) {
                 view = selection.clone();
                 this.set({view});
-                this.fire('view', view.clone());
+                this.fire('view', view.clone().date(1));
             }
         } else {
             this.fire('select', selection.map(s => s.clone()));
@@ -751,7 +751,7 @@ function onstate({changed, previous, current: {mode, view, value, selection, dis
 
         view = selection.clone();
         this.set({view, selection});
-        this.fire('view', view.clone());
+        this.fire('view', view.clone().date(1));
     }
 }
 function add_css$1() {
