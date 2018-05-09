@@ -6,10 +6,6 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 install:
   - yarn
-  - yarn global add codecov
-script:
-  - yarn coverage
-  - codecov
 deploy:
   provider: npm
   email: guy@cornelius.io
