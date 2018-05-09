@@ -41,6 +41,7 @@
     "@babel/core": "^7.0.0-beta",
     "@babel/preset-env": "^7.0.0-beta",
     "autoprefixer": "^8.4.1",
+    "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.2.3",
     "babel-jest": "^22.4.3",
     "codecov": "^3.0.2",
@@ -53,8 +54,5 @@
     "rollup-plugin-svelte": "^4.1.0",
     "rollup-plugin-uglify": "^3.0.0",
     "svelte": "^2.4.3"
-  },
-  "dependencies": {
-    "babel-core": "^7.0.0-0"
   }
 }
