@@ -7,14 +7,12 @@ class LilEpoch {
 
         if (args.length > 1) {
             this.value = new Date(a, b, c || 1);
-        } else if (a) {
-            if (a instanceof LilEpoch) {
-                this.value = a.clone().value;
-            } else if (a instanceof Date) {
-                this.value = a;
-            } else if (['number', 'string'].includes(typeof a)) {
-                this.value = new Date(a);
-            }
+        } else if (a instanceof LilEpoch) {
+            this.value = a.clone().value;
+        } else if (a instanceof Date) {
+            this.value = a;
+        } else if (['number', 'string'].includes(typeof a)) {
+            this.value = new Date(a);
         } else {
             this.value = new Date();
         }
