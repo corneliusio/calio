@@ -4,6 +4,10 @@ test('it accepts year, month, date arguments', () => {
     expect(new LilEpoch(2018, 0, 1)).toHaveProperty('value', new Date(Date.UTC(2018, 0, 1)));
 });
 
+test('it defaults to 1st if on date provided', () => {
+    expect(new LilEpoch(2018, 0)).toHaveProperty('value', new Date(Date.UTC(2018, 0, 1)));
+});
+
 test('it accepts another LilEpoch instance', () => {
     let epoch = new LilEpoch();
 
