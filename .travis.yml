@@ -8,7 +8,7 @@ install:
   - yarn
   - yarn global add codecov
 script:
-  - yarn test
+  - yarn coverage
   - codecov
 deploy:
   provider: npm
