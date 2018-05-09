@@ -548,11 +548,18 @@ var methods = {
     },
 
     select(day) {
-        const {mode} = this.get();
+        const {mode, disabled, min, max} = this.get();
 
         day = this.makeMyDay(day);
 
         if (day) {
+            if (disabled.find(d => d.isSame(day))
+                || (min && day.isBefore(min))
+                || (max && day.isAfter(max))) {
+
+                return;
+            }
+
             switch (mode) {
             case 'range' :
                 this.updateRange(day);
@@ -678,7 +685,7 @@ var methods = {
         });
     },
 
-    goToToday() {
+    goToThisMonth() {
         this.set({
             view: today$1.clone()
         });

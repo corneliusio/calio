@@ -63,7 +63,7 @@ You may notice at this point that this really is **just a date picker**. Where's
 <script>
     const calio = new Calio('#calio');
 
-    document.querySelector('.today').addEventListener('click', event => calio.goToToday());
+    document.querySelector('.today').addEventListener('click', event => calio.goToThisMonth());
     document.querySelector('.prev').addEventListener('click', event => calio.goToLastMonth());
     document.querySelector('.next').addEventListener('click', event => calio.goToNextMonth());
 </script>
@@ -291,7 +291,7 @@ calio.fire('selection', selection);
 
 ### goToLastMonth()
 
-### goToToday()
+### goToThisMonth()
 
 ### goToSelection()
 ##### *Only works in mode: 'single'*  
