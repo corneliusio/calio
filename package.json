@@ -34,7 +34,7 @@
     "build": "npm run lint && npm run clean && npm run prod && npm run min",
     "prod": "rollup --config rollup.config.es.js --environment NODE_ENV:production",
     "min": "rollup --config rollup.config.min.js --environment NODE_ENV:production",
-    "prepublishOnly": "npm run coverage && npm run build",
+    "prepublishOnly": "npm run build",
     "precommit": "npm run lint"
   },
   "devDependencies": {
