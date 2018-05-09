@@ -14,5 +14,6 @@ deploy:
   provider: npm
   email: guy@cornelius.io
   api_key: $NPM_API_KEY
+  skip_cleanup: true
   on:
     tags: true
