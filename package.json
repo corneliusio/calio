@@ -26,7 +26,8 @@
     "src/"
   ],
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest",
+    "coverage": "jest --coverage",
     "clean": "rm -rf dist",
     "lint": "eslint -c .eslintrc.json src/** --fix",
     "dev": "npm run clean && rollup --config rollup.config.dev.js --environment NODE_ENV:development --watch",

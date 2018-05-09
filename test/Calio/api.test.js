@@ -43,52 +43,119 @@ test('selects a day', () => {
     expect(calio.get().selection).toEqual(epoch);
 });
 
-test('adds selected day to array in multi mode', () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
-    const epoch3 = new LilEpoch(2016, 0);
+test('can go to year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'multi'}
+        data: {
+            value: new LilEpoch(2018, 0)
+        }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
+    calio.goToYear(2000);
 
-    expect(calio.get().selection).toContainEqual(epoch1);
-    expect(calio.get().selection).toContainEqual(epoch2);
-    expect(calio.get().selection).toContainEqual(epoch3);
+    expect(calio.get().view).toEqual(new LilEpoch(2000, 0));
 });
 
-test('adds selected day to array in range mode', () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
+test('can go to next year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'range'}
+        data: {
+            value: new LilEpoch(2018, 0)
+        }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
+    calio.goToNextYear();
 
-    expect(calio.get().selection).toContainEqual(epoch1);
-    expect(calio.get().selection).toContainEqual(epoch2);
+    expect(calio.get().view).toEqual(new LilEpoch(2019, 0));
 });
 
-test('limits selection to two selected days in range mode', () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
-    const epoch3 = new LilEpoch(2016, 0);
+test('can go to last year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'range'}
+        data: {
+            value: new LilEpoch(2018, 0)
+        }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
+    calio.goToLastYear();
 
-    expect(calio.get().selection).toHaveLength(1);
-    expect(calio.get().selection).toContainEqual(epoch3);
+    expect(calio.get().view).toEqual(new LilEpoch(2017, 0));
+});
+
+test('can go to month', () => {
+    const calio = new Calio({
+        target: document.querySelector('#calio'),
+        data: {
+            value: new LilEpoch(2018, 6)
+        }
+    });
+
+    calio.goToMonth(1);
+
+    expect(calio.get().view).toEqual(new LilEpoch(2018, 0));
+});
+
+test('can go to next month', () => {
+    const calio = new Calio({
+        target: document.querySelector('#calio'),
+        data: {
+            value: new LilEpoch(2018, 6)
+        }
+    });
+
+    calio.goToNextMonth();
+
+    expect(calio.get().view).toEqual(new LilEpoch(2018, 7));
+});
+
+test('can go to last month', () => {
+    const calio = new Calio({
+        target: document.querySelector('#calio'),
+        data: {
+            value: new LilEpoch(2018, 6)
+        }
+    });
+
+    calio.goToLastMonth();
+
+    expect(calio.get().view).toEqual(new LilEpoch(2018, 5));
+});
+
+test('can go to this month', () => {
+    const calio = new Calio({
+        target: document.querySelector('#calio'),
+        data: {
+            value: new LilEpoch(1988, 6)
+        }
+    });
+
+    calio.goToThisMonth();
+
+    expect(calio.get().view).toEqual(new LilEpoch().date(1));
+});
+
+test('can go to current selection in single mode if it exists', () => {
+    const epoch = new LilEpoch(1988, 0);
+    const calio = new Calio({
+        target: document.querySelector('#calio')
+    });
+
+    calio.goToSelection();
+    expect(calio.get().view).toEqual(new LilEpoch().date(1));
+
+    calio.select(epoch);
+    calio.goToSelection();
+    expect(calio.get().view).toEqual(epoch);
+});
+
+test('can go to month containing valid day', () => {
+    const epoch = new LilEpoch(1988, 10, 25);
+    const calio = new Calio({
+        target: document.querySelector('#calio')
+    });
+
+    calio.goTo(epoch);
+    expect(calio.get().view).toEqual(epoch.clone().date(1));
+
+    expect(calio.goTo(null)).toBeUndefined();
 });
