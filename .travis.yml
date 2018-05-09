@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - 10
+if: tag IS present
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH="$HOME/.yarn/bin:$PATH"
