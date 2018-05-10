@@ -2,7 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/calio.svg?style=flat-square)](http://npmjs.com/package/calio)
 ![Github File Size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)
-![Gzip File Size](https://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)
+![Gzip File Size](https://img.badgesize.io/https://unpkg.com/calio?compression=gzip&label=gzip&style=flat-square)
 [![Build Status](https://img.shields.io/travis/corneliusio/calio/master.svg?style=flat-square)](https://travis-ci.org/corneliusio/calio)
 [![Codecov](https://img.shields.io/codecov/c/github/corneliusio/calio.svg?style=flat-square)](https://codecov.io/gh/corneliusio/calio)
 [![License](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
@@ -38,7 +38,7 @@ import Calio from 'calio';
 or manually include `calio.min.js` in your HTML:
 
 ```html
-<script src="https://unpkg.com/calio/dist/calio.min.js"></script>
+<script src="https://unpkg.com/calio"></script>
 ```
 
 Then, instantiate your date picker!
@@ -61,7 +61,7 @@ You may notice at this point that this really is **just a date picker**. Where's
 
 <div id="calio"></div>
 
-<script src="https://unpkg.com/calio/dist/calio.min.js"></script>
+<script src="https://unpkg.com/calio"></script>
 <script>
     const calio = new Calio('#calio');
 
@@ -80,7 +80,7 @@ Displaying things like the current selection or view is pretty easy too.
 <div id="calio"></div>
 <h5 class="selected"></h5>
 
-<script src="https://unpkg.com/calio/dist/calio.min.js"></script>
+<script src="https://unpkg.com/calio"></script>
 <script>
     const calio = new Calio('#calio');
     const {selection, view} = calio.get();
@@ -246,7 +246,7 @@ calio.on('view', view => {
 ```
 
 ### select
-This event fires whenever the selects a new date and is passed the full selection of the current Calio instance.
+This event fires whenever the user selects a new date and is passed the full selection of the current Calio instance.
 
 ```js
 const calio = new Calio(el);
