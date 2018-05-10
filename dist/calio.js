@@ -1002,14 +1002,17 @@ Calio.prototype._recompute = function _recompute(changed, state) {
 };
 
 class index {
-    constructor(el, data) {
+    constructor(el, data = {}) {
+        const options = ['headers', 'mode', 'disabled', 'strict', 'value', 'limit', 'min', 'max'];
         const target = (typeof el === 'string')
             ? document.querySelector(el)
             : el;
 
         return new Calio({
             target,
-            data
+            data: Object.keys(data)
+                .filter(key => options.includes(key))
+                .reduce((obj, key) => (obj[key] = data[key], obj), {})
         });
     }
 }
