@@ -11,7 +11,8 @@ module.exports = [
             format: 'es'
         },
         plugins: [
-            svelte(config)
+            svelte(config),
+            babel()
         ]
     },
     {
