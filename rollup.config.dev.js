@@ -1,6 +1,4 @@
-const path = require('path');
-const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
+const config = require('./svelte.config');
 const svelte = require('rollup-plugin-svelte');
 
 module.exports = {
@@ -12,26 +10,6 @@ module.exports = {
         sourcemap: true
     },
     plugins: [
-        svelte({
-            extensions: ['.svlt', '.svelte'],
-            preprocess: {
-                style: async ({content, filename}) => {
-                    const result = await postcss([
-                        autoprefixer({
-                            flexbox: 'no-2009',
-                            grid: true
-                        })
-                    ]).process(content, {
-                        to: path.basename(filename),
-                        from: path.basename(filename)
-                    });
-
-                    return {
-                        code: result.css,
-                        map: result.map
-                    };
-                }
-            }
-        })
+        svelte(config)
     ]
 };

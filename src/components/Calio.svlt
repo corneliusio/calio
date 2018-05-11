@@ -48,7 +48,6 @@
             new Array().concat(value).forEach(v => this.select(v));
         },
 
-        // eslint-disable-next-line complexity
         onstate({changed, previous, current: {mode, view, value, selection, disabled}}) {
 
             if (changed.view) {

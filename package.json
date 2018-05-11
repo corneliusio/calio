@@ -31,9 +31,8 @@
     "clean": "rm -rf dist",
     "lint": "eslint -c .eslintrc.json src/** --fix",
     "dev": "npm run clean && rollup --config rollup.config.dev.js --environment NODE_ENV:development --watch",
-    "build": "npm run lint && npm run clean && npm run prod && npm run min",
-    "prod": "rollup --config rollup.config.es.js --environment NODE_ENV:production",
-    "min": "rollup --config rollup.config.min.js --environment NODE_ENV:production",
+    "build": "npm run lint && npm run clean && npm run prod",
+    "prod": "rollup --config rollup.config.js --environment NODE_ENV:production",
     "prepublishOnly": "npm run build",
     "precommit": "npm run lint"
   },
