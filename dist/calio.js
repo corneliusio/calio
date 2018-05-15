@@ -517,6 +517,7 @@ function Day(options) {
     isRanged: 1
   }, this._state);
 
+  this._intro = true;
   if (!document.getElementById("svelte-1mp2c5z-style")) add_css();
   this._fragment = create_main_fragment(this, this._state);
 
@@ -1078,6 +1079,7 @@ function Calio(options) {
     headers: 1
   }, this._state);
 
+  this._intro = true;
   this._handlers.state = [onstate];
   if (!document.getElementById("svelte-ui4b82-style")) add_css$1();
 
