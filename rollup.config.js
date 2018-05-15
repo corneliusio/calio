@@ -8,7 +8,7 @@ module.exports = [
         input: 'src/index.js',
         output: {
             file: 'dist/calio.js',
-            format: 'es'
+            format: 'esm'
         },
         plugins: [
             svelte(config),
