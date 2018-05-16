@@ -35,7 +35,7 @@ npm install calio --save
 import Calio from 'calio';
 ```
 
-or manually include `calio.min.js` in your HTML:
+or manually include `dist/calio.min.js` in your HTML:
 
 ```html
 <script src="https://unpkg.com/calio"></script>
@@ -277,34 +277,126 @@ calio.fire('view', view);
 calio.fire('selection', selection);
 ```
 
-> ## The rest of this readme is still a WIP.
+---
 
 ## API
 
 ### goToYear(y)
+Jump to the (full 4-digit) year provided.
+
+```js
+const calio = new Calio(el);
+
+calio.goToYear(1988);
+```
 
 ### goToNextYear()
+Jump to the next year.
+
+```js
+const calio = new Calio(el);
+
+calio.goToNextYear();
+```
 
 ### goToLastYear()
+Jump to the previous year.
+
+```js
+const calio = new Calio(el);
+
+calio.goToLastYear();
+```
 
 ### goToMonth(m)
+Jump to the month provided. Works with a conventional 1-12 index (i.e. 1: Jan, 2: Feb, etc…) as opposed to the [0 based index](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Parameters) that Javascript's Date object uses for months.
+
+```js
+const calio = new Calio(el);
+
+calio.goToMonth(12);
+```
 
 ### goToNextMonth()
+Jump to the next month.
+
+```js
+const calio = new Calio(el);
+
+calio.goToNextMonth();
+```
 
 ### goToLastMonth()
+Jump to the previous month.
+
+```js
+const calio = new Calio(el);
+
+calio.goToLastMonth();
+```
 
 ### goToThisMonth()
+Jump to this month (i.e. jump to today).
+
+```js
+const calio = new Calio(el);
+
+calio.goToThisMonth();
+```
 
 ### goToSelection()
 ##### *Only works in mode: 'single'*  
+Jump to the currently selected date when in the default 'single' mode.  
+For 'multi' or 'range' mode, see `goTo(day)` below.
+
+```js
+const calio = new Calio(el);
+
+calio.goToSelection();
+```
 
 ### goTo(day)
+Jump directly to any passed selection value object, `Date` object, or `Date` parsable string/integer.
+
+```js
+const calio = new Calio(el, {
+    mode: 'multi',
+    value: [
+        '2018-02-05',
+        '2018-06-12',
+        '2018-07-24'
+    ]
+});
+const {selection} = calio.get();
+
+calio.goTo(selection[2]); // Will jump to July.
+```
 
 ### makeMyDay(day)
+Normalizes any selection value object, `Date` object, or `Date` parsable string/integer into the object Calio uses for dates.
+
+```js
+const calio = new Calio(el);
+const {selection} = calio.get();
+const today = calio.makeMyDay(Date.now());
+
+if (selection.isBefore(today)) {
+    // Do something if the selection is before today.
+}
+```
 
 ### select(day)
+Problematically make a selection.
 
----
+```js
+const calio = new Calio(el);
+
+if (someCondition) {
+    calio.select('2018-01-04');
+}
+```
+
+> ## The rest of this readme is still a WIP.
 
 ## Styling
 
