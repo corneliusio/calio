@@ -7,10 +7,10 @@ test('updates selection when value is updated', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {value: epoch.clone().addYear()}
+        data: { value: epoch.clone().addYear() }
     });
 
-    calio.set({value: epoch});
+    calio.set({ value: epoch });
 
     expect(calio.get().selection).toEqual(epoch);
 });

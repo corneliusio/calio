@@ -8,7 +8,7 @@ test('it has props to pass to Day', () => {
         target: document.querySelector('#calio')
     });
 
-    const {props, selection, mode, view, disabled, min, max} = calio.get();
+    const { props, selection, mode, view, disabled, min, max } = calio.get();
 
     expect(props).toEqual({
         selection,
@@ -27,12 +27,12 @@ test('it has head for each day of week', () => {
 
     const calio2 = new Calio({
         target: document.querySelector('#calio'),
-        data: {headers: [false, 'a', 'b', 'c', false]}
+        data: { headers: [false, 'a', 'b', 'c', false] }
     });
 
     const calio3 = new Calio({
         target: document.querySelector('#calio'),
-        data: {headers: false}
+        data: { headers: false }
     });
 
     expect(calio1.get().head).toEqual(calio1.get().headers);

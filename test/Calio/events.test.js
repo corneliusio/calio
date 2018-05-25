@@ -8,12 +8,12 @@ test('it fires a select event when a date is selected', () => {
 
     const calio1 = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'single'}
+        data: { mode: 'single' }
     });
 
     const calio2 = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'multi'}
+        data: { mode: 'multi' }
     });
 
     calio1.on('select', selection => {
@@ -40,7 +40,7 @@ test('it fires a view event when a new view is loaded', () => {
         expect(view).toEqual(epoch);
     });
 
-    calio.set({view: epoch});
+    calio.set({ view: epoch });
 });
 
 test('it fires a view event in single mode when a date is selected in a new month', () => {
