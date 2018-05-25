@@ -7,7 +7,7 @@ test('can set a default selection from passed value', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {value: epoch}
+        data: { value: epoch }
     });
 
     expect(calio.get().selection).toEqual(epoch);
@@ -17,7 +17,7 @@ test('prevents selection of dates before min', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {min: epoch}
+        data: { min: epoch }
     });
 
     calio.select(epoch.clone().subDay());
@@ -29,7 +29,7 @@ test('prevents selection of dates after max', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {max: epoch}
+        data: { max: epoch }
     });
 
     calio.select(epoch.clone().addDay());
@@ -41,7 +41,7 @@ test('prevents selection of disabled dates', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {disabled: epoch}
+        data: { disabled: epoch }
     });
 
     calio.select(epoch);
@@ -55,7 +55,7 @@ test('adds selected day to array in multi mode', () => {
     const epoch3 = new LilEpoch(2016, 0);
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'multi'}
+        data: { mode: 'multi' }
     });
 
     calio.select(epoch1);
@@ -72,7 +72,7 @@ test('toggles date selection if selected date is reselected in multi mode', () =
     const epoch2 = new LilEpoch(2018, 0);
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'multi'}
+        data: { mode: 'multi' }
     });
 
     calio.select(epoch1);
@@ -114,7 +114,7 @@ test('adds selected day to array in range mode', () => {
     const epoch2 = new LilEpoch(2017, 0);
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'range'}
+        data: { mode: 'range' }
     });
 
     calio.select(epoch1);
@@ -130,7 +130,7 @@ test('limits selection to two selected days in range mode', () => {
     const epoch3 = new LilEpoch(2016, 0);
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'range'}
+        data: { mode: 'range' }
     });
 
     calio.select(epoch1);
@@ -147,7 +147,7 @@ test('toggles date selection if selected date is reselected in range mode', () =
     const epoch3 = new LilEpoch(2017, 0);
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {mode: 'range'}
+        data: { mode: 'range' }
     });
 
     calio.select(epoch1);
@@ -185,7 +185,7 @@ test('delays dates being generated if non-array passed to disabled', () => {
 
     new Calio({
         target: document.querySelector('#calio'),
-        data: {disabled: null}
+        data: { disabled: null }
     });
 
     expect(toHaveGottenThisFar).toBe(true);
