@@ -5,7 +5,7 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
     extensions: ['.svlt', '.svelte'],
     preprocess: {
-        style: async ({content, filename}) => {
+        style: async ({ content, filename }) => {
             const result = await postcss([
                 autoprefixer({
                     flexbox: 'no-2009',
