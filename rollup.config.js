@@ -1,7 +1,7 @@
 const config = require('./svelte.config');
 const babel = require('rollup-plugin-babel');
-const uglify = require('rollup-plugin-uglify');
 const svelte = require('rollup-plugin-svelte');
+const { terser } = require('rollup-plugin-terser');
 
 module.exports = [
     {
@@ -25,7 +25,7 @@ module.exports = [
         plugins: [
             svelte(config),
             babel(),
-            uglify()
+            terser()
         ]
     }
 ];
