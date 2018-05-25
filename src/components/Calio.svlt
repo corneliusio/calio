@@ -34,7 +34,7 @@
         },
 
         oncreate() {
-            const {value, min, max, disabled} = this.get();
+            const { value, min, max, disabled } = this.get();
 
             this.set({
                 min: this.makeMyDay(min),
@@ -48,7 +48,7 @@
             new Array().concat(value).forEach(v => this.select(v));
         },
 
-        onstate({changed, previous, current: {mode, view, value, selection, disabled}}) {
+        onstate({ changed, previous, current: { mode, view, value, selection, disabled } }) {
 
             if (changed.view) {
                 this.fire('view', view.clone().date(1));
@@ -61,7 +61,7 @@
 
                     if (!selection.isSameMonth(view)) {
                         view = selection.clone();
-                        this.set({view});
+                        this.set({ view });
                         this.fire('view', view.clone().date(1));
                     }
                 } else {
@@ -73,24 +73,24 @@
                 const selection = this.makeMyDay(value);
 
                 view = selection.clone();
-                this.set({view, selection});
+                this.set({ view, selection });
                 this.fire('view', view.clone().date(1));
             }
         },
 
         computed: {
 
-            props({selection, mode, view, disabled, min, max}) {
-                return {selection, mode, view, disabled, min, max};
+            props({ selection, mode, view, disabled, min, max }) {
+                return { selection, mode, view, disabled, min, max };
             },
 
-            head({headers}) {
+            head({ headers }) {
                 return headers.length
                     ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
                     : [];
             },
 
-            dates({view, disabled}) {
+            dates({ view, disabled }) {
                 let current = view.clone().startOfMonth(),
                     dates = [],
                     dayOfFirst,
@@ -134,7 +134,7 @@
             },
 
             select(day) {
-                const {mode, disabled, min, max} = this.get();
+                const { mode, disabled, min, max } = this.get();
 
                 day = this.makeMyDay(day);
 
@@ -161,7 +161,7 @@
             },
 
             updateRange(day) {
-                let {selection, disabled, strict} = this.get(),
+                let { selection, disabled, strict } = this.get(),
                     index;
 
                 selection = selection || [];
@@ -169,7 +169,7 @@
 
                 if (index > -1) {
                     selection.splice(index, 1);
-                    this.set({selection});
+                    this.set({ selection });
                 } else if (selection.length > 1) {
                     this.set({
                         selection: [day.clone()]
@@ -199,7 +199,7 @@
             },
 
             updateMulti(day) {
-                let {selection, limit} = this.get(),
+                let { selection, limit } = this.get(),
                     index;
 
                 selection = selection || [];
@@ -207,7 +207,7 @@
 
                 if (index > -1) {
                     selection.splice(index, 1);
-                    this.set({selection});
+                    this.set({ selection });
                 } else if (!limit || selection.length < limit) {
                     this.set({
                         selection: [...selection, day.clone()].sort((a, b) => {
@@ -224,7 +224,7 @@
             },
 
             goToYear(y) {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().year(y)
@@ -232,7 +232,7 @@
             },
 
             goToNextYear() {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().addYear()
@@ -240,7 +240,7 @@
             },
 
             goToLastYear() {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().subYear()
@@ -248,7 +248,7 @@
             },
 
             goToMonth(m) {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().date(1).month(m - 1)
@@ -256,7 +256,7 @@
             },
 
             goToNextMonth() {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().date(1).addMonth()
@@ -264,7 +264,7 @@
             },
 
             goToLastMonth() {
-                const {view} = this.get();
+                const { view } = this.get();
 
                 this.set({
                     view: view.clone().date(1).subMonth()
@@ -278,7 +278,7 @@
             },
 
             goToSelection() {
-                const {selection, mode} = this.get();
+                const { selection, mode } = this.get();
 
                 if (mode === 'single' && selection) {
                     this.set({
