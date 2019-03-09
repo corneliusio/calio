@@ -13,7 +13,7 @@ const calio = new Calio({
     target: document.querySelector('#calio')
 });
 
-test('it fires a select event when clicked', () => {
+test('it fires a "selection" event when clicked', () => {
     const day = new Day({
         target: document.querySelector('#day'),
         data: {
@@ -24,14 +24,8 @@ test('it fires a select event when clicked', () => {
 
     const el = document.querySelector('#day .calio-day');
 
-    expect.assertions(2);
-
-    day.on('select', day => {
+    day.on('selection', day => {
         expect(day).toEqual(today);
-    });
-
-    el.addEventListener('click', event => {
-        expect(event instanceof MouseEvent).toBe(true);
     });
 
     el.dispatchEvent(new MouseEvent('click'));

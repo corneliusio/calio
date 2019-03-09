@@ -18,7 +18,7 @@ What does that mean? Zero-dependency, vanilla JS that is lean and ready to use w
 
 | Chrome | Edge | Firefox | Safari / iOS | UC Android | Samsung |
 | ------ | ---- | ------- | ------------ | ---------- | ------- |
-| 60+    | 14+  | 53+     | 10+          | 11+        | 6+      |
+| 60+    | 15+  | 53+     | 10+          | 11+        | 6+      |
 
 **Note: This module does not support IE out of the box.  
 But if you're looking for IE11 support, here's [what you need](extra/IE.md).**
@@ -83,7 +83,7 @@ Displaying things like the current selection or view is pretty easy too.
 <script src="https://unpkg.com/calio"></script>
 <script>
     const calio = new Calio('#calio');
-    const {selection, view} = calio.get();
+    const { selection, view } = calio.get();
     const viewing = document.querySelector('.viewing');
     const selected = document.querySelector('.selected');
 
@@ -243,17 +243,25 @@ const calio = new Calio(el);
 calio.on('view', view => {
     // Do something with the value of "view"
 });
+// or
+el.addEventListener('calio:view', event => {
+    // Do something with the value of "event.detail"
+});
 ```
 
-### select
+### selection
 This event fires whenever the user selects a new date and is passed the full selection of the current Calio instance.
 
 ```js
 const calio = new Calio(el);
 
-calio.on('select', selection => {
+calio.on('selection', selection => {
     // Do something with the value of "selection"
     // Note that in the case of range and multi modes, "selection" includes all dates currently selected.
+});
+// or
+el.addEventListener('calio:selection', event => {
+    // Do something with the value of "event.detail"
 });
 ```
 
@@ -263,7 +271,7 @@ These events can also be fired manually to trigger an event on the initial load.
 
 ```js
 const calio = new Calio(el);
-const {view, selection} = calio.get();
+const { view, selection } = calio.get();
 
 calio.on('view', view => {
     // Do something with the value of "view"
@@ -367,7 +375,7 @@ const calio = new Calio(el, {
         '2018-07-24'
     ]
 });
-const {selection} = calio.get();
+const { selection } = calio.get();
 
 calio.goTo(selection[2]); // Will jump to July.
 ```
@@ -377,7 +385,7 @@ Normalizes any selection value object, `Date` object, or `Date` parsable string/
 
 ```js
 const calio = new Calio(el);
-const {selection} = calio.get();
+const { selection } = calio.get();
 const today = calio.makeMyDay(Date.now());
 
 if (selection.isBefore(today)) {
