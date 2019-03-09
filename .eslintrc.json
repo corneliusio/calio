@@ -8,8 +8,7 @@
         "sourceType": "module",
         "ecmaVersion": 8,
         "ecmaFeatures": {
-            "impliedStrict": true,
-            "experimentalObjectRestSpread": true
+            "impliedStrict": true
         }
     },
     "env": {
@@ -35,8 +34,9 @@
         "comma-style": 1,
         "computed-property-spacing": 1,
         "func-call-spacing": 1,
-        "indent": "off",
-        "indent-legacy": [1, 4],
+        "indent": [1, 4, {
+            "SwitchCase": 1
+        }],
         "key-spacing": 1,
         "keyword-spacing": 1,
         "new-cap": 1,

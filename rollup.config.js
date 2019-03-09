@@ -1,7 +1,9 @@
 const config = require('./svelte.config');
 const babel = require('rollup-plugin-babel');
 const svelte = require('rollup-plugin-svelte');
+const common = require('rollup-plugin-commonjs');
 const { terser } = require('rollup-plugin-terser');
+const resolve = require('rollup-plugin-node-resolve');
 
 module.exports = [
     {
@@ -11,8 +13,10 @@ module.exports = [
             format: 'esm'
         },
         plugins: [
+            resolve(),
+            common(),
             svelte(config),
-            babel()
+            babel({ exclude: 'node_modules/core-js/**' })
         ]
     },
     {
@@ -23,8 +27,10 @@ module.exports = [
             name: 'Calio'
         },
         plugins: [
+            resolve(),
+            common(),
             svelte(config),
-            babel(),
+            babel({ exclude: 'node_modules/core-js/**' }),
             terser()
         ]
     }
