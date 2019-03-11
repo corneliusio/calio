@@ -240,12 +240,14 @@ This event fires whenever the currently displayed month is updated and is passed
 ```js
 const calio = new Calio(el);
 
-calio.on('view', view => {
+calio.on('view', ({ view }) => {
     // Do something with the value of "view"
 });
 // or
 el.addEventListener('calio:view', event => {
-    // Do something with the value of "event.detail"
+    const { view } = event.detail;
+    
+    // Do something with the value of "view"
 });
 ```
 

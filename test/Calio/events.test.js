@@ -16,11 +16,11 @@ test('it fires a select event when a date is selected', () => {
         data: { mode: 'multi' }
     });
 
-    calio1.on('select', selection => {
+    calio1.on('selection', ({ selection }) => {
         expect(selection).toEqual(epoch);
     });
 
-    calio2.on('select', selection => {
+    calio2.on('selection', ({ selection }) => {
         expect(selection).toEqual([epoch]);
     });
 
@@ -36,7 +36,7 @@ test('it fires a view event when a new view is loaded', () => {
 
     epoch.date(1);
 
-    calio.on('view', view => {
+    calio.on('view', ({ view }) => {
         expect(view).toEqual(epoch);
     });
 
@@ -51,7 +51,7 @@ test('it fires a view event in single mode when a date is selected in a new mont
 
     epoch.date(1).addYear();
 
-    calio.on('view', view => {
+    calio.on('view', ({ view }) => {
         expect(view).toEqual(epoch);
     });
 
