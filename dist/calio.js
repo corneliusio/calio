@@ -1878,16 +1878,14 @@ function oncreate() {
     new Array().concat(value).forEach(v => this.select(v));
 }
 function onupdate({ changed, previous, current }) {
-    const { mode, view, value, selection, disabled } = current;
-
     this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:update`, {
         detail: current
     }));
 
     Object.keys(changed).forEach(key => {
-        this.fire(key, current[key]);
+        this.fire(key, current);
         this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
-            detail: current[key]
+            detail: current
         }));
     });
 
