@@ -1635,7 +1635,6 @@ Day.prototype._recompute = function _recompute(changed, state) {
 
 const today$1 = new LilEpoch();
 
-
 function updateRange(component, day) {
     let { selection, disabled, strict } = component.get(),
         index;
@@ -1699,8 +1698,8 @@ function updateSingle(component, day, view) {
     }
 }
 
-function props({selection, mode, view, disabled, min, max}) {
-    return {selection, mode, view, disabled, min, max};
+function props({ selection, mode, view, disabled, min, max }) {
+    return { selection, mode, view, disabled, min, max };
 }
 function head({ headers }) {
     return headers.length
@@ -1775,15 +1774,15 @@ var methods = {
             }
 
             switch (mode) {
-            case 'range' :
-                updateRange(this, day);
-                break;
-            case 'multi' :
-                updateMulti(this, day);
-                break;
-            default :
-                updateSingle(this, day, view);
-                break;
+                case 'range' :
+                    updateRange(this, day);
+                    break;
+                case 'multi' :
+                    updateMulti(this, day);
+                    break;
+                default :
+                    updateSingle(this, day, view);
+                    break;
             }
         }
     },
@@ -1890,7 +1889,7 @@ function onupdate({ changed, previous, current }) {
     });
 
     if (previous && changed.value) {
-        this.select(value);
+        this.select(current.value);
     }
 }
 function add_css$1() {

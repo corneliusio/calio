@@ -13,7 +13,6 @@
 
     const today = new LilEpoch();
 
-
     function updateRange(component, day) {
         let { selection, disabled, strict } = component.get(),
             index;
@@ -130,8 +129,8 @@
         },
 
         computed: {
-            props({selection, mode, view, disabled, min, max}) {
-                return {selection, mode, view, disabled, min, max};
+            props({ selection, mode, view, disabled, min, max }) {
+                return { selection, mode, view, disabled, min, max };
             },
 
             head({ headers }) {
@@ -196,15 +195,15 @@
                     }
 
                     switch (mode) {
-                    case 'range' :
-                        updateRange(this, day);
-                        break;
-                    case 'multi' :
-                        updateMulti(this, day);
-                        break;
-                    default :
-                        updateSingle(this, day, view);
-                        break;
+                        case 'range' :
+                            updateRange(this, day);
+                            break;
+                        case 'multi' :
+                            updateMulti(this, day);
+                            break;
+                        default :
+                            updateSingle(this, day, view);
+                            break;
                     }
                 }
             },
