@@ -83,21 +83,20 @@ Displaying things like the current selection or view is pretty easy too.
 <script src="https://unpkg.com/calio"></script>
 <script>
     const calio = new Calio('#calio');
-    const { selection, view } = calio.get();
     const viewing = document.querySelector('.viewing');
     const selected = document.querySelector('.selected');
 
-    calio.on('view', view => {
+    calio.on('view', ({ view }) => {
         viewing.textContent = view.format('mmmm yyyy');
     });
 
-    calio.on('select', selection => {
+    calio.on('selection', ({ selection }) => {
         selected.textContent = selection.format('mediumDate');
     });
 
     // Fire these so we update our text when loaded.
-    calio.fire('view', view);
-    calio.fire('select', selection);
+    calio.fire('view', calio.get());
+    calio.fire('selection', calio.get());
 </script>
 ```
 
@@ -257,7 +256,7 @@ This event fires whenever the user selects a new date and is passed the full sel
 ```js
 const calio = new Calio(el);
 
-calio.on('selection', selection => {
+calio.on('selection', ({ selection }) => {
     // Do something with the value of "selection"
     // Note that in the case of range and multi modes, "selection" includes all dates currently selected.
 });
@@ -273,18 +272,17 @@ These events can also be fired manually to trigger an event on the initial load.
 
 ```js
 const calio = new Calio(el);
-const { view, selection } = calio.get();
 
-calio.on('view', view => {
+calio.on('view', ({ view }) => {
     // Do something with the value of "view"
 });
 
-calio.on('select', selection => {
+calio.on('selection', ({ selection }) => {
     // Do something with the value of "selection"
 });
 
-calio.fire('view', view);
-calio.fire('selection', selection);
+calio.fire('view', calio.get());
+calio.fire('selection', calio.get());
 ```
 
 ---
