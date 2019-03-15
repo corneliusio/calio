@@ -25,6 +25,10 @@ But if you're looking for IE11 support, here's [what you need](extra/IE.md).**
 
 ---
 
+## Demo
+
+[corneliusio.github.io/calio](https://corneliusio.github.io/calio/)
+
 ## Usage
 
 ```shell
