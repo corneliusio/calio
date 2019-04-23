@@ -1,5 +1,7 @@
 const config = require('./svelte.config');
 const svelte = require('rollup-plugin-svelte');
+const common = require('rollup-plugin-commonjs');
+const resolve = require('rollup-plugin-node-resolve');
 
 module.exports = {
     input: './src/index.js',
@@ -10,6 +12,8 @@ module.exports = {
         sourcemap: true
     },
     plugins: [
+        resolve(),
+        common(),
         svelte(config)
     ]
 };

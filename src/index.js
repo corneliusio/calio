@@ -9,7 +9,7 @@ export default class {
 
         return new Calio({
             target,
-            data: Object.keys(data)
+            props: Object.keys(data)
                 .filter(key => options.includes(key))
                 .reduce((obj, key) => (obj[key] = data[key], obj), {})
         });

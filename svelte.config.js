@@ -7,10 +7,7 @@ module.exports = {
     preprocess: {
         style: async ({ content, filename }) => {
             const result = await postcss([
-                autoprefixer({
-                    flexbox: 'no-2009',
-                    grid: true
-                })
+                autoprefixer({ flexbox: 'no-2009', grid: 'no-autoplace' })
             ]).process(content, {
                 to: path.basename(filename),
                 from: path.basename(filename)

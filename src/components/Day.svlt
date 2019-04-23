@@ -1,57 +1,57 @@
-<span class="calio-day {classes}" on:click="fire('select', day)">
+<span class="calio-day {classes}" on:click={event => dispatch('select', day)}>
     {day.date()}
 </span>
 
 <script>
+    import { createEventDispatcher } from 'svelte';
     import LilEpoch from '../modules/LilEpoch';
 
     const today = new LilEpoch();
+    const dispatch = createEventDispatcher();
 
-    export default {
-        props: [
-            'day', 'props'
-        ],
+    export let day,
+        selection,
+        disabled,
+        min,
+        max,
+        mode,
+        view;
 
-        computed: {
-            classes({ props: { view }, day, isActive, isDisabled, isRanged }) {
-                return [
-                    day.isSame(today) && 'is-today',
-                    view.endOfMonth().isBefore(day) && 'is-next',
-                    view.startOfMonth().isAfter(day) && 'is-prev',
-                    isDisabled && 'is-disabled',
-                    isRanged && 'is-ranged',
-                    isActive && 'is-active'
-                ].filter(Boolean).join(' ');
-            },
+    $: isActive = (() => {
+        selection = new Array().concat(selection).filter(Boolean);
 
-            isActive({ props: { selection }, day }) {
-                selection = new Array().concat(selection).filter(Boolean);
+        return selection.find(s => day.isSame(s));
+    })();
 
-                return selection.find(s => day.isSame(s));
-            },
+    $: isDisabled = (() => {
+        return (disabled.find(d => d.isSame && d.isSame(day)))
+            || (min && day.isBefore(min))
+            || (max && day.isAfter(max));
+    })();
 
-            isDisabled({ props: { min, max, disabled }, day }) {
-                return (disabled.find(d => d.isSame && d.isSame(day)))
-                    || (min && day.isBefore(min))
-                    || (max && day.isAfter(max));
-            },
+    $: isRanged = (() => {
+        if (mode === 'range' && selection) {
+            let [start, end] = selection;
 
-            isRanged({ props: { selection, mode }, day }) {
-                if (mode === 'range' && selection) {
-                    let [start, end] = selection;
-
-                    if (start && end) {
-                        return day.isAfter(start) && day.isBefore(end);
-                    }
-                }
-
-                return false;
+            if (start && end) {
+                return day.isAfter(start) && day.isBefore(end);
             }
         }
-    };
+
+        return false;
+    })();
+
+    $: classes = [
+        day.isSame(today) && 'is-today',
+        view.endOfMonth().isBefore(day) && 'is-next',
+        view.startOfMonth().isAfter(day) && 'is-prev',
+        isDisabled && 'is-disabled',
+        isRanged && 'is-ranged',
+        isActive && 'is-active'
+    ].filter(Boolean).join(' ');
 </script>
 
-<style>
+<style type="text/postcss">
     .calio-day {
         cursor: pointer;
         color: var(--color, #333);
