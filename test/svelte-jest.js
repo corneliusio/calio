@@ -1,4 +1,4 @@
-const svelte = require('svelte');
+const svelte = require('svelte/compiler');
 
 exports.process = function(src, filename) {
     const result = svelte.compile(src, {

@@ -1,41 +1,189 @@
-<div class="calio" ref:el>
+<div class="calio" bind:this={el}>
     {#each head as day}
         <span class="calio-head">{day}</span>
     {/each}
     {#each dates as day}
-        <Day {day} {props} on:select="select(day)" />
+        <Day {day} {...props} on:select={event => select(day)} />
     {/each}
 </div>
 
 <script>
+    import { createEventDispatcher } from 'svelte';
     import LilEpoch from '../modules/LilEpoch';
     import Day from './Day.svlt';
 
     const today = new LilEpoch();
+    const dispatch = createEventDispatcher();
 
-    function updateRange(component, day) {
-        let { selection, disabled, strict } = component.get(),
-            index;
+    export let headers = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        view = new LilEpoch(),
+        mode = 'single',
+        strict = false,
+        disabled = [],
+        selection,
+        value,
+        limit,
+        min,
+        max,
+        el;
 
-        selection = selection || [];
-        index = selection.findIndex(s => s.isSame(day));
+    min = makeMyDay(min);
+    max = makeMyDay(max);
+    disabled = new Array()
+        .concat(disabled)
+        .filter(Boolean)
+        .map(makeMyDay);
+
+    new Array().concat(value).forEach(v => select(v));
+
+    // afterUpdate(() => {
+    //     // el.parentNode.dispatchEvent(new CustomEvent(`calio:update`, {
+    //     //     detail: current
+    //     // }));
+
+    //     // Object.keys(changed).forEach(key => {
+    //     //     this.fire(key, current);
+    //     //     this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
+    //     //         detail: current
+    //     //     }));
+    //     // });
+    // });
+
+    $: dispatch('selection', selection);
+    $: dispatch('view', view);
+    $: dispatch('min', min);
+    $: dispatch('max', max);
+
+    $: props = { selection, mode, view, disabled, min, max };
+    $: dates = makeDates(view, disabled);
+    $: head = headers.length
+        ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
+        : [];
+
+    export function makeMyDay(day = null) {
+        return day
+            ? (day instanceof LilEpoch)
+                ? day : Array.isArray(day)
+                    ? new LilEpoch(...day) : new LilEpoch(day)
+            : null;
+    }
+
+    export function select(day) {
+        day = makeMyDay(day);
+
+        if (day) {
+            if (disabled.find(d => d.isSame(day))
+                || (min && day.isBefore(min))
+                || (max && day.isAfter(max))) {
+                return;
+            }
+
+            switch (mode) {
+                case 'range' :
+                    updateRange(day);
+                    break;
+                case 'multi' :
+                    updateMulti(day);
+                    break;
+                default :
+                    updateSingle(day, view);
+                    break;
+            }
+        }
+    }
+
+    export function goToYear(y) {
+        view = view.clone().year(y);
+    }
+
+    export function goToNextYear() {
+        view = view.clone().addYear();
+    }
+
+    export function goToLastYear() {
+        view = view.clone().subYear();
+    }
+
+    export function goToMonth(m) {
+        view = view.clone().startOfMonth().month(m - 1);
+    }
+
+    export function goToNextMonth() {
+        view = view.clone().startOfMonth().addMonth();
+    }
+
+    export function goToLastMonth() {
+        view = view.clone().startOfMonth().subMonth();
+    }
+
+    export function goToThisMonth() {
+        view = today.clone().startOfMonth();
+    }
+
+    export function goToSelection() {
+        if (mode === 'single' && selection) {
+            view = selection.clone().startOfMonth();
+        }
+    }
+
+    export function goTo(day) {
+        day = makeMyDay(day);
+
+        if (day) {
+            view = day.clone().startOfMonth();
+        }
+    }
+
+    function makeDates(view, disabled) {
+        let current = view.clone().startOfMonth(),
+            dates = [],
+            dayOfFirst,
+            dayOfLast;
+
+        if (!Array.isArray(disabled)) {
+            return [];
+        }
+
+        dayOfFirst = current.dayOfWeek();
+
+        for (let i = 0; i < dayOfFirst; i++) {
+            dates.unshift(current.clone().date(-i));
+        }
+
+        current.endOfMonth();
+
+        for (let i = 1, days = current.date(); i <= days; i++) {
+            dates.push(current.clone().date(i));
+        }
+
+        dayOfLast = current.dayOfWeek();
+        current.startOfMonth().addMonth();
+
+        for (let i = 1; i < (7 - dayOfLast); i++) {
+            dates.push(current.clone().date(i));
+        }
+
+        return dates;
+    }
+
+    function updateRange(day) {
+        let updated = selection || [],
+            index = updated.findIndex(s => s.isSame(day));
 
         if (index > -1) {
-            selection.splice(index, 1);
-            component.set({ selection });
-        } else if (selection.length > 1) {
-            component.set({
-                selection: [day.clone()]
-            });
+            updated.splice(index, 1);
+            selection = updated;
+        } else if (updated.length > 1) {
+            selection = [day.clone()];
         } else {
-            selection = [...selection, day.clone()];
+            updated = [...updated, day.clone()];
 
-            selection = selection.sort((a, b) => {
+            updated = updated.sort((a, b) => {
                 return a.timestamp() - b.timestamp();
             });
 
             if (strict) {
-                let [start, end] = selection,
+                let [start, end] = updated,
                     isInvalid = end && !!disabled.find(d => {
                         return d.isAfter(start) && d.isBefore(end);
                     });
@@ -45,247 +193,34 @@
                 }
             }
 
-            component.set({ selection });
+            selection = updated;
         }
     }
 
-    function updateMulti(component, day) {
-        let { selection, limit } = component.get(),
-            index;
-
-        selection = selection || [];
-        index = selection.findIndex(s => s.isSame(day));
+    function updateMulti(day) {
+        let updated = selection || [],
+            index = updated.findIndex(s => s.isSame(day));
 
         if (index > -1) {
-            selection.splice(index, 1);
-            component.set({ selection });
-        } else if (!limit || selection.length < limit) {
-            component.set({
-                selection: [...selection, day.clone()].sort((a, b) => {
-                    return a.timestamp() - b.timestamp();
-                })
+            updated.splice(index, 1);
+            selection = updated;
+        } else if (!limit || updated.length < limit) {
+            selection = [...updated, day.clone()].sort((a, b) => {
+                return a.timestamp() - b.timestamp();
             });
         }
     }
 
-    function updateSingle(component, day, view) {
-        component.set({ selection: day.clone() });
+    function updateSingle(day) {
+        selection = day.clone();
 
         if (!view.isSameMonth(day)) {
-            component.set({ view: day.clone().startOfMonth() });
+            view = day.clone().startOfMonth();
         }
     }
-
-    export default {
-        components: {
-            Day
-        },
-
-        data() {
-            return {
-                headers: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-                view: new LilEpoch(),
-                mode: 'single',
-                strict: false,
-                disabled: [],
-                selection: null,
-                value: null,
-                limit: null,
-                min: null,
-                max: null
-            };
-        },
-
-        oncreate() {
-            const { value, min, max, disabled } = this.get();
-
-            this.set({
-                min: this.makeMyDay(min),
-                max: this.makeMyDay(max),
-                disabled: new Array()
-                    .concat(disabled)
-                    .filter(Boolean)
-                    .map(this.makeMyDay)
-            });
-
-            new Array().concat(value).forEach(v => this.select(v));
-        },
-
-        onupdate({ changed, previous, current }) {
-            this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:update`, {
-                detail: current
-            }));
-
-            Object.keys(changed).forEach(key => {
-                this.fire(key, current);
-                this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
-                    detail: current
-                }));
-            });
-
-            if (previous && changed.value) {
-                this.select(current.value);
-            }
-        },
-
-        computed: {
-            props({ selection, mode, view, disabled, min, max }) {
-                return { selection, mode, view, disabled, min, max };
-            },
-
-            head({ headers }) {
-                return headers.length
-                    ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
-                    : [];
-            },
-
-            dates({ view, disabled }) {
-                let current = view.clone().startOfMonth(),
-                    dates = [],
-                    dayOfFirst,
-                    dayOfLast;
-
-                if (!Array.isArray(disabled)) {
-                    return [];
-                }
-
-                dayOfFirst = current.dayOfWeek();
-
-                for (let i = 0; i < dayOfFirst; i++) {
-                    dates.unshift(current.clone().date(-i));
-                }
-
-                current.endOfMonth();
-
-                for (let i = 1, days = current.date(); i <= days; i++) {
-                    dates.push(current.clone().date(i));
-                }
-
-                dayOfLast = current.dayOfWeek();
-                current.startOfMonth().addMonth();
-
-                for (let i = 1; i < (7 - dayOfLast); i++) {
-                    dates.push(current.clone().date(i));
-                }
-
-                return dates;
-            }
-        },
-
-        methods: {
-            makeMyDay(day = null) {
-                return day
-                    ? (day instanceof LilEpoch)
-                        ? day : Array.isArray(day)
-                            ? new LilEpoch(...day) : new LilEpoch(day)
-                    : null;
-            },
-
-            select(day) {
-                const { mode, view, disabled, min, max } = this.get();
-
-                day = this.makeMyDay(day);
-
-                if (day) {
-                    if (disabled.find(d => d.isSame(day))
-                        || (min && day.isBefore(min))
-                        || (max && day.isAfter(max))) {
-
-                        return;
-                    }
-
-                    switch (mode) {
-                        case 'range' :
-                            updateRange(this, day);
-                            break;
-                        case 'multi' :
-                            updateMulti(this, day);
-                            break;
-                        default :
-                            updateSingle(this, day, view);
-                            break;
-                    }
-                }
-            },
-
-            goToYear(y) {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().year(y)
-                });
-            },
-
-            goToNextYear() {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().addYear()
-                });
-            },
-
-            goToLastYear() {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().subYear()
-                });
-            },
-
-            goToMonth(m) {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().startOfMonth().month(m - 1)
-                });
-            },
-
-            goToNextMonth() {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().startOfMonth().addMonth()
-                });
-            },
-
-            goToLastMonth() {
-                const { view } = this.get();
-
-                this.set({
-                    view: view.clone().startOfMonth().subMonth()
-                });
-            },
-
-            goToThisMonth() {
-                this.set({
-                    view: today.clone().startOfMonth()
-                });
-            },
-
-            goToSelection() {
-                const { selection, mode } = this.get();
-
-                if (mode === 'single' && selection) {
-                    this.set({
-                        view: selection.clone().startOfMonth()
-                    });
-                }
-            },
-
-            goTo(day) {
-                day = this.makeMyDay(day);
-
-                if (day) {
-                    this.set({
-                        view: day.clone().startOfMonth()
-                    });
-                }
-            }
-        }
-    };
 </script>
 
-<style>
+<style type="text/postcss">
     .calio {
         display: inline-grid;
         grid-template-columns: repeat(7, var(--size-x, var(--size, 2.25em)));
