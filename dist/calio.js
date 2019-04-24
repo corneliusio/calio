@@ -2525,6 +2525,154 @@ class SvelteComponent {
 
 }
 
+var nativeSort = [].sort;
+var test = [1, 2, 3];
+
+// IE8-
+var FAILS_ON_UNDEFINED = fails(function () {
+  test.sort(undefined);
+});
+// V8 bug
+var FAILS_ON_NULL = fails(function () {
+  test.sort(null);
+});
+// Old WebKit
+var SLOPPY_METHOD$1 = sloppyArrayMethod('sort');
+
+var FORCED$1 = FAILS_ON_UNDEFINED || !FAILS_ON_NULL || SLOPPY_METHOD$1;
+
+// `Array.prototype.sort` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.sort
+_export({ target: 'Array', proto: true, forced: FORCED$1 }, {
+  sort: function sort(comparefn) {
+    return comparefn === undefined
+      ? nativeSort.call(toObject(this))
+      : nativeSort.call(toObject(this), aFunction(comparefn));
+  }
+});
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArrayLimit(arr, i) {
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+function makeDates(view, disabled) {
+  var current = view.clone().startOfMonth(),
+      dates = [],
+      dayOfFirst,
+      dayOfLast;
+
+  if (!Array.isArray(disabled)) {
+    return [];
+  }
+
+  dayOfFirst = current.dayOfWeek();
+
+  for (var i = 0; i < dayOfFirst; i++) {
+    dates.unshift(current.clone().date(-i));
+  }
+
+  current.endOfMonth();
+
+  for (var _i = 1, days = current.date(); _i <= days; _i++) {
+    dates.push(current.clone().date(_i));
+  }
+
+  dayOfLast = current.dayOfWeek();
+  current.startOfMonth().addMonth();
+
+  for (var _i2 = 1; _i2 < 7 - dayOfLast; _i2++) {
+    dates.push(current.clone().date(_i2));
+  }
+
+  return dates;
+}
+function updateRange(day, current, strict, disabled) {
+  var selection = current || [],
+      index = selection.findIndex(s => s.isSame(day));
+
+  if (index > -1) {
+    selection.splice(index, 1);
+    return selection;
+  } else if (selection.length > 1) {
+    return [day.clone()];
+  }
+
+  selection = [...selection, day.clone()];
+  selection = selection.sort((a, b) => {
+    return a.timestamp() - b.timestamp();
+  });
+
+  if (strict) {
+    var _selection = selection,
+        _selection2 = _slicedToArray(_selection, 2),
+        start = _selection2[0],
+        end = _selection2[1],
+        isInvalid = end && !!disabled.find(d => {
+      return d.isAfter(start) && d.isBefore(end);
+    });
+
+    if (isInvalid) {
+      return;
+    }
+  }
+
+  return selection;
+}
+function updateMulti(day, current, limit) {
+  var selection = current || [],
+      index = selection.findIndex(s => s.isSame(day));
+
+  if (index > -1) {
+    selection.splice(index, 1);
+    return selection;
+  } else if (!limit || selection.length < limit) {
+    return [...selection, day.clone()].sort((a, b) => {
+      return a.timestamp() - b.timestamp();
+    });
+  }
+}
+function updateSingle(day, view) {
+  if (!view.isSameMonth(day)) {
+    view = day.clone().startOfMonth();
+  }
+
+  return day.clone();
+}
+
 var TO_STRING = 'toString';
 var nativeToString = /./[TO_STRING];
 
@@ -3131,41 +3279,11 @@ function create_fragment$1(ctx) {
 function makeMyDay(day = null) {
     return day
         ? (day instanceof LilEpoch)
-            ? day : Array.isArray(day)
-                ? new LilEpoch(...day) : new LilEpoch(day)
+            ? day
+            : Array.isArray(day)
+                ? new LilEpoch(...day)
+                : new LilEpoch(day)
         : null;
-}
-
-function makeDates(view, disabled) {
-    let current = view.clone().startOfMonth(),
-        dates = [],
-        dayOfFirst,
-        dayOfLast;
-
-    if (!Array.isArray(disabled)) {
-        return [];
-    }
-
-    dayOfFirst = current.dayOfWeek();
-
-    for (let i = 0; i < dayOfFirst; i++) {
-        dates.unshift(current.clone().date(-i));
-    }
-
-    current.endOfMonth();
-
-    for (let i = 1, days = current.date(); i <= days; i++) {
-        dates.push(current.clone().date(i));
-    }
-
-    dayOfLast = current.dayOfWeek();
-    current.startOfMonth().addMonth();
-
-    for (let i = 1; i < (7 - dayOfLast); i++) {
-        dates.push(current.clone().date(i));
-    }
-
-    return dates;
 }
 
 function instance$1($$self, $$props, $$invalidate) {
@@ -3197,13 +3315,13 @@ function instance$1($$self, $$props, $$invalidate) {
 
             switch (mode) {
                 case 'range' :
-                    updateRange(day);
+                    $$invalidate('selection', selection = updateRange(day, selection, strict, disabled));
                     break;
                 case 'multi' :
-                    updateMulti(day);
+                    $$invalidate('selection', selection = updateMulti(day, selection, limit));
                     break;
                 default :
-                    updateSingle(day, view);
+                    $$invalidate('selection', selection = updateSingle(day, view));
                     break;
             }
         }
@@ -3247,59 +3365,6 @@ function instance$1($$self, $$props, $$invalidate) {
         day = makeMyDay(day);
 
         if (day) {
-            $$invalidate('view', view = day.clone().startOfMonth());
-        }
-    }
-
-    function updateRange(day) {
-        let updated = selection || [],
-            index = updated.findIndex(s => s.isSame(day));
-
-        if (index > -1) {
-            updated.splice(index, 1);
-            $$invalidate('selection', selection = updated);
-        } else if (updated.length > 1) {
-            $$invalidate('selection', selection = [day.clone()]);
-        } else {
-            updated = [...updated, day.clone()];
-
-            updated = updated.sort((a, b) => {
-                return a.timestamp() - b.timestamp();
-            });
-
-            if (strict) {
-                let [start, end] = updated,
-                    isInvalid = end && !!disabled.find(d => {
-                        return d.isAfter(start) && d.isBefore(end);
-                    });
-
-                if (isInvalid) {
-                    return;
-                }
-            }
-
-            $$invalidate('selection', selection = updated);
-        }
-    }
-
-    function updateMulti(day) {
-        let updated = selection || [],
-            index = updated.findIndex(s => s.isSame(day));
-
-        if (index > -1) {
-            updated.splice(index, 1);
-            $$invalidate('selection', selection = updated);
-        } else if (!limit || updated.length < limit) {
-            $$invalidate('selection', selection = [...updated, day.clone()].sort((a, b) => {
-                return a.timestamp() - b.timestamp();
-            }));
-        }
-    }
-
-    function updateSingle(day) {
-        $$invalidate('selection', selection = day.clone());
-
-        if (!view.isSameMonth(day)) {
             $$invalidate('view', view = day.clone().startOfMonth());
         }
     }
@@ -3374,15 +3439,15 @@ class Calio extends SvelteComponent {
 	constructor(options) {
 		super();
 		if (!document.getElementById("svelte-4rx1aq-style")) add_css$1();
-		init(this, options, instance$1, create_fragment$1, safe_not_equal, ["headers", "view", "mode", "strict", "disabled", "selection", "value", "limit", "min", "max", "el", "makeMyDay", "select", "goToYear", "goToNextYear", "goToLastYear", "goToMonth", "goToNextMonth", "goToLastMonth", "goToThisMonth", "goToSelection", "goTo"]);
-	}
-
-	get makeMyDay() {
-		return makeMyDay;
+		init(this, options, instance$1, create_fragment$1, safe_not_equal, ["headers", "view", "mode", "strict", "disabled", "selection", "value", "limit", "min", "max", "el", "select", "makeMyDay", "goToYear", "goToNextYear", "goToLastYear", "goToMonth", "goToNextMonth", "goToLastMonth", "goToThisMonth", "goToSelection", "goTo"]);
 	}
 
 	get select() {
 		return this.$$.ctx.select;
+	}
+
+	get makeMyDay() {
+		return makeMyDay;
 	}
 
 	get goToYear() {
