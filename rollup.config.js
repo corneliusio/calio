@@ -9,14 +9,47 @@ module.exports = [
     {
         input: 'src/index.js',
         output: {
-            file: 'dist/calio.js',
+            file: 'dist/calio.polyfilled.js',
             format: 'esm'
         },
         plugins: [
             resolve(),
             common(),
             svelte(config),
-            babel({ exclude: 'node_modules/core-js/**' })
+            babel({
+                extensions: ['.js', '.mjs', '.svelte'],
+                exclude: 'node_modules/core-js/**'
+            })
+        ]
+    },
+    {
+        input: 'src/index.js',
+        output: {
+            file: 'dist/calio.polyfilled.min.js',
+            format: 'iife',
+            name: 'Calio'
+        },
+        plugins: [
+            resolve(),
+            common(),
+            svelte(config),
+            babel({
+                extensions: ['.js', '.mjs', '.svelte'],
+                exclude: 'node_modules/core-js/**'
+            }),
+            terser()
+        ]
+    },
+    {
+        input: 'src/index.js',
+        output: {
+            file: 'dist/calio.js',
+            format: 'esm'
+        },
+        plugins: [
+            resolve(),
+            common(),
+            svelte(config)
         ]
     },
     {
@@ -30,7 +63,6 @@ module.exports = [
             resolve(),
             common(),
             svelte(config),
-            babel({ exclude: 'node_modules/core-js/**' }),
             terser()
         ]
     }

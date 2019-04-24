@@ -1,5 +1,5 @@
-import Day from '../../src/components/Day.svlt';
-import Calio from '../../src/components/Calio.svlt';
+import Day from '../../src/components/Day.svelte';
+import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = `
@@ -8,23 +8,20 @@ document.body.innerHTML = `
 `;
 
 const today = new LilEpoch();
-
 const calio = new Calio({
     target: document.querySelector('#calio')
 });
 
 test('it fires a "selection" event when clicked', () => {
+    const { props } = calio.state();
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
-            day: today,
-            props: calio.get().props
-        }
+        props: { ...props, day: today }
     });
 
     const el = document.querySelector('#day .calio-day');
 
-    day.on('selection', day => {
+    day.$on('selection', day => {
         expect(day).toEqual(today);
     });
 

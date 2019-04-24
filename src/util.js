@@ -1,3 +1,12 @@
+export function dispatchEvents(dispatch, el, key, data) {
+    dispatch(key, data);
+    if (el) {
+        el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
+            detail: data
+        }));
+    }
+}
+
 export function makeDates(view, disabled) {
     let current = view.clone().startOfMonth(),
         dates = [],
@@ -37,9 +46,9 @@ export function updateRange(day, current, strict, disabled) {
     if (index > -1) {
         selection.splice(index, 1);
 
-        return selection;
+        return [selection];
     } else if (selection.length > 1) {
-        return [day.clone()];
+        return [[day.clone()]];
     }
 
     selection = [...selection, day.clone()];
@@ -59,8 +68,7 @@ export function updateRange(day, current, strict, disabled) {
         }
     }
 
-    return selection;
-
+    return [selection];
 }
 
 export function updateMulti(day, current, limit) {
@@ -70,7 +78,7 @@ export function updateMulti(day, current, limit) {
     if (index > -1) {
         selection.splice(index, 1);
 
-        return selection;
+        return [selection];
     } else if (!limit || selection.length < limit) {
         return [...selection, day.clone()].sort((a, b) => {
             return a.timestamp() - b.timestamp();
@@ -79,9 +87,10 @@ export function updateMulti(day, current, limit) {
 }
 
 export function updateSingle(day, view) {
-    if (!view.isSameMonth(day)) {
-        view = day.clone().startOfMonth();
-    }
-
-    return day.clone();
+    return [
+        day.clone(),
+        !view.isSameMonth(day)
+            ? day.clone().startOfMonth()
+            : view
+    ];
 }

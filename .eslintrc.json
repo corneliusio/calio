@@ -1,10 +1,10 @@
 {
+    "parser": "babel-eslint",
     "plugins": ["html"],
     "settings": {
-        "html/html-extensions": [".html", ".svlt"]
+        "html/html-extensions": [".html", ".svelte"]
     },
     "parserOptions": {
-        "parser": "babel-eslint",
         "sourceType": "module",
         "ecmaVersion": 8,
         "ecmaFeatures": {

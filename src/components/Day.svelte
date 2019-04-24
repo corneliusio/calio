@@ -9,13 +9,15 @@
     const today = new LilEpoch();
     const dispatch = createEventDispatcher();
 
-    export let day,
-        selection,
-        disabled,
-        min,
-        max,
-        mode,
-        view;
+    let data;
+
+    export let view = new LilEpoch();
+    export let selection = [];
+    export let disabled = [];
+    export let day;
+    export let min;
+    export let max;
+    export let mode;
 
     $: isActive = (() => {
         selection = new Array().concat(selection).filter(Boolean);
@@ -43,12 +45,26 @@
 
     $: classes = [
         day.isSame(today) && 'is-today',
-        view.endOfMonth().isBefore(day) && 'is-next',
-        view.startOfMonth().isAfter(day) && 'is-prev',
+        view && view.endOfMonth().isBefore(day) && 'is-next',
+        view && view.startOfMonth().isAfter(day) && 'is-prev',
         isDisabled && 'is-disabled',
         isRanged && 'is-ranged',
         isActive && 'is-active'
     ].filter(Boolean).join(' ');
+
+    $: data = {
+        min,
+        max,
+        disabled,
+        view,
+        mode,
+        selection,
+        classes
+    };
+
+    export function state() {
+        return data;
+    };
 </script>
 
 <style type="text/postcss">

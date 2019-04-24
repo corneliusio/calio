@@ -1,4 +1,4 @@
-import Calio from '../../src/components/Calio.svlt';
+import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = '<div id="calio"></div>';

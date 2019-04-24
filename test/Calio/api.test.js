@@ -1,4 +1,4 @@
-import Calio from '../../src/components/Calio.svlt';
+import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = '<div id="calio"></div>';
@@ -7,12 +7,12 @@ test('updates selection when value is updated', () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: { value: epoch.clone().addYear() }
+        props: { value: epoch.clone().addYear() }
     });
 
-    calio.set({ value: epoch });
+    calio.$set({ value: epoch });
 
-    expect(calio.get().selection).toEqual(epoch);
+    expect(calio.state().selection).toEqual(epoch);
 });
 
 test('normalizes a date', () => {
@@ -40,98 +40,98 @@ test('selects a day', () => {
 
     calio.select(epoch);
 
-    expect(calio.get().selection).toEqual(epoch);
+    expect(calio.state().selection).toEqual(epoch);
 });
 
 test('can go to year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 0)
         }
     });
 
     calio.goToYear(2000);
 
-    expect(calio.get().view).toEqual(new LilEpoch(2000, 0));
+    expect(calio.state().view).toEqual(new LilEpoch(2000, 0));
 });
 
 test('can go to next year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 0)
         }
     });
 
     calio.goToNextYear();
 
-    expect(calio.get().view).toEqual(new LilEpoch(2019, 0));
+    expect(calio.state().view).toEqual(new LilEpoch(2019, 0));
 });
 
 test('can go to last year', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 0)
         }
     });
 
     calio.goToLastYear();
 
-    expect(calio.get().view).toEqual(new LilEpoch(2017, 0));
+    expect(calio.state().view).toEqual(new LilEpoch(2017, 0));
 });
 
 test('can go to month', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 6)
         }
     });
 
     calio.goToMonth(1);
 
-    expect(calio.get().view).toEqual(new LilEpoch(2018, 0));
+    expect(calio.state().view).toEqual(new LilEpoch(2018, 0));
 });
 
 test('can go to next month', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 6)
         }
     });
 
     calio.goToNextMonth();
 
-    expect(calio.get().view).toEqual(new LilEpoch(2018, 7));
+    expect(calio.state().view).toEqual(new LilEpoch(2018, 7));
 });
 
 test('can go to last month', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(2018, 6)
         }
     });
 
     calio.goToLastMonth();
 
-    expect(calio.get().view).toEqual(new LilEpoch(2018, 5));
+    expect(calio.state().view).toEqual(new LilEpoch(2018, 5));
 });
 
 test('can go to this month', () => {
     const calio = new Calio({
         target: document.querySelector('#calio'),
-        data: {
+        props: {
             value: new LilEpoch(1988, 6)
         }
     });
 
     calio.goToThisMonth();
 
-    expect(calio.get().view).toEqual(new LilEpoch().date(1));
+    expect(calio.state().view).toEqual(new LilEpoch().date(1));
 });
 
 test('can go to current selection in single mode if it exists', () => {
@@ -141,11 +141,11 @@ test('can go to current selection in single mode if it exists', () => {
     });
 
     calio.goToSelection();
-    expect(calio.get().view).toEqual(new LilEpoch().date(1));
+    expect(calio.state().view).toEqual(new LilEpoch().date(1));
 
     calio.select(epoch);
     calio.goToSelection();
-    expect(calio.get().view).toEqual(epoch);
+    expect(calio.state().view).toEqual(epoch);
 });
 
 test('can go to month containing valid day', () => {
@@ -155,7 +155,7 @@ test('can go to month containing valid day', () => {
     });
 
     calio.goTo(epoch);
-    expect(calio.get().view).toEqual(epoch.clone().date(1));
+    expect(calio.state().view).toEqual(epoch.clone().date(1));
 
     expect(calio.goTo(null)).toBeUndefined();
 });
