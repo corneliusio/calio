@@ -3,12 +3,11 @@ module.exports = {
         'src/**/*.{js,svlt}'
     ],
     transform: {
-        '\\.js$': 'babel-jest',
-        '\\.svlt$': './test/svelte-jest'
+        '\\.(js|svelte)$': './test/babel-svelte-jest'
     },
     moduleFileExtensions: [
         'js',
         'json',
-        'svlt'
+        'svelte'
     ]
 };

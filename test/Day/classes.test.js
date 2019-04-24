@@ -1,5 +1,5 @@
-import Day from '../../src/components/Day.svlt';
-import Calio from '../../src/components/Calio.svlt';
+import Day from '../../src/components/Day.svelte';
+import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = `
@@ -11,94 +11,77 @@ const today = new LilEpoch();
 const past = today.clone().subYear();
 const future = today.clone().addYear();
 
-const calio = new Calio({
-    target: document.querySelector('#calio')
-});
+const calio = new Calio({ target: document.querySelector('#calio') });
+const { props } = calio.state();
 
 test('adds "is-today" class if is today', () => {
-    const day = new Day({
+    const day1 = new Day({
         target: document.querySelector('#day'),
-        data: {
-            day: today,
-            props: calio.get().props
-        }
+        props: { ...props, day: today }
+    });
+    const day2 = new Day({
+        target: document.querySelector('#day'),
+        props: { ...props, day: today.clone().addDay() }
     });
 
-    expect(day.get().classes).toBe('is-today');
-
-    day.set({
-        day: today.clone().addDay()
-    });
-
-    expect(day.get().classes).toBe('');
+    expect(day1.state().classes).toBe('is-today');
+    expect(day2.state().classes).toBe('');
 });
 
 test('adds "is-prev" class if is before viewed month', () => {
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
-            day: today.clone().subMonth(),
-            props: calio.get().props
-        }
+        props: { ...props, day: past }
     });
 
-    expect(day.get().classes).toBe('is-prev');
+    expect(day.state().classes).toBe('is-prev');
 });
 
 test('adds "is-next" class if is after viewed month', () => {
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
-            day: today.clone().addMonth(),
-            props: calio.get().props
-        }
+        props: { ...props, day: future }
     });
 
-    expect(day.get().classes).toBe('is-next');
+    expect(day.state().classes).toBe('is-next');
 });
 
 test('adds "is-disabled" class if is disabled', () => {
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
+        props: {
+            ...props,
             day: today.clone().addDay(),
-            props: {
-                ...calio.get().props,
-                disabled: [today.clone().addDay()]
-            }
+            disabled: [today.clone().addDay()]
         }
     });
 
-    expect(day.get().classes).toBe('is-disabled');
+    expect(day.state().classes).toBe('is-disabled');
 });
 
 test('adds "is-ranged" class if is within range', () => {
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
+        props: {
+            ...props,
             day: today.clone().addDay(),
-            props: {
-                ...calio.get().props,
-                mode: 'range',
-                selection: [past, future]
-            }
+            mode: 'range',
+            selection: [past, future]
         }
     });
 
-    expect(day.get().classes).toBe('is-ranged');
+    expect(day.state().classes).toBe('is-ranged');
 });
 
 test('adds "is-active" class if is selected', () => {
     const day = new Day({
         target: document.querySelector('#day'),
-        data: {
+        props: {
+            ...props,
             day: today.clone().addDay(),
-            props: {
-                ...calio.get().props,
-                selection: today.clone().addDay()
-            }
+            selection: today.clone().addDay()
         }
     });
 
-    expect(day.get().classes).toBe('is-active');
+    expect(day.state().classes).toBe('is-active');
 });

@@ -3,83 +3,91 @@
         <span class="calio-head">{day}</span>
     {/each}
     {#each dates as day}
-        <Day {day} {...props} on:select={event => select(day)} />
+        <Day {day} {...data} on:select={event => select(day)} />
     {/each}
 </div>
 
 <script>
-    import { makeDates, updateRange, updateMulti, updateSingle } from '../util';
+    import { dispatchEvents, makeDates, updateRange, updateMulti, updateSingle } from '../util';
     import { createEventDispatcher } from 'svelte';
     import LilEpoch from '../modules/LilEpoch';
-    import Day from './Day.svlt';
+    import Day from './Day.svelte';
 
     const today = new LilEpoch();
-    const dispatch = createEventDispatcher();
+    const dispatcher = createEventDispatcher();
 
-    export let headers = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-        view = new LilEpoch(),
-        mode = 'single',
-        strict = false,
-        disabled = [],
-        selection,
-        value,
-        limit,
-        min,
-        max,
-        el;
+    let el;
+    let data;
+    let selection = null;
+    let view = new LilEpoch();
 
-    min = makeMyDay(min);
-    max = makeMyDay(max);
-    disabled = new Array()
-        .concat(disabled)
-        .filter(Boolean)
-        .map(makeMyDay);
+    export let headers = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    export let mode = 'single';
+    export let strict = false;
+    export let disabled = [];
+    export let value = null;
+    export let limit = null;
+    export let min = null;
+    export let max = null;
 
     new Array().concat(value).forEach(v => select(v));
 
-    // afterUpdate(() => {
-    //     // el.parentNode.dispatchEvent(new CustomEvent(`calio:update`, {
-    //     //     detail: current
-    //     // }));
+    $: computed = {
+        min: makeMyDay(min),
+        max: makeMyDay(max),
+        disabled: new Array()
+            .concat(disabled)
+            .filter(Boolean)
+            .map(makeMyDay)
+    }
 
-    //     // Object.keys(changed).forEach(key => {
-    //     //     this.fire(key, current);
-    //     //     this.refs.el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
-    //     //         detail: current
-    //     //     }));
-    //     // });
-    // });
+    $: data = {
+        min: computed.min,
+        max: computed.max,
+        disabled: computed.disabled,
+        headers,
+        view,
+        mode,
+        strict,
+        selection,
+        limit,
+        el
+    };
 
-    $: dispatch('selection', selection);
-    $: dispatch('view', view);
-    $: dispatch('min', min);
-    $: dispatch('max', max);
-
-    $: props = { selection, mode, view, disabled, min, max };
-    $: dates = makeDates(view, disabled);
+    $: dates = makeDates(view, computed.disabled);
     $: head = headers.length
         ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
         : [];
+
+    $: dispatchEvents(dispatcher, el, 'selection', selection);
+    $: dispatchEvents(dispatcher, el, 'view', view);
+    $: dispatchEvents(dispatcher, el, 'min', computed.min);
+    $: dispatchEvents(dispatcher, el, 'max', computed.max);
+    $: dispatchEvents(dispatcher, el, 'update', data);
+
+    export function state() {
+        return data;
+    };
 
     export function select(day) {
         day = makeMyDay(day);
 
         if (day) {
-            if (disabled.find(d => d.isSame(day))
-                || (min && day.isBefore(min))
-                || (max && day.isAfter(max))) {
+            if (computed.disabled.find(d => d.isSame(day))
+                || (computed.min && day.isBefore(computed.min))
+                || (computed.max && day.isAfter(computed.max))) {
                 return;
             }
 
             switch (mode) {
                 case 'range' :
-                    selection = updateRange(day, selection, strict, disabled);
+                    [ selection ] = updateRange(day, selection, strict, computed.disabled);
                     break;
                 case 'multi' :
-                    selection = updateMulti(day, selection, limit);
+                    [ selection ] = updateMulti(day, selection, limit);
                     break;
                 default :
-                    selection = updateSingle(day, view);
+                    [ selection, view ] = updateSingle(day, view);
                     break;
             }
         }
@@ -136,7 +144,6 @@
             view = day.clone().startOfMonth();
         }
     }
-
 </script>
 
 <style type="text/postcss">

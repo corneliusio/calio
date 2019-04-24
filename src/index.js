@@ -1,4 +1,4 @@
-import Calio from './components/Calio.svlt';
+import Calio from './components/Calio.svelte';
 
 export default class {
     constructor(el, data = {}) {
