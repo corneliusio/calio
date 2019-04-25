@@ -8,7 +8,7 @@ module.exports = {
         }]
     ],
     env: {
-        test: {
+        testing: {
             presets: ['@babel/env']
         }
     }

@@ -21,10 +21,10 @@ test('can be passed a selector or dom node', () => {
 
 test('filters out unwanted options from passed data', () => {
     const epoch = new LilEpoch();
-    const calio = new Calio('#calio', { selection: 'bar', min: epoch });
-    const { selection, min } = calio.state();
+    const calio = new Calio('#calio', { foo: 'bar', min: epoch });
+    const { foo, min } = calio.state();
 
-    expect(selection).toBeUndefined();
+    expect(foo).toBeUndefined();
     expect(min).toEqual(epoch);
 });
 

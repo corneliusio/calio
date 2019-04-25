@@ -3,47 +3,55 @@ import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = '<div id="calio"></div>';
 
-test('it fires a select event when a date is selected', () => {
+test('it fires a select event when a date is selected', async () => {
     const epoch = new LilEpoch();
 
     const calio1 = new Calio({
         target: document.querySelector('#calio'),
-        data: { mode: 'single' }
+        props: { mode: 'single' }
     });
 
     const calio2 = new Calio({
         target: document.querySelector('#calio'),
-        data: { mode: 'multi' }
+        props: { mode: 'multi' }
     });
 
-    calio1.on('selection', ({ selection }) => {
-        expect(selection).toEqual(epoch);
+    await new Promise(resolve => {
+        calio1.$on('selection', event => {
+            expect(event.detail).toEqual(epoch);
+            resolve();
+        });
+
+        calio1.select(epoch.clone());
     });
 
-    calio2.on('selection', ({ selection }) => {
-        expect(selection).toEqual([epoch]);
-    });
+    await new Promise(resolve => {
+        calio2.$on('selection', event => {
+            expect(event.detail).toEqual([epoch]);
+            resolve();
+        });
 
-    calio1.select(epoch.clone());
-    calio2.select(epoch.clone());
+        calio2.select(epoch.clone());
+    });
 });
 
-test('it fires a view event when a new view is loaded', () => {
+test('it fires a view event when a new view is loaded', async () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio')
     });
 
-    epoch.date(1);
+    await new Promise(resolve => {
+        calio.$on('view', event => {
+            expect(event.detail).toEqual(epoch.date(1));
+            resolve();
+        });
 
-    calio.on('view', ({ view }) => {
-        expect(view).toEqual(epoch);
+        calio.goTo(epoch);
     });
-
-    calio.set({ view: epoch });
 });
 
-test('it fires a view event in single mode when a date is selected in a new month', () => {
+test('it fires a view event in single mode when a date is selected in a new month', async () => {
     const epoch = new LilEpoch();
     const calio = new Calio({
         target: document.querySelector('#calio')
@@ -51,10 +59,13 @@ test('it fires a view event in single mode when a date is selected in a new mont
 
     epoch.date(1).addYear();
 
-    calio.on('view', ({ view }) => {
-        expect(view).toEqual(epoch);
-    });
+    await new Promise(resolve => {
+        calio.$on('view', event => {
+            expect(event.detail).toEqual(epoch);
+            resolve();
+        });
 
-    calio.select(epoch);
+        calio.select(epoch);
+    });
 });
 
