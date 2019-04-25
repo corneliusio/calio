@@ -3,21 +3,24 @@ import LilEpoch from '../../src/modules/LilEpoch';
 
 document.body.innerHTML = '<div id="calio"></div>';
 
-test('it has props to pass to Day', () => {
+test('it has state accessible through state', () => {
     const calio = new Calio({
         target: document.querySelector('#calio')
     });
 
-    const { props, selection, mode, view, disabled, min, max } = calio.get();
-
-    expect(props).toEqual({
-        selection,
-        mode,
-        view,
-        disabled,
-        min,
-        max
-    });
+    expect(Object.keys(calio.state())).toEqual([
+        'min',
+        'max',
+        'headers',
+        'disabled',
+        'dates',
+        'view',
+        'mode',
+        'strict',
+        'selection',
+        'limit',
+        'el'
+    ]);
 });
 
 test('it has head for each day of week', () => {
@@ -27,17 +30,17 @@ test('it has head for each day of week', () => {
 
     const calio2 = new Calio({
         target: document.querySelector('#calio'),
-        data: { headers: [false, 'a', 'b', 'c', false] }
+        props: { headers: [false, 'a', 'b', 'c', false] }
     });
 
     const calio3 = new Calio({
         target: document.querySelector('#calio'),
-        data: { headers: false }
+        props: { headers: false }
     });
 
-    expect(calio1.get().head).toEqual(calio1.get().headers);
-    expect(calio2.get().head).toEqual(['', 'a', 'b', 'c', '', '', '']);
-    expect(calio3.get().head).toEqual([]);
+    expect(calio1.state().headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+    expect(calio2.state().headers).toEqual(['', 'a', 'b', 'c', '', '', '']);
+    expect(calio3.state().headers).toEqual([]);
 });
 
 test('it has dates', () => {
@@ -70,5 +73,5 @@ test('it has dates', () => {
         dates.push(current.clone().date(i));
     }
 
-    expect(calio.get().dates).toEqual(dates);
+    expect(calio.state().dates).toEqual(dates);
 });

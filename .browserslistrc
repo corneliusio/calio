@@ -1,3 +1,4 @@
+[production]
 IE 11
 Chrome >= 60
 ChromeAndroid >= 60
@@ -8,3 +9,15 @@ Firefox >= 53
 Safari >= 10.1
 iOS >= 10.3
 > 1%
+
+[testing]
+Chrome >= 60
+ChromeAndroid >= 60
+UCAndroid >= 11
+Samsung >= 6
+Edge >= 15
+Firefox >= 53
+Safari >= 10.1
+iOS >= 10.3
+> 1%
+not IE 11

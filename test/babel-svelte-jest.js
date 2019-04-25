@@ -1,5 +1,6 @@
+const fs = require('fs');
 const { transform } = require('@babel/core');
-const jestPreset = require('babel-preset-jest');
+const jest = require('babel-preset-jest');
 const svelte = require('svelte/compiler');
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
 
         const result = transform(src, {
             filename,
-            presets: [jestPreset]
+            presets: [jest]
         });
 
         return result ? result.code : src;

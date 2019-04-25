@@ -1,5 +1,5 @@
 <div class="calio" bind:this={el}>
-    {#each head as day}
+    {#each computed.headers as day}
         <span class="calio-head">{day}</span>
     {/each}
     {#each dates as day}
@@ -9,7 +9,7 @@
 
 <script>
     import { dispatchEvents, makeDates, updateRange, updateMulti, updateSingle } from '../util';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount, tick } from 'svelte';
     import LilEpoch from '../modules/LilEpoch';
     import Day from './Day.svelte';
 
@@ -18,6 +18,7 @@
 
     let el;
     let data;
+    let computed;
     let selection = null;
     let view = new LilEpoch();
 
@@ -30,22 +31,31 @@
     export let min = null;
     export let max = null;
 
-    new Array().concat(value).forEach(v => select(v));
+    onMount(() => {
+        new Array().concat(value).forEach(v => select(v));
+        tick().then(() => {
+            view && dispatchEvents(dispatcher, el, 'view', view);
+            selection && dispatchEvents(dispatcher, el, 'selection', selection);
+        });
+    });
 
     $: computed = {
         min: makeMyDay(min),
         max: makeMyDay(max),
+        headers: headers.length
+            ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
+            : [],
         disabled: new Array()
             .concat(disabled)
             .filter(Boolean)
             .map(makeMyDay)
-    }
+    };
+
+    $: dates = makeDates(view, computed.disabled);
 
     $: data = {
-        min: computed.min,
-        max: computed.max,
-        disabled: computed.disabled,
-        headers,
+        ...computed,
+        dates,
         view,
         mode,
         strict,
@@ -53,11 +63,6 @@
         limit,
         el
     };
-
-    $: dates = makeDates(view, computed.disabled);
-    $: head = headers.length
-        ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
-        : [];
 
     $: dispatchEvents(dispatcher, el, 'selection', selection);
     $: dispatchEvents(dispatcher, el, 'view', view);
@@ -81,10 +86,10 @@
 
             switch (mode) {
                 case 'range' :
-                    [ selection ] = updateRange(day, selection, strict, computed.disabled);
+                    selection = updateRange(day, selection, strict, computed.disabled);
                     break;
                 case 'multi' :
-                    [ selection ] = updateMulti(day, selection, limit);
+                    selection = updateMulti(day, selection, limit);
                     break;
                 default :
                     [ selection, view ] = updateSingle(day, view);

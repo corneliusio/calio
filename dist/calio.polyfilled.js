@@ -777,6 +777,40 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
@@ -3273,6 +3307,15 @@ function set_current_component(component) {
   current_component = component;
 }
 
+function get_current_component() {
+  if (!current_component) throw new Error("Function called outside component initialization");
+  return current_component;
+}
+
+function onMount(fn) {
+  get_current_component().$$.on_mount.push(fn);
+}
+
 function createEventDispatcher() {
   var component = current_component;
   return function (type, detail) {
@@ -3290,16 +3333,22 @@ function createEventDispatcher() {
 }
 
 var dirty_components = [];
-var update_promise;
+var resolved_promise = Promise.resolve();
+var update_scheduled = false;
 var binding_callbacks = [];
 var render_callbacks = [];
 var flush_callbacks = [];
 
 function schedule_update() {
-  if (!update_promise) {
-    update_promise = Promise.resolve();
-    update_promise.then(flush$1);
+  if (!update_scheduled) {
+    update_scheduled = true;
+    resolved_promise.then(flush$1);
   }
+}
+
+function tick() {
+  schedule_update();
+  return resolved_promise;
 }
 
 function add_binding_callback(fn) {
@@ -3344,7 +3393,7 @@ function flush$1() {
     flush_callbacks.pop()();
   }
 
-  update_promise = null;
+  update_scheduled = false;
 }
 
 function update($$) {
@@ -3687,20 +3736,19 @@ function makeDates(view, disabled) {
   return dates;
 }
 function updateRange(day, current, strict, disabled) {
-  var selection = current || [],
+  var selection = new Array().concat(current).filter(Boolean) || [],
       index = selection.findIndex(function (s) {
     return s.isSame(day);
   });
 
   if (index > -1) {
     selection.splice(index, 1);
-    return [selection];
+    return selection;
   } else if (selection.length > 1) {
-    return [[day.clone()]];
+    return [day.clone()];
   }
 
-  selection = [].concat(_toConsumableArray(selection), [day.clone()]);
-  selection = selection.sort(function (a, b) {
+  selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
     return a.timestamp() - b.timestamp();
   });
 
@@ -3718,21 +3766,22 @@ function updateRange(day, current, strict, disabled) {
     }
   }
 
-  return [selection];
+  return selection;
 }
 function updateMulti(day, current, limit) {
-  var selection = current || [],
+  var selection = new Array().concat(current).filter(Boolean) || [],
       index = selection.findIndex(function (s) {
     return s.isSame(day);
   });
 
   if (index > -1) {
     selection.splice(index, 1);
-    return [selection];
+    return selection;
   } else if (!limit || selection.length < limit) {
-    return [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
+    selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
       return a.timestamp() - b.timestamp();
     });
+    return selection;
   }
 }
 function updateSingle(day, view) {
@@ -4198,7 +4247,7 @@ function get_each_context_1(ctx, list, i) {
   var child_ctx = Object.create(ctx);
   child_ctx.day = list[i];
   return child_ctx;
-} // (2:4) {#each head as day}
+} // (2:4) {#each computed.headers as day}
 
 
 function create_each_block_1(ctx) {
@@ -4216,7 +4265,7 @@ function create_each_block_1(ctx) {
       append(span, t);
     },
     p: function p(changed, ctx) {
-      if (changed.head && t_value !== (t_value = ctx.day)) {
+      if (changed.computed && t_value !== (t_value = ctx.day)) {
         set_data(t, t_value);
       }
     },
@@ -4287,7 +4336,7 @@ function create_each_block(ctx) {
 
 function create_fragment$1(ctx) {
   var div, t, current;
-  var each_value_1 = ctx.head;
+  var each_value_1 = ctx.computed.headers;
   var each_blocks_1 = [];
 
   for (var i = 0; i < each_value_1.length; i += 1) {
@@ -4349,8 +4398,8 @@ function create_fragment$1(ctx) {
       current = true;
     },
     p: function p(changed, ctx) {
-      if (changed.head) {
-        each_value_1 = ctx.head;
+      if (changed.computed) {
+        each_value_1 = ctx.computed.headers;
 
         for (var i = 0; i < each_value_1.length; i += 1) {
           var child_ctx = get_each_context_1(ctx, each_value_1, i);
@@ -4442,6 +4491,7 @@ function instance$1($$self, $$props, $$invalidate) {
   var dispatcher = createEventDispatcher();
   var el;
   var data;
+  var computed;
   var selection = null;
   var view = new LilEpoch();
   var _$$props$headers = $$props.headers,
@@ -4460,8 +4510,14 @@ function instance$1($$self, $$props, $$invalidate) {
       min = _$$props$min === void 0 ? null : _$$props$min,
       _$$props$max = $$props.max,
       max = _$$props$max === void 0 ? null : _$$props$max;
-  new Array().concat(value).forEach(function (v) {
-    return select(v);
+  onMount(function () {
+    new Array().concat(value).forEach(function (v) {
+      return select(v);
+    });
+    tick().then(function () {
+      view && dispatchEvents(dispatcher, el, 'view', view);
+      selection && dispatchEvents(dispatcher, el, 'selection', selection);
+    });
   });
 
   function state() {
@@ -4480,21 +4536,11 @@ function instance$1($$self, $$props, $$invalidate) {
 
       switch (mode) {
         case 'range':
-          var _updateRange = updateRange(day, selection, strict, computed.disabled);
-
-          var _updateRange2 = _slicedToArray(_updateRange, 1);
-
-          selection = _updateRange2[0];
-          $$invalidate('selection', selection);
+          $$invalidate('selection', selection = updateRange(day, selection, strict, computed.disabled));
           break;
 
         case 'multi':
-          var _updateMulti = updateMulti(day, selection, limit);
-
-          var _updateMulti2 = _slicedToArray(_updateMulti, 1);
-
-          selection = _updateMulti2[0];
-          $$invalidate('selection', selection);
+          $$invalidate('selection', selection = updateMulti(day, selection, limit));
           break;
 
         default:
@@ -4574,16 +4620,17 @@ function instance$1($$self, $$props, $$invalidate) {
     if ('max' in $$props) $$invalidate('max', max = $$props.max);
   };
 
-  var computed, dates, head;
+  var dates;
 
   $$self.$$.update = function () {
     var $$dirty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
       min: 1,
       max: 1,
-      disabled: 1,
-      computed: 1,
       headers: 1,
+      disabled: 1,
       view: 1,
+      computed: 1,
+      dates: 1,
       mode: 1,
       strict: 1,
       selection: 1,
@@ -4592,26 +4639,14 @@ function instance$1($$self, $$props, $$invalidate) {
       data: 1
     };
 
-    if ($$dirty.min || $$dirty.max || $$dirty.disabled) {
+    if ($$dirty.min || $$dirty.max || $$dirty.headers || $$dirty.disabled) {
       $$invalidate('computed', computed = {
         min: makeMyDay(min),
         max: makeMyDay(max),
+        headers: headers.length ? new Array(7).fill('', 0, 7).map(function (n, i) {
+          return headers[i] || n;
+        }) : [],
         disabled: new Array().concat(disabled).filter(Boolean).map(makeMyDay)
-      });
-    }
-
-    if ($$dirty.computed || $$dirty.headers || $$dirty.view || $$dirty.mode || $$dirty.strict || $$dirty.selection || $$dirty.limit || $$dirty.el) {
-      $$invalidate('data', data = {
-        min: computed.min,
-        max: computed.max,
-        disabled: computed.disabled,
-        headers: headers,
-        view: view,
-        mode: mode,
-        strict: strict,
-        selection: selection,
-        limit: limit,
-        el: el
       });
     }
 
@@ -4619,10 +4654,16 @@ function instance$1($$self, $$props, $$invalidate) {
       $$invalidate('dates', dates = makeDates(view, computed.disabled));
     }
 
-    if ($$dirty.headers) {
-      $$invalidate('head', head = headers.length ? new Array(7).fill('', 0, 7).map(function (n, i) {
-        return headers[i] || n;
-      }) : []);
+    if ($$dirty.computed || $$dirty.dates || $$dirty.view || $$dirty.mode || $$dirty.strict || $$dirty.selection || $$dirty.limit || $$dirty.el) {
+      $$invalidate('data', data = _objectSpread({}, computed, {
+        dates: dates,
+        view: view,
+        mode: mode,
+        strict: strict,
+        selection: selection,
+        limit: limit,
+        el: el
+      }));
     }
 
     if ($$dirty.el || $$dirty.selection) {
@@ -4649,6 +4690,7 @@ function instance$1($$self, $$props, $$invalidate) {
   return {
     el: el,
     data: data,
+    computed: computed,
     headers: headers,
     mode: mode,
     strict: strict,
@@ -4669,7 +4711,6 @@ function instance$1($$self, $$props, $$invalidate) {
     goToSelection: goToSelection,
     goTo: goTo,
     dates: dates,
-    head: head,
     select_handler: select_handler,
     div_binding: div_binding
   };

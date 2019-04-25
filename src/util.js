@@ -40,20 +40,18 @@ export function makeDates(view, disabled) {
 }
 
 export function updateRange(day, current, strict, disabled) {
-    let selection = current || [],
+    let selection = new Array().concat(current).filter(Boolean) || [],
         index = selection.findIndex(s => s.isSame(day));
 
     if (index > -1) {
         selection.splice(index, 1);
 
-        return [selection];
+        return selection;
     } else if (selection.length > 1) {
-        return [[day.clone()]];
+        return [day.clone()];
     }
 
-    selection = [...selection, day.clone()];
-
-    selection = selection.sort((a, b) => {
+    selection = [...selection, day.clone()].sort((a, b) => {
         return a.timestamp() - b.timestamp();
     });
 
@@ -68,21 +66,23 @@ export function updateRange(day, current, strict, disabled) {
         }
     }
 
-    return [selection];
+    return selection;
 }
 
 export function updateMulti(day, current, limit) {
-    let selection = current || [],
+    let selection = new Array().concat(current).filter(Boolean) || [],
         index = selection.findIndex(s => s.isSame(day));
 
     if (index > -1) {
         selection.splice(index, 1);
 
-        return [selection];
+        return selection;
     } else if (!limit || selection.length < limit) {
-        return [...selection, day.clone()].sort((a, b) => {
+        selection = [...selection, day.clone()].sort((a, b) => {
             return a.timestamp() - b.timestamp();
         });
+
+        return selection;
     }
 }
 
