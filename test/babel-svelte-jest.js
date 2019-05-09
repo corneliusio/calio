@@ -1,20 +1,19 @@
-const fs = require('fs');
-const { transform } = require('@babel/core');
 const jest = require('babel-preset-jest');
 const svelte = require('svelte/compiler');
+const { transformSync } = require('@babel/core');
 
 module.exports = {
     process(src, filename) {
         if ((/\.svelte$/).test(filename)) {
-            const result = svelte.compile(src, {
+            const component = svelte.compile(src, {
                 filename,
                 css: false
             });
 
-            src = result.js.code;
+            src = component.js.code;
         }
 
-        const result = transform(src, {
+        const result = transformSync(src, {
             filename,
             presets: [jest]
         });

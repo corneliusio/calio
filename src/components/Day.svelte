@@ -9,8 +9,6 @@
     const today = new LilEpoch();
     const dispatch = createEventDispatcher();
 
-    let data;
-
     export let view = new LilEpoch();
     export let selection = [];
     export let disabled = [];
@@ -51,20 +49,6 @@
         isRanged && 'is-ranged',
         isActive && 'is-active'
     ].filter(Boolean).join(' ');
-
-    $: data = {
-        min,
-        max,
-        disabled,
-        view,
-        mode,
-        selection,
-        classes
-    };
-
-    export function state() {
-        return data;
-    };
 </script>
 
 <style type="text/postcss">

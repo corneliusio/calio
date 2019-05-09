@@ -1,6 +1,6 @@
 {
   "name": "calio",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "🗓 A modern date picker—simple and lightweight.",
   "repository": "corneliusio/calio",
   "bugs": {
@@ -27,7 +27,7 @@
   ],
   "scripts": {
     "test": "NODE_ENV=testing jest",
-    "coverage": "jest --coverage && npx codecov",
+    "coverage": "NODE_ENV=testing jest --coverage --no-cache && npx codecov",
     "clean": "rm -rf dist",
     "lint": "eslint -c .eslintrc.json src/**.* --fix",
     "dev": "npm run clean && rollup --config rollup.config.dev.js --environment NODE_ENV:development --watch",
@@ -46,8 +46,8 @@
     "babel-preset-jest": "^24.6.0",
     "codecov": "^3.0.2",
     "core-js": "^3.0.1",
-    "eslint": "^5.15.1",
-    "eslint-plugin-html": "^5.0.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-svelte3": "^1.1.0",
     "jest": "^24.3.1",
     "postcss": "^7.0.14",
     "rollup": "^1.6.0",

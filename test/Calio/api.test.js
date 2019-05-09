@@ -30,7 +30,7 @@ test('selects a day', async () => {
     calio.select(epoch);
     await tick();
 
-    expect(calio.state().selection).toEqual(epoch);
+    expect(calio.$$.ctx.selection).toEqual(epoch);
 });
 
 test('can go to year', async () => {
@@ -44,7 +44,7 @@ test('can go to year', async () => {
     calio.goToYear(2000);
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2000, 0));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2000, 0));
 });
 
 test('can go to next year', async () => {
@@ -58,7 +58,7 @@ test('can go to next year', async () => {
     calio.goToNextYear();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2019, 0));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2019, 0));
 });
 
 test('can go to last year', async () => {
@@ -72,7 +72,7 @@ test('can go to last year', async () => {
     calio.goToLastYear();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2017, 0));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2017, 0));
 });
 
 test('can go to month', async () => {
@@ -86,7 +86,7 @@ test('can go to month', async () => {
     calio.goToMonth(1);
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2018, 0));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2018, 0));
 });
 
 test('can go to next month', async () => {
@@ -100,7 +100,7 @@ test('can go to next month', async () => {
     calio.goToNextMonth();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2018, 7));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2018, 7));
 });
 
 test('can go to last month', async () => {
@@ -114,7 +114,7 @@ test('can go to last month', async () => {
     calio.goToLastMonth();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch(2018, 5));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch(2018, 5));
 });
 
 test('can go to this month', async () => {
@@ -128,25 +128,28 @@ test('can go to this month', async () => {
     calio.goToThisMonth();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch().date(1));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch().date(1));
 });
 
 test('can go to current selection in single mode if it exists', async () => {
     const epoch = new LilEpoch(1988, 0);
     const calio = new Calio({
-        target: document.querySelector('#calio')
+        target: document.querySelector('#calio'),
+        props: {
+            value: new LilEpoch()
+        }
     });
 
     calio.goToSelection();
     await tick();
 
-    expect(calio.state().view).toEqual(new LilEpoch().date(1));
+    expect(calio.$$.ctx.view).toEqual(new LilEpoch().date(1));
 
     calio.select(epoch);
     calio.goToSelection();
     await tick();
 
-    expect(calio.state().view).toEqual(epoch);
+    expect(calio.$$.ctx.view).toEqual(epoch);
 });
 
 test('can go to month containing valid day', async () => {
@@ -157,7 +160,7 @@ test('can go to month containing valid day', async () => {
 
     calio.goTo(epoch);
     await tick();
-    expect(calio.state().view).toEqual(epoch.clone().date(1));
+    expect(calio.$$.ctx.view).toEqual(epoch.clone().date(1));
 
     expect(calio.goTo(null)).toBeUndefined();
     await tick();

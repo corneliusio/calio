@@ -1,3 +1,4 @@
+import { tick } from 'svelte';
 import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
 
@@ -8,7 +9,7 @@ const calio = new Calio({
 });
 
 test('defaults headers to two char days', () => {
-    expect(calio.state().headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+    expect(calio.$$.ctx.headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
 });
 
 test('defaults view to 1st of this month', () => {
@@ -16,37 +17,37 @@ test('defaults view to 1st of this month', () => {
 
     epoch.date(1);
 
-    expect(calio.state().view).toEqual(epoch);
+    expect(calio.$$.ctx.view).toEqual(epoch);
 });
 
 test('defaults mode to single', () => {
-    expect(calio.state().mode).toBe('single');
+    expect(calio.$$.ctx.mode).toBe('single');
 });
 
 test('defaults strict to false', () => {
-    expect(calio.state().strict).toBe(false);
+    expect(calio.$$.ctx.strict).toBe(false);
 });
 
 test('defaults strict to false', () => {
-    expect(calio.state().strict).toBe(false);
+    expect(calio.$$.ctx.strict).toBe(false);
 });
 
 test('defaults disabled to empty array', () => {
-    expect(calio.state().disabled).toEqual([]);
+    expect(calio.$$.ctx.disabled).toEqual([]);
 });
 
 test('defaults selection to null', () => {
-    expect(calio.state().selection).toBeNull();
+    expect(calio.$$.ctx.selection).toBeNull();
 });
 
 test('defaults limit to null', () => {
-    expect(calio.state().limit).toBeNull();
+    expect(calio.$$.ctx.limit).toBeNull();
 });
 
 test('defaults min to null', () => {
-    expect(calio.state().min).toBeNull();
+    expect(calio.$$.ctx.min).toBeNull();
 });
 
 test('defaults max to null', () => {
-    expect(calio.state().max).toBeNull();
+    expect(calio.$$.ctx.max).toBeNull();
 });

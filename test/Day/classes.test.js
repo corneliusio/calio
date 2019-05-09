@@ -12,7 +12,7 @@ const past = today.clone().subYear();
 const future = today.clone().addYear();
 
 const calio = new Calio({ target: document.querySelector('#calio') });
-const { props } = calio.state();
+const { props } = calio.$$.ctx;
 
 test('adds "is-today" class if is today', () => {
     const day1 = new Day({
@@ -24,8 +24,8 @@ test('adds "is-today" class if is today', () => {
         props: { ...props, day: today.clone().addDay() }
     });
 
-    expect(day1.state().classes).toBe('is-today');
-    expect(day2.state().classes).toBe('');
+    expect(day1.$$.ctx.classes).toBe('is-today');
+    expect(day2.$$.ctx.classes).toBe('');
 });
 
 test('adds "is-prev" class if is before viewed month', () => {
@@ -34,7 +34,7 @@ test('adds "is-prev" class if is before viewed month', () => {
         props: { ...props, day: past }
     });
 
-    expect(day.state().classes).toBe('is-prev');
+    expect(day.$$.ctx.classes).toBe('is-prev');
 });
 
 test('adds "is-next" class if is after viewed month', () => {
@@ -43,7 +43,7 @@ test('adds "is-next" class if is after viewed month', () => {
         props: { ...props, day: future }
     });
 
-    expect(day.state().classes).toBe('is-next');
+    expect(day.$$.ctx.classes).toBe('is-next');
 });
 
 test('adds "is-disabled" class if is disabled', () => {
@@ -56,7 +56,7 @@ test('adds "is-disabled" class if is disabled', () => {
         }
     });
 
-    expect(day.state().classes).toBe('is-disabled');
+    expect(day.$$.ctx.classes).toBe('is-disabled');
 });
 
 test('adds "is-ranged" class if is within range', () => {
@@ -70,7 +70,7 @@ test('adds "is-ranged" class if is within range', () => {
         }
     });
 
-    expect(day.state().classes).toBe('is-ranged');
+    expect(day.$$.ctx.classes).toBe('is-ranged');
 });
 
 test('adds "is-active" class if is selected', () => {
@@ -83,5 +83,5 @@ test('adds "is-active" class if is selected', () => {
         }
     });
 
-    expect(day.state().classes).toBe('is-active');
+    expect(day.$$.ctx.classes).toBe('is-active');
 });
