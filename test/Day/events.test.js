@@ -13,7 +13,7 @@ const calio = new Calio({
 });
 
 test('it fires a "selection" event when clicked', () => {
-    const { props } = calio.state();
+    const { props } = calio.$$.ctx;
     const day = new Day({
         target: document.querySelector('#day'),
         props: { ...props, day: today }

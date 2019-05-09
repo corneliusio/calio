@@ -8,18 +8,26 @@ test('it has state accessible through state', () => {
         target: document.querySelector('#calio')
     });
 
-    expect(Object.keys(calio.state())).toEqual([
-        'min',
-        'max',
+    expect(calio.$$.props).toEqual([
         'headers',
-        'disabled',
-        'dates',
-        'view',
         'mode',
         'strict',
-        'selection',
+        'disabled',
+        'value',
         'limit',
-        'el'
+        'min',
+        'max',
+        'select',
+        'makeMyDay',
+        'goToYear',
+        'goToNextYear',
+        'goToLastYear',
+        'goToMonth',
+        'goToNextMonth',
+        'goToLastMonth',
+        'goToThisMonth',
+        'goToSelection',
+        'goTo'
     ]);
 });
 
@@ -38,9 +46,9 @@ test('it has head for each day of week', () => {
         props: { headers: false }
     });
 
-    expect(calio1.state().headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
-    expect(calio2.state().headers).toEqual(['', 'a', 'b', 'c', '', '', '']);
-    expect(calio3.state().headers).toEqual([]);
+    expect(calio1.$$.ctx.computed.headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+    expect(calio2.$$.ctx.computed.headers).toEqual(['', 'a', 'b', 'c', '', '', '']);
+    expect(calio3.$$.ctx.computed.headers).toEqual([]);
 });
 
 test('it has dates', () => {
@@ -73,5 +81,5 @@ test('it has dates', () => {
         dates.push(current.clone().date(i));
     }
 
-    expect(calio.state().dates).toEqual(dates);
+    expect(calio.$$.ctx.dates).toEqual(dates);
 });

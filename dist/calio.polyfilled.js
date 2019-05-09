@@ -777,40 +777,6 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    var ownKeys = Object.keys(source);
-
-    if (typeof Object.getOwnPropertySymbols === 'function') {
-      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-      }));
-    }
-
-    ownKeys.forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    });
-  }
-
-  return target;
-}
-
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
@@ -3254,7 +3220,7 @@ function append(target, node) {
 }
 
 function insert(target, node, anchor) {
-  target.insertBefore(node, anchor);
+  target.insertBefore(node, anchor || null);
 }
 
 function detach(node) {
@@ -3428,7 +3394,9 @@ function on_outro(callback) {
 function get_spread_update(levels, updates) {
   var update = {};
   var to_null_out = {};
-  var accounted_for = {};
+  var accounted_for = {
+    $$scope: 1
+  };
   var i = levels.length;
 
   while (i--) {
@@ -3503,7 +3471,7 @@ function make_dirty(component, key) {
   if (!component.$$.dirty) {
     dirty_components.push(component);
     schedule_update();
-    component.$$.dirty = {};
+    component.$$.dirty = blank_object();
   }
 
   component.$$.dirty[key] = true;
@@ -3708,11 +3676,9 @@ function makeDates(view, disabled) {
   var current = view.clone().startOfMonth(),
       dates = [],
       dayOfFirst,
-      dayOfLast;
-
-  if (!Array.isArray(disabled)) {
-    return [];
-  }
+      dayOfLast; // if (!Array.isArray(disabled)) {
+  //     return [];
+  // }
 
   dayOfFirst = current.dayOfWeek();
 
@@ -3783,6 +3749,8 @@ function updateMulti(day, current, limit) {
     });
     return selection;
   }
+
+  return selection;
 }
 function updateSingle(day, view) {
   return [day.clone(), !view.isSameMonth(day) ? day.clone().startOfMonth() : view];
@@ -4091,7 +4059,6 @@ function create_fragment(ctx) {
 function instance($$self, $$props, $$invalidate) {
   var today = new LilEpoch();
   var dispatch = createEventDispatcher();
-  var data;
   var _$$props$view = $$props.view,
       view = _$$props$view === void 0 ? new LilEpoch() : _$$props$view,
       _$$props$selection = $$props.selection,
@@ -4102,10 +4069,6 @@ function instance($$self, $$props, $$invalidate) {
       min = $$props.min,
       max = $$props.max,
       mode = $$props.mode;
-
-  function state() {
-    return data;
-  }
 
   function click_handler(event) {
     return dispatch('select', day);
@@ -4134,8 +4097,7 @@ function instance($$self, $$props, $$invalidate) {
       view: 1,
       isDisabled: 1,
       isRanged: 1,
-      isActive: 1,
-      classes: 1
+      isActive: 1
     };
 
     if ($$dirty.selection || $$dirty.day) {
@@ -4175,18 +4137,6 @@ function instance($$self, $$props, $$invalidate) {
     if ($$dirty.day || $$dirty.view || $$dirty.isDisabled || $$dirty.isRanged || $$dirty.isActive) {
       $$invalidate('classes', classes = [day.isSame(today) && 'is-today', view && view.endOfMonth().isBefore(day) && 'is-next', view && view.startOfMonth().isAfter(day) && 'is-prev', isDisabled && 'is-disabled', isRanged && 'is-ranged', isActive && 'is-active'].filter(Boolean).join(' '));
     }
-
-    if ($$dirty.min || $$dirty.max || $$dirty.disabled || $$dirty.view || $$dirty.mode || $$dirty.selection || $$dirty.classes) {
-      $$invalidate('data', data = {
-        min: min,
-        max: max,
-        disabled: disabled,
-        view: view,
-        mode: mode,
-        selection: selection,
-        classes: classes
-      });
-    }
   };
 
   return {
@@ -4198,7 +4148,6 @@ function instance($$self, $$props, $$invalidate) {
     min: min,
     max: max,
     mode: mode,
-    state: state,
     classes: classes,
     click_handler: click_handler
   };
@@ -4216,16 +4165,9 @@ function (_SvelteComponent) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Day).call(this));
     if (!document.getElementById("svelte-1mp2c5z-style")) add_css();
-    init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, ["view", "selection", "disabled", "day", "min", "max", "mode", "state"]);
+    init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, ["view", "selection", "disabled", "day", "min", "max", "mode"]);
     return _this;
   }
-
-  _createClass(Day, [{
-    key: "state",
-    get: function get() {
-      return this.$$.ctx.state;
-    }
-  }]);
 
   return Day;
 }(SvelteComponent);
@@ -4282,7 +4224,7 @@ function create_each_block(ctx) {
   var current;
   var day_spread_levels = [{
     day: ctx.day
-  }, ctx.data];
+  }, ctx.props];
 
   function select_handler() {
     var _ctx;
@@ -4314,9 +4256,9 @@ function create_each_block(ctx) {
     },
     p: function p(changed, new_ctx) {
       ctx = new_ctx;
-      var day_changes = changed.dates || changed.data ? get_spread_update(day_spread_levels, [changed.dates && {
+      var day_changes = changed.dates || changed.props ? get_spread_update(day_spread_levels, [changed.dates && {
         day: ctx.day
-      }, changed.data && ctx.data]) : {};
+      }, changed.props && ctx.props]) : {};
       day.$set(day_changes);
     },
     i: function i(local) {
@@ -4420,7 +4362,7 @@ function create_fragment$1(ctx) {
         each_blocks_1.length = each_value_1.length;
       }
 
-      if (changed.dates || changed.data) {
+      if (changed.dates || changed.props) {
         each_value = ctx.dates;
 
         for (var i = 0; i < each_value.length; i += 1) {
@@ -4490,7 +4432,7 @@ function instance$1($$self, $$props, $$invalidate) {
   var today = new LilEpoch();
   var dispatcher = createEventDispatcher();
   var el;
-  var data;
+  var props;
   var computed;
   var selection = null;
   var view = new LilEpoch();
@@ -4511,6 +4453,8 @@ function instance$1($$self, $$props, $$invalidate) {
       _$$props$max = $$props.max,
       max = _$$props$max === void 0 ? null : _$$props$max;
   onMount(function () {
+    $$invalidate('view', view);
+    $$invalidate('selection', selection);
     new Array().concat(value).forEach(function (v) {
       return select(v);
     });
@@ -4519,10 +4463,6 @@ function instance$1($$self, $$props, $$invalidate) {
       selection && dispatchEvents(dispatcher, el, 'selection', selection);
     });
   });
-
-  function state() {
-    return data;
-  }
 
   function select(day) {
     day = makeMyDay(day);
@@ -4630,13 +4570,10 @@ function instance$1($$self, $$props, $$invalidate) {
       disabled: 1,
       view: 1,
       computed: 1,
-      dates: 1,
-      mode: 1,
-      strict: 1,
       selection: 1,
-      limit: 1,
+      mode: 1,
       el: 1,
-      data: 1
+      props: 1
     };
 
     if ($$dirty.min || $$dirty.max || $$dirty.headers || $$dirty.disabled) {
@@ -4654,16 +4591,15 @@ function instance$1($$self, $$props, $$invalidate) {
       $$invalidate('dates', dates = makeDates(view, computed.disabled));
     }
 
-    if ($$dirty.computed || $$dirty.dates || $$dirty.view || $$dirty.mode || $$dirty.strict || $$dirty.selection || $$dirty.limit || $$dirty.el) {
-      $$invalidate('data', data = _objectSpread({}, computed, {
-        dates: dates,
-        view: view,
-        mode: mode,
-        strict: strict,
+    if ($$dirty.computed || $$dirty.selection || $$dirty.view || $$dirty.mode) {
+      $$invalidate('props', props = {
+        disabled: computed.disabled,
+        min: computed.min,
+        max: computed.max,
         selection: selection,
-        limit: limit,
-        el: el
-      }));
+        view: view,
+        mode: mode
+      });
     }
 
     if ($$dirty.el || $$dirty.selection) {
@@ -4682,14 +4618,14 @@ function instance$1($$self, $$props, $$invalidate) {
       dispatchEvents(dispatcher, el, 'max', computed.max);
     }
 
-    if ($$dirty.el || $$dirty.data) {
-      dispatchEvents(dispatcher, el, 'update', data);
+    if ($$dirty.el || $$dirty.props) {
+      dispatchEvents(dispatcher, el, 'update', props);
     }
   };
 
   return {
     el: el,
-    data: data,
+    props: props,
     computed: computed,
     headers: headers,
     mode: mode,
@@ -4699,7 +4635,6 @@ function instance$1($$self, $$props, $$invalidate) {
     limit: limit,
     min: min,
     max: max,
-    state: state,
     select: select,
     goToYear: goToYear,
     goToNextYear: goToNextYear,
@@ -4728,16 +4663,11 @@ function (_SvelteComponent) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Calio).call(this));
     if (!document.getElementById("svelte-4rx1aq-style")) add_css$1();
-    init(_assertThisInitialized(_this), options, instance$1, create_fragment$1, safe_not_equal, ["headers", "mode", "strict", "disabled", "value", "limit", "min", "max", "state", "select", "makeMyDay", "goToYear", "goToNextYear", "goToLastYear", "goToMonth", "goToNextMonth", "goToLastMonth", "goToThisMonth", "goToSelection", "goTo"]);
+    init(_assertThisInitialized(_this), options, instance$1, create_fragment$1, safe_not_equal, ["headers", "mode", "strict", "disabled", "value", "limit", "min", "max", "select", "makeMyDay", "goToYear", "goToNextYear", "goToLastYear", "goToMonth", "goToNextMonth", "goToLastMonth", "goToThisMonth", "goToSelection", "goTo"]);
     return _this;
   }
 
   _createClass(Calio, [{
-    key: "state",
-    get: function get() {
-      return this.$$.ctx.state;
-    }
-  }, {
     key: "select",
     get: function get() {
       return this.$$.ctx.select;
@@ -4802,7 +4732,7 @@ var _default = function _default(el) {
 
   _classCallCheck(this, _default);
 
-  var options = ['headers', 'mode', 'disabled', 'strict', 'value', 'limit', 'min', 'max'];
+  var options = ['headers', 'mode', 'strict', 'disabled', 'value', 'limit', 'min', 'max'];
   var target = typeof el === 'string' ? document.querySelector(el) : el;
   return new Calio({
     target: target,

@@ -11,8 +11,8 @@ test('it returns an instance of Calio (component)', () => {
 test('can be passed a selector or dom node', () => {
     const calio1 = new Calio('#calio');
     const calio2 = new Calio(document.querySelector('#calio'));
-    const { el: el1 } = calio1.state();
-    const { el: el2 } = calio2.state();
+    const { el: el1 } = calio1.$$.ctx;
+    const { el: el2 } = calio2.$$.ctx;
 
     expect(el1).toBeTruthy();
     expect(el2).toBeTruthy();
@@ -22,7 +22,7 @@ test('can be passed a selector or dom node', () => {
 test('filters out unwanted options from passed data', () => {
     const epoch = new LilEpoch();
     const calio = new Calio('#calio', { foo: 'bar', min: epoch });
-    const { foo, min } = calio.state();
+    const { foo, min } = calio.$$.ctx;
 
     expect(foo).toBeUndefined();
     expect(min).toEqual(epoch);
