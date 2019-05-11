@@ -192,6 +192,16 @@ test('it checks if two dates are the same', () => {
     expect(epoch1.isSame(epoch3)).toBe(false);
 });
 
+test('it checks if date is between two other dates', () => {
+    let epoch1 = new LilEpoch(1988, 10, 25),
+        epoch2 = new LilEpoch(1988, 10, 26),
+        epoch3 = new LilEpoch(1992, 10, 27),
+        epoch4 = new LilEpoch(1992, 10, 28);
+
+    expect(epoch2.isBetween(epoch1, epoch3)).toBe(true);
+    expect(epoch4.isBetween(epoch1, epoch3)).toBe(false);
+});
+
 test('it checks if two dates are in the same month', () => {
     let epoch1 = new LilEpoch(1988, 10, 23),
         epoch2 = new LilEpoch(1988, 10, 25),

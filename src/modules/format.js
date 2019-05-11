@@ -55,7 +55,7 @@ export default function(date, mask = 'default') {
             mmmm: formats.i18n.monthNames[m + 12],
             yy: String(y).slice(2),
             yyyy: y,
-            S: ['th', 'st', 'nd', 'rd'][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+            S: [ 'th', 'st', 'nd', 'rd' ][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
         };
 
     return mask.replace(token, $0 => {

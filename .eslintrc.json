@@ -37,7 +37,7 @@
         "no-multi-spaces": 1,
         "no-unmodified-loop-condition": 1,
         "no-useless-escape": 1,
-        "array-bracket-spacing": 1,
+        "array-bracket-spacing": [1, "always"],
         "brace-style": [1, "1tbs"],
         "camelcase": 1,
         "comma-dangle": 1,

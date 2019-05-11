@@ -19,7 +19,7 @@
   ],
   "side-effects": false,
   "main": "dist/calio.js",
-  "unpkg": "dist/calio.min.js",
+  "unpkg": "dist/calio.polyfilled.min.js",
   "license": "MIT",
   "files": [
     "dist/",
@@ -28,7 +28,7 @@
   "scripts": {
     "test": "NODE_ENV=testing jest",
     "coverage": "NODE_ENV=testing jest --coverage --no-cache && npx codecov",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist/*",
     "lint": "eslint -c .eslintrc.json src/**.* --fix",
     "dev": "npm run clean && rollup --config rollup.config.dev.js --environment NODE_ENV:development --watch",
     "build": "npm run lint && npm run clean && npm run prod",

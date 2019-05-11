@@ -21,7 +21,7 @@
     let selection = null;
     let view = new LilEpoch();
 
-    export let headers = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    export let headers = [ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ];
     export let mode = 'single';
     export let strict = false;
     export let disabled = [];
@@ -76,7 +76,9 @@
         if (data && typeof data.clone === 'function') {
             data = data.clone();
         } else {
-            data = { ...data };
+            data = Array.isArray(data)
+                ? [ ...data ]
+                : { ...data };
         }
 
         if (el) {
@@ -148,15 +150,15 @@
 
             return selection;
         } else if (selection.length > 1) {
-            return [day.clone()];
+            return [ day.clone() ];
         }
 
-        selection = [...selection, day.clone()].sort((a, b) => {
+        selection = [ ...selection, day.clone() ].sort((a, b) => {
             return a.timestamp() - b.timestamp();
         });
 
         if (strict) {
-            let [start, end] = selection,
+            let [ start, end ] = selection,
                 isInvalid = end && !!disabled.find(d => {
                     return d.isAfter(start) && d.isBefore(end);
                 });
@@ -178,7 +180,7 @@
 
             return selection;
         } else if (!limit || selection.length < limit) {
-            selection = [...selection, day.clone()].sort((a, b) => {
+            selection = [ ...selection, day.clone() ].sort((a, b) => {
                 return a.timestamp() - b.timestamp();
             });
 
@@ -215,7 +217,7 @@
                     selection = updateMulti(day, selection, limit);
                     break;
                 default :
-                    [selection, view] = updateSingle(day, view);
+                    [ selection, view ] = updateSingle(day, view);
                     break;
             }
         }
