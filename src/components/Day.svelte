@@ -52,39 +52,39 @@
 </script>
 
 <style type="text/postcss">
-    .calio-day {
+    :global(.calio-day) {
         cursor: pointer;
         color: var(--color, #333);
     }
 
-    .calio-day:hover {
+    :global(.calio-day:hover) {
         color: var(--color-hover, var(--color, #333));
         background: var(--bg-hover, #EEE);
     }
 
-    .calio-day.is-today {
+    :global(.calio-day.is-today) {
         font-weight: 900;
     }
 
-    .calio-day.is-prev,
-    .calio-day.is-next {
+    :global(.calio-day.is-prev),
+    :global(.calio-day.is-next) {
         color: var(--color-inactive, #CCC);
         background: var(--bg-inactive, transparent);
     }
 
-    .calio-day.is-disabled {
+    :global(.calio-day.is-disabled) {
         pointer-events: none;
         color: var(--color-disabled, var(--color-inactive, #CCC));
         background: var(--bg-disabled, transparent);
         opacity: var(--opacity-disabled, 0.5);
     }
 
-    .calio-day.is-ranged {
+    :global(.calio-day.is-ranged) {
         color: var(--color-ranged, var(--color-active, white));
         background: var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)));
     }
 
-    .calio-day.is-active {
+    :global(.calio-day.is-active) {
         color: var(--color-active, white);
         background: var(--bg-active, rgb(100, 149, 237));
     }

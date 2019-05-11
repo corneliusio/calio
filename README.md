@@ -2,12 +2,12 @@
 
 [![NPM Version](https://img.shields.io/npm/v/calio.svg?style=flat-square)](http://npmjs.com/package/calio)
 ![Github File Size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)
-![Gzip File Size](https://img.badgesize.io/https://unpkg.com/calio?compression=gzip&label=gzip&style=flat-square)
+![Gzip File Size](https://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)
 [![Build Status](https://img.shields.io/travis/corneliusio/calio/master.svg?style=flat-square)](https://travis-ci.org/corneliusio/calio)
 [![Codecov](https://img.shields.io/codecov/c/github/corneliusio/calio.svg?style=flat-square)](https://codecov.io/gh/corneliusio/calio)
 [![License](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
 
-Calio is an unopinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
+Calio is an un-opinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  
 What does that mean? Zero-dependency, vanilla JS that is lean and ready to use where ever you need a date picker.
 
 ![Calio](extra/calio.png)
@@ -16,12 +16,20 @@ What does that mean? Zero-dependency, vanilla JS that is lean and ready to use w
 
 ## Browser support
 
-| Chrome | Edge | Firefox | Safari / iOS | UC Android | Samsung |
-| ------ | ---- | ------- | ------------ | ---------- | ------- |
-| 60+    | 15+  | 53+     | 10+          | 11+        | 6+      |
+Out of the box, Calio includes a lean, modern-browser bundle by default and a polyfilled version of the bundle that has browser support reflected in the table below.
 
-**Note: This module does not support IE out of the box.  
-But if you're looking for IE11 support, here's [what you need](extra/IE.md).**
+```js
+import Calio from 'calio';
+// or 
+import Calio from 'calio/polyfilled';
+```
+
+| IE\*
+  | Chrome | Edge | Firefox | Safari / iOS | UC Android | Samsung |
+| ----- | ------ | ---- | ------- | ------------ | ---------- | ------- |
+| 11    | 60+    | 15+  | 53+     | 10+          | 11+        | 6+      |
+
+**\***[IE11 support](extra/IE.md) requires the inclusion of additional CSS.
 
 ---
 
@@ -39,7 +47,7 @@ npm install calio --save
 import Calio from 'calio';
 ```
 
-or manually include `dist/calio.min.js` in your HTML:
+or manually include `dist/calio.polyfilled.min.js` in your HTML:
 
 ```html
 <script src="https://unpkg.com/calio"></script>
@@ -79,6 +87,7 @@ That wasn't too bad, was it!
 
 ### Current
 Displaying things like the current selection or view is pretty easy too.
+
 ```html
 <h4 class="viewing"></h4>
 <div id="calio"></div>
@@ -90,17 +99,13 @@ Displaying things like the current selection or view is pretty easy too.
     const viewing = document.querySelector('.viewing');
     const selected = document.querySelector('.selected');
 
-    calio.on('view', ({ view }) => {
+    calio.$on('view', ({ detail: view }) => {
         viewing.textContent = view.format('mmmm yyyy');
     });
 
-    calio.on('selection', ({ selection }) => {
+    calio.$on('selection', ({ detail: selection }) => {
         selected.textContent = selection.format('mediumDate');
     });
-
-    // Fire these so we update our text when loaded.
-    calio.fire('view', calio.get());
-    calio.fire('selection', calio.get());
 </script>
 ```
 
@@ -114,8 +119,8 @@ Displaying things like the current selection or view is pretty easy too.
 new Calio(el, {
     headers: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
     mode: 'single',
-    disabled: [],
     strict: false,
+    disabled: [],
     value: null,
     limit: null,
     min: null,
@@ -147,7 +152,7 @@ new Calio(el, {
 An initial value for the date picker. This can be:  
 - a Javascript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object  
 - a string or number accepted by Javascript's [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object  
-- or a returned selection item from another instance of Calio.
+- or a returned date item (such as a selection) from another instance of Calio.
 
 ```js
 new Calio(el, {
@@ -238,12 +243,13 @@ new Calio(el, {
 ## Events
 
 ### view
-This event fires whenever the currently displayed month is updated and is passed the class representing the 1st of the displayed month.
+This event fires whenever the currently displayed month is updated and is passed an instance of the 1st of the displayed month.
 
 ```js
 const calio = new Calio(el);
 
-calio.on('view', ({ view }) => {
+calio.$on('view', event => {
+    const { view } = event.detail;
     // Do something with the value of "view"
 });
 // or
@@ -260,8 +266,8 @@ This event fires whenever the user selects a new date and is passed the full sel
 ```js
 const calio = new Calio(el);
 
-calio.on('selection', ({ selection }) => {
-    // Do something with the value of "selection"
+calio.$on('selection', event => {
+    // Do something with the value of "event.detail"
     // Note that in the case of range and multi modes, "selection" includes all dates currently selected.
 });
 // or
@@ -272,26 +278,31 @@ el.addEventListener('calio:selection', event => {
 
 ---
 
-These events can also be fired manually to trigger an event on the initial load.
+## API
+
+### select(day)
+Problematically make a selection.
 
 ```js
 const calio = new Calio(el);
 
-calio.on('view', ({ view }) => {
-    // Do something with the value of "view"
-});
-
-calio.on('selection', ({ selection }) => {
-    // Do something with the value of "selection"
-});
-
-calio.fire('view', calio.get());
-calio.fire('selection', calio.get());
+if (someCondition) {
+    calio.select('2018-01-04');
+}
 ```
 
----
+### makeMyDay(day)
+Normalizes any selection value object, `Date` object, or `Date` parsable string/integer into the object Calio uses for dates.
 
-## API
+```js
+const calio = new Calio(el);
+const { selection } = calio.get();
+const today = calio.makeMyDay(Date.now());
+
+if (selection.isBefore(today)) {
+    // Do something if the selection is before today.
+}
+```
 
 ### goToYear(y)
 Jump to the (full 4-digit) year provided.
@@ -384,51 +395,25 @@ const { selection } = calio.get();
 calio.goTo(selection[2]); // Will jump to July.
 ```
 
-### makeMyDay(day)
-Normalizes any selection value object, `Date` object, or `Date` parsable string/integer into the object Calio uses for dates.
-
-```js
-const calio = new Calio(el);
-const { selection } = calio.get();
-const today = calio.makeMyDay(Date.now());
-
-if (selection.isBefore(today)) {
-    // Do something if the selection is before today.
-}
-```
-
-### select(day)
-Problematically make a selection.
-
-```js
-const calio = new Calio(el);
-
-if (someCondition) {
-    calio.select('2018-01-04');
-}
-```
-
-> ## The rest of this readme is still a WIP.
-
 ## Styling
 
 ```css
 #calio {
-    --size;
-    --size-x;
-    --size-y;
-    --color;
-    --color-hover;
-    --bg-hover;
-    --color-inactive;
-    --bg-inactive;
-    --color-disabled;
-    --bg-disabled;
-    --opacity-disabled;
-    --color-ranged;
-    --bg-ranged;
-    --color-active;
-    --bg-active;
+    --size;             // size of single grid item (both horizontal and vertical)
+    --size-x;           // horizontal size of single grid item
+    --size-y;           // vertical size of single grid item
+    --color;            // date text color
+    --color-hover;      // date text color on hover
+    --bg-hover;         // date background color on hover
+    --color-inactive;   // text color for visible dates from prev/next month
+    --bg-inactive;      // background color for visible dates from prev/next month
+    --color-disabled;   // text color for dates disabled by min, max, disabled values
+    --bg-disabled;      // background color for dates disabled by min, max, disabled values
+    --opacity-disabled; // opacity for dates disabled by min, max, disabled values
+    --color-ranged;     // text color for dates between two selections in range mode
+    --bg-ranged;        // background color for dates between two selections in range mode
+    --color-active;     // text color for a selected date
+    --bg-active;        // background color for a selected date
 }
 ```
 

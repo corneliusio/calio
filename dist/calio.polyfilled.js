@@ -1,3 +1,55 @@
+// Polyfill for creating CustomEvents on IE9/10/11
+// code pulled from:
+// https://github.com/d4tocchini/customevent-polyfill
+// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
+(function () {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    var ce = new window.CustomEvent('test', {
+      cancelable: true
+    });
+    ce.preventDefault();
+
+    if (ce.defaultPrevented !== true) {
+      // IE has problems with .preventDefault() on custom events
+      // http://stackoverflow.com/questions/23349191
+      throw new Error('Could not prevent default');
+    }
+  } catch (e) {
+    var CustomEvent = function CustomEvent(event, params) {
+      var evt, origPrevent;
+      params = params || {};
+      params.bubbles = !!params.bubbles;
+      params.cancelable = !!params.cancelable;
+      evt = document.createEvent('CustomEvent');
+      evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+      origPrevent = evt.preventDefault;
+
+      evt.preventDefault = function () {
+        origPrevent.call(this);
+
+        try {
+          Object.defineProperty(this, 'defaultPrevented', {
+            get: function get() {
+              return true;
+            }
+          });
+        } catch (e) {
+          this.defaultPrevented = true;
+        }
+      };
+
+      return evt;
+    };
+
+    CustomEvent.prototype = window.Event.prototype;
+    window.CustomEvent = CustomEvent; // expose definition to window
+  }
+})();
+
 var aFunction = function (it) {
   if (typeof it != 'function') {
     throw TypeError(String(it) + ' is not a function');
@@ -3925,8 +3977,8 @@ function () {
 
 function add_css() {
   var style = element("style");
-  style.id = 'svelte-1mp2c5z-style';
-  style.textContent = ".calio-day.svelte-1mp2c5z{cursor:pointer;color:var(--color, #333)}.calio-day.svelte-1mp2c5z:hover{color:var(--color-hover, var(--color, #333));background:var(--bg-hover, #EEE)}.calio-day.is-today.svelte-1mp2c5z{font-weight:900}.calio-day.is-prev.svelte-1mp2c5z,.calio-day.is-next.svelte-1mp2c5z{color:var(--color-inactive, #CCC);background:var(--bg-inactive, transparent)}.calio-day.is-disabled.svelte-1mp2c5z{pointer-events:none;color:var(--color-disabled, var(--color-inactive, #CCC));background:var(--bg-disabled, transparent);opacity:var(--opacity-disabled, 0.5)}.calio-day.is-ranged.svelte-1mp2c5z{color:var(--color-ranged, var(--color-active, white));background:var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)))}.calio-day.is-active.svelte-1mp2c5z{color:var(--color-active, white);background:var(--bg-active, rgb(100, 149, 237))}";
+  style.id = 'svelte-1l2ul15-style';
+  style.textContent = ".calio-day{cursor:pointer;color:var(--color, #333)}.calio-day:hover{color:var(--color-hover, var(--color, #333));background:var(--bg-hover, #EEE)}.calio-day.is-today{font-weight:900}.calio-day.is-prev,.calio-day.is-next{color:var(--color-inactive, #CCC);background:var(--bg-inactive, transparent)}.calio-day.is-disabled{pointer-events:none;color:var(--color-disabled, var(--color-inactive, #CCC));background:var(--bg-disabled, transparent);opacity:var(--opacity-disabled, 0.5)}.calio-day.is-ranged{color:var(--color-ranged, var(--color-active, white));background:var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)))}.calio-day.is-active{color:var(--color-active, white);background:var(--bg-active, rgb(100, 149, 237))}";
   append(document.head, style);
 }
 
@@ -3940,7 +3992,7 @@ function create_fragment(ctx) {
     c: function c() {
       span = element("span");
       t = text(t_value);
-      span.className = span_class_value = "calio-day " + ctx.classes + " svelte-1mp2c5z";
+      span.className = span_class_value = "calio-day " + ctx.classes;
       dispose = listen(span, "click", ctx.click_handler);
     },
     m: function m(target, anchor) {
@@ -3952,7 +4004,7 @@ function create_fragment(ctx) {
         set_data(t, t_value);
       }
 
-      if (changed.classes && span_class_value !== (span_class_value = "calio-day " + ctx.classes + " svelte-1mp2c5z")) {
+      if (changed.classes && span_class_value !== (span_class_value = "calio-day " + ctx.classes)) {
         span.className = span_class_value;
       }
     },
@@ -4076,7 +4128,7 @@ function (_SvelteComponent) {
     _classCallCheck(this, Day);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Day).call(this));
-    if (!document.getElementById("svelte-1mp2c5z-style")) add_css();
+    if (!document.getElementById("svelte-1l2ul15-style")) add_css();
     init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, ["view", "selection", "disabled", "day", "min", "max", "mode"]);
     return _this;
   }
@@ -4086,8 +4138,8 @@ function (_SvelteComponent) {
 
 function add_css$1() {
   var style = element("style");
-  style.id = 'svelte-4rx1aq-style';
-  style.textContent = ".calio.svelte-4rx1aq{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head.svelte-4rx1aq{color:var(--color, #333);font-weight:bold}";
+  style.id = 'svelte-1uuu3r4-style';
+  style.textContent = ".calio{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
   append(document.head, style);
 }
 
@@ -4112,7 +4164,7 @@ function create_each_block_1(ctx) {
     c: function c() {
       span = element("span");
       t = text(t_value);
-      span.className = "calio-head svelte-4rx1aq";
+      span.className = "calio-head";
     },
     m: function m(target, anchor) {
       insert(target, span, anchor);
@@ -4231,7 +4283,7 @@ function create_fragment$1(ctx) {
         each_blocks[i].c();
       }
 
-      div.className = "calio svelte-4rx1aq";
+      div.className = "calio";
     },
     m: function m(target, anchor) {
       insert(target, div, anchor);
@@ -4709,7 +4761,7 @@ function (_SvelteComponent) {
     _classCallCheck(this, Calio);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Calio).call(this));
-    if (!document.getElementById("svelte-4rx1aq-style")) add_css$1();
+    if (!document.getElementById("svelte-1uuu3r4-style")) add_css$1();
     init(_assertThisInitialized(_this), options, instance$1, create_fragment$1, safe_not_equal, ["headers", "mode", "strict", "disabled", "value", "limit", "min", "max", "select", "makeMyDay", "goToYear", "goToNextYear", "goToLastYear", "goToMonth", "goToNextMonth", "goToLastMonth", "goToThisMonth", "goToSelection", "goTo"]);
     return _this;
   }
