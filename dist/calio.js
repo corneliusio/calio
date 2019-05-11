@@ -419,7 +419,7 @@ function format(date, mask = 'default') {
             mmmm: formats.i18n.monthNames[m + 12],
             yy: String(y).slice(2),
             yyyy: y,
-            S: ['th', 'st', 'nd', 'rd'][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+            S: [ 'th', 'st', 'nd', 'rd' ][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
         };
 
     return mask.replace(token, $0 => {
@@ -1208,7 +1208,7 @@ function instance$1($$self, $$props, $$invalidate) {
 
 	let dates;
 
-	$$self.$$.update = ($$dirty = { min: 1, max: 1, headers: 1, disabled: 1, view: 1, computed: 1, selection: 1, mode: 1, el: 1, props: 1 }) => {
+	$$self.$$.update = ($$dirty = { min: 1, max: 1, headers: 1, disabled: 1, view: 1, computed: 1, selection: 1, mode: 1, el: 1 }) => {
 		if ($$dirty.min || $$dirty.max || $$dirty.headers || $$dirty.disabled) { $$invalidate('computed', computed = {
                 min: makeMyDay(min),
                 max: makeMyDay(max),
@@ -1231,9 +1231,6 @@ function instance$1($$self, $$props, $$invalidate) {
             }); }
 		if ($$dirty.el || $$dirty.selection) { dispatchEvents(dispatcher, el, 'selection', selection); }
 		if ($$dirty.el || $$dirty.view) { dispatchEvents(dispatcher, el, 'view', view); }
-		if ($$dirty.el || $$dirty.computed) { dispatchEvents(dispatcher, el, 'min', computed.min); }
-		if ($$dirty.el || $$dirty.computed) { dispatchEvents(dispatcher, el, 'max', computed.max); }
-		if ($$dirty.el || $$dirty.props) { dispatchEvents(dispatcher, el, 'update', props); }
 		if ($$dirty.computed) { watchInvalidDates(computed); }
 	};
 

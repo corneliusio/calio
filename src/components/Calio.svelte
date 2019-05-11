@@ -66,9 +66,6 @@
 
     $: dispatchEvents(dispatcher, el, 'selection', selection);
     $: dispatchEvents(dispatcher, el, 'view', view);
-    $: dispatchEvents(dispatcher, el, 'min', computed.min);
-    $: dispatchEvents(dispatcher, el, 'max', computed.max);
-    $: dispatchEvents(dispatcher, el, 'update', props);
 
     $: watchInvalidDates(computed);
 
