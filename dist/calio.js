@@ -961,10 +961,12 @@ function create_fragment$1(ctx) {
 function dispatchEvents(dispatch, el, key, data) {
     if (data && typeof data.clone === 'function') {
         data = data.clone();
-    } else {
-        data = Array.isArray(data)
-            ? [ ...data ]
-            : { ...data };
+    } else if (Array.isArray(data)) {
+        data = data.map(d => {
+            return typeof d.clone === 'function'
+                ? d.clone()
+                : d;
+        });
     }
 
     if (el) {
