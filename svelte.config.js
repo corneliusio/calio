@@ -3,7 +3,7 @@ const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
-    extensions: ['.svlt', '.svelte'],
+    extensions: [ '.svlt', '.svelte' ],
     preprocess: {
         style: async ({ content, filename }) => {
             const result = await postcss([

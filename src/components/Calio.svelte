@@ -276,7 +276,7 @@
 </script>
 
 <style type="text/postcss">
-    .calio {
+    :global(.calio) {
         display: inline-grid;
         grid-template-columns: repeat(7, var(--size-x, var(--size, 2.25em)));
         grid-auto-rows: var(--size-y, var(--size, 2em));
@@ -285,7 +285,7 @@
         user-select: none;
     }
 
-    .calio-head {
+    :global(.calio-head) {
         color: var(--color, #333);
         font-weight: bold;
     }

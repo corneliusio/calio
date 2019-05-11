@@ -7,7 +7,7 @@ const resolve = require('rollup-plugin-node-resolve');
 
 module.exports = [
     {
-        input: 'src/index.js',
+        input: 'src/index.polyfilled.js',
         output: {
             file: 'dist/calio.polyfilled.js',
             format: 'esm'
@@ -17,13 +17,13 @@ module.exports = [
             common(),
             svelte(config),
             babel({
-                extensions: ['.js', '.mjs', '.svelte'],
+                extensions: [ '.js', '.mjs', '.svelte' ],
                 exclude: 'node_modules/core-js/**'
             })
         ]
     },
     {
-        input: 'src/index.js',
+        input: 'src/index.polyfilled.js',
         output: {
             file: 'dist/calio.polyfilled.min.js',
             format: 'iife',
@@ -34,7 +34,7 @@ module.exports = [
             common(),
             svelte(config),
             babel({
-                extensions: ['.js', '.mjs', '.svelte'],
+                extensions: [ '.js', '.mjs', '.svelte' ],
                 exclude: 'node_modules/core-js/**'
             }),
             terser()
