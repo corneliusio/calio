@@ -4660,8 +4660,7 @@ function instance$1($$self, $$props, $$invalidate) {
       computed: 1,
       selection: 1,
       mode: 1,
-      el: 1,
-      props: 1
+      el: 1
     };
 
     if ($$dirty.min || $$dirty.max || $$dirty.headers || $$dirty.disabled) {
@@ -4696,18 +4695,6 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$dirty.el || $$dirty.view) {
       dispatchEvents(dispatcher, el, 'view', view);
-    }
-
-    if ($$dirty.el || $$dirty.computed) {
-      dispatchEvents(dispatcher, el, 'min', computed.min);
-    }
-
-    if ($$dirty.el || $$dirty.computed) {
-      dispatchEvents(dispatcher, el, 'max', computed.max);
-    }
-
-    if ($$dirty.el || $$dirty.props) {
-      dispatchEvents(dispatcher, el, 'update', props);
     }
 
     if ($$dirty.computed) {
