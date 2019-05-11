@@ -3,7 +3,7 @@ import format from './format';
 class LilEpoch {
 
     constructor(...args) {
-        const [a, b, c] = args;
+        const [ a, b, c ] = args;
 
         if (args.length > 1) {
             this.value = new Date(a, b, c || 1);
@@ -11,7 +11,7 @@ class LilEpoch {
             this.value = a.clone().value;
         } else if (a instanceof Date) {
             this.value = a;
-        } else if (['number', 'string'].includes(typeof a)) {
+        } else if ([ 'number', 'string' ].includes(typeof a)) {
             this.value = new Date(a);
         } else {
             this.value = new Date();

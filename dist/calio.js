@@ -430,7 +430,7 @@ function format(date, mask = 'default') {
 class LilEpoch {
 
     constructor(...args) {
-        const [a, b, c] = args;
+        const [ a, b, c ] = args;
 
         if (args.length > 1) {
             this.value = new Date(a, b, c || 1);
@@ -438,7 +438,7 @@ class LilEpoch {
             this.value = a.clone().value;
         } else if (a instanceof Date) {
             this.value = a;
-        } else if (['number', 'string'].includes(typeof a)) {
+        } else if ([ 'number', 'string' ].includes(typeof a)) {
             this.value = new Date(a);
         } else {
             this.value = new Date();
@@ -666,7 +666,7 @@ function instance($$self, $$props, $$invalidate) {
             })()); }
 		if ($$dirty.mode || $$dirty.selection || $$dirty.day) { $$invalidate('isRanged', isRanged = (() => {
                 if (mode === 'range' && selection) {
-                    let [start, end] = selection;
+                    let [ start, end ] = selection;
         
                     if (start && end) {
                         return day.isAfter(start) && day.isBefore(end);
@@ -962,7 +962,9 @@ function dispatchEvents(dispatch, el, key, data) {
     if (data && typeof data.clone === 'function') {
         data = data.clone();
     } else {
-        data = { ...data };
+        data = Array.isArray(data)
+            ? [ ...data ]
+            : { ...data };
     }
 
     if (el) {
@@ -983,15 +985,15 @@ function updateRange(day, current, strict, disabled) {
 
         return selection;
     } else if (selection.length > 1) {
-        return [day.clone()];
+        return [ day.clone() ];
     }
 
-    selection = [...selection, day.clone()].sort((a, b) => {
+    selection = [ ...selection, day.clone() ].sort((a, b) => {
         return a.timestamp() - b.timestamp();
     });
 
     if (strict) {
-        let [start, end] = selection,
+        let [ start, end ] = selection,
             isInvalid = end && !!disabled.find(d => {
                 return d.isAfter(start) && d.isBefore(end);
             });
@@ -1013,7 +1015,7 @@ function updateMulti(day, current, limit) {
 
         return selection;
     } else if (!limit || selection.length < limit) {
-        selection = [...selection, day.clone()].sort((a, b) => {
+        selection = [ ...selection, day.clone() ].sort((a, b) => {
             return a.timestamp() - b.timestamp();
         });
 
@@ -1054,7 +1056,7 @@ function instance$1($$self, $$props, $$invalidate) {
     let selection = null;
     let view = new LilEpoch();
 
-    let { headers = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], mode = 'single', strict = false, disabled = [], value = null, limit = null, min = null, max = null } = $$props;
+    let { headers = [ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ], mode = 'single', strict = false, disabled = [], value = null, limit = null, min = null, max = null } = $$props;
 
     onMount(() => {
         $$invalidate('view', view);
@@ -1136,7 +1138,7 @@ function instance$1($$self, $$props, $$invalidate) {
                     $$invalidate('selection', selection = updateMulti(day, selection, limit));
                     break;
                 default :
-                    [selection, view] = updateSingle(day, view); $$invalidate('selection', selection); $$invalidate('view', view);
+                    [ selection, view ] = updateSingle(day, view); $$invalidate('selection', selection); $$invalidate('view', view);
                     break;
             }
         }
@@ -1317,7 +1319,7 @@ class Calio extends SvelteComponent {
 
 class index {
     constructor(el, data = {}) {
-        const options = ['headers', 'mode', 'strict', 'disabled', 'value', 'limit', 'min', 'max'];
+        const options = [ 'headers', 'mode', 'strict', 'disabled', 'value', 'limit', 'min', 'max' ];
         const target = (typeof el === 'string')
             ? document.querySelector(el)
             : el;

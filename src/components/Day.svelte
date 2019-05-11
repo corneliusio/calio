@@ -31,7 +31,7 @@
 
     $: isRanged = (() => {
         if (mode === 'range' && selection) {
-            let [start, end] = selection;
+            let [ start, end ] = selection;
 
             if (start && end) {
                 return day.isAfter(start) && day.isBefore(end);

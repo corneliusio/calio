@@ -4373,7 +4373,7 @@ function dispatchEvents(dispatch, el, key, data) {
   if (data && typeof data.clone === 'function') {
     data = data.clone();
   } else {
-    data = _objectSpread({}, data);
+    data = Array.isArray(data) ? _toConsumableArray(data) : _objectSpread({}, data);
   }
 
   if (el) {
