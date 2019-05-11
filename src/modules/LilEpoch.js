@@ -123,6 +123,11 @@ class LilEpoch {
             && this.date() === day.date();
     }
 
+    isBetween(day1, day2) {
+        return (this.isAfter(day1) && this.isBefore(day2))
+            || (this.isAfter(day2) && this.isBefore(day1));
+    }
+
     isSameMonth(day) {
         return this.year() === day.year()
             && this.month() === day.month();
