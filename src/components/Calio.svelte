@@ -70,13 +70,45 @@
     $: dispatchEvents(dispatcher, el, 'max', computed.max);
     $: dispatchEvents(dispatcher, el, 'update', props);
 
+    $: watchInvalidDates(computed);
+
     function dispatchEvents(dispatch, el, key, data) {
-        dispatch(key, data);
+        if (data && typeof data.clone === 'function') {
+            data = data.clone();
+        } else {
+            data = { ...data };
+        }
+
         if (el) {
             el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
                 detail: data
             }));
         }
+
+        dispatch(key, data);
+    }
+
+    function watchInvalidDates({ min, max, disabled }) {
+        // eslint-disable-next-line complexity
+        tick().then(() => {
+            min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
+            max && max.isBefore(view) && goTo(max);
+            if (mode === 'single' && selection) {
+                min && min.isAfter(selection) && select(min);
+                max && max.isBefore(selection) && select(max);
+                disabled.find(disabled => disabled.isSame(selection)) && (selection = null);
+            } else if (selection && selection.length) {
+                min && (selection = selection.filter(s => min.isBefore(s)));
+                max && (selection = selection.filter(s => max.isAfter(s)));
+                disabled.length && (selection = selection.filter(s => {
+                    return !disabled.find(disabled => disabled.isSame(s));
+                }));
+
+                if (mode === 'range' && strict && selection.length === 2) {
+                    disabled.find(disabled => disabled.isBetween(...selection)) && (selection = null);
+                }
+            }
+        });
     }
 
     function makeDates(view, disabled) {

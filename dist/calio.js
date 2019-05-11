@@ -362,105 +362,6 @@ class SvelteComponent {
 	}
 }
 
-function dispatchEvents(dispatch, el, key, data) {
-    dispatch(key, data);
-    if (el) {
-        el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
-            detail: data
-        }));
-    }
-}
-
-function makeDates(view, disabled) {
-    let current = view.clone().startOfMonth(),
-        dates = [],
-        dayOfFirst,
-        dayOfLast;
-
-    // if (!Array.isArray(disabled)) {
-    //     return [];
-    // }
-
-    dayOfFirst = current.dayOfWeek();
-
-    for (let i = 0; i < dayOfFirst; i++) {
-        dates.unshift(current.clone().date(-i));
-    }
-
-    current.endOfMonth();
-
-    for (let i = 1, days = current.date(); i <= days; i++) {
-        dates.push(current.clone().date(i));
-    }
-
-    dayOfLast = current.dayOfWeek();
-    current.startOfMonth().addMonth();
-
-    for (let i = 1; i < (7 - dayOfLast); i++) {
-        dates.push(current.clone().date(i));
-    }
-
-    return dates;
-}
-
-function updateRange(day, current, strict, disabled) {
-    let selection = new Array().concat(current).filter(Boolean) || [],
-        index = selection.findIndex(s => s.isSame(day));
-
-    if (index > -1) {
-        selection.splice(index, 1);
-
-        return selection;
-    } else if (selection.length > 1) {
-        return [day.clone()];
-    }
-
-    selection = [...selection, day.clone()].sort((a, b) => {
-        return a.timestamp() - b.timestamp();
-    });
-
-    if (strict) {
-        let [start, end] = selection,
-            isInvalid = end && !!disabled.find(d => {
-                return d.isAfter(start) && d.isBefore(end);
-            });
-
-        if (isInvalid) {
-            return;
-        }
-    }
-
-    return selection;
-}
-
-function updateMulti(day, current, limit) {
-    let selection = new Array().concat(current).filter(Boolean) || [],
-        index = selection.findIndex(s => s.isSame(day));
-
-    if (index > -1) {
-        selection.splice(index, 1);
-
-        return selection;
-    } else if (!limit || selection.length < limit) {
-        selection = [...selection, day.clone()].sort((a, b) => {
-            return a.timestamp() - b.timestamp();
-        });
-
-        return selection;
-    }
-
-    return selection;
-}
-
-function updateSingle(day, view) {
-    return [
-        day.clone(),
-        !view.isSameMonth(day)
-            ? day.clone().startOfMonth()
-            : view
-    ];
-}
-
 const token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhsTt])\1?|[LloS]|"[^"]*"|'[^']*'/g;
 const formats = {
     masks: {
@@ -647,6 +548,11 @@ class LilEpoch {
         return this.year() === day.year()
             && this.month() === day.month()
             && this.date() === day.date();
+    }
+
+    isBetween(day1, day2) {
+        return (this.isAfter(day1) && this.isBefore(day2))
+            || (this.isAfter(day2) && this.isBefore(day1));
     }
 
     isSameMonth(day) {
@@ -1052,6 +958,80 @@ function create_fragment$1(ctx) {
 	};
 }
 
+function dispatchEvents(dispatch, el, key, data) {
+    if (data && typeof data.clone === 'function') {
+        data = data.clone();
+    } else {
+        data = { ...data };
+    }
+
+    if (el) {
+        el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
+            detail: data
+        }));
+    }
+
+    dispatch(key, data);
+}
+
+function updateRange(day, current, strict, disabled) {
+    let selection = new Array().concat(current).filter(Boolean) || [],
+        index = selection.findIndex(s => s.isSame(day));
+
+    if (index > -1) {
+        selection.splice(index, 1);
+
+        return selection;
+    } else if (selection.length > 1) {
+        return [day.clone()];
+    }
+
+    selection = [...selection, day.clone()].sort((a, b) => {
+        return a.timestamp() - b.timestamp();
+    });
+
+    if (strict) {
+        let [start, end] = selection,
+            isInvalid = end && !!disabled.find(d => {
+                return d.isAfter(start) && d.isBefore(end);
+            });
+
+        if (isInvalid) {
+            return;
+        }
+    }
+
+    return selection;
+}
+
+function updateMulti(day, current, limit) {
+    let selection = new Array().concat(current).filter(Boolean) || [],
+        index = selection.findIndex(s => s.isSame(day));
+
+    if (index > -1) {
+        selection.splice(index, 1);
+
+        return selection;
+    } else if (!limit || selection.length < limit) {
+        selection = [...selection, day.clone()].sort((a, b) => {
+            return a.timestamp() - b.timestamp();
+        });
+
+        return selection;
+    }
+
+    return selection;
+}
+
+function updateSingle(day, view) {
+    return [
+        day.clone(),
+        !view.isSameMonth(day)
+            ? day.clone().startOfMonth()
+            : view
+    ];
+}
+
 function makeMyDay(day = null) {
     return day
         ? (day instanceof LilEpoch)
@@ -1086,6 +1066,57 @@ function instance$1($$self, $$props, $$invalidate) {
             selection && dispatchEvents(dispatcher, el, 'selection', selection);
         });
     });
+
+    function watchInvalidDates({ min, max, disabled }) {
+        // eslint-disable-next-line complexity
+        tick().then(() => {
+            min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
+            max && max.isBefore(view) && goTo(max);
+            if (mode === 'single' && selection) {
+                min && min.isAfter(selection) && select(min);
+                max && max.isBefore(selection) && select(max);
+                disabled.find(disabled => disabled.isSame(selection)) && (selection = null); $$invalidate('selection', selection);
+            } else if (selection && selection.length) {
+                min && (selection = selection.filter(s => min.isBefore(s))); $$invalidate('selection', selection);
+                max && (selection = selection.filter(s => max.isAfter(s))); $$invalidate('selection', selection);
+                disabled.length && (selection = selection.filter(s => {
+                    return !disabled.find(disabled => disabled.isSame(s));
+                })); $$invalidate('selection', selection);
+
+                if (mode === 'range' && strict && selection.length === 2) {
+                    disabled.find(disabled => disabled.isBetween(...selection)) && (selection = null); $$invalidate('selection', selection);
+                }
+            }
+        });
+    }
+
+    function makeDates(view, disabled) {
+        let current = view.clone().startOfMonth(),
+            dates = [],
+            dayOfFirst,
+            dayOfLast;
+
+        dayOfFirst = current.dayOfWeek();
+
+        for (let i = 0; i < dayOfFirst; i++) {
+            dates.unshift(current.clone().date(-i));
+        }
+
+        current.endOfMonth();
+
+        for (let i = 1, days = current.date(); i <= days; i++) {
+            dates.push(current.clone().date(i));
+        }
+
+        dayOfLast = current.dayOfWeek();
+        current.startOfMonth().addMonth();
+
+        for (let i = 1; i < (7 - dayOfLast); i++) {
+            dates.push(current.clone().date(i));
+        }
+
+        return dates;
+    }
 
     function select(day) {
         day = makeMyDay(day);
@@ -1201,6 +1232,7 @@ function instance$1($$self, $$props, $$invalidate) {
 		if ($$dirty.el || $$dirty.computed) { dispatchEvents(dispatcher, el, 'min', computed.min); }
 		if ($$dirty.el || $$dirty.computed) { dispatchEvents(dispatcher, el, 'max', computed.max); }
 		if ($$dirty.el || $$dirty.props) { dispatchEvents(dispatcher, el, 'update', props); }
+		if ($$dirty.computed) { watchInvalidDates(computed); }
 	};
 
 	return {

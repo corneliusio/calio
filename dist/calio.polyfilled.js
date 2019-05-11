@@ -777,6 +777,40 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
@@ -1039,6 +1073,24 @@ _export({ target: 'Array', proto: true, forced: SKIPS_HOLES }, {
 // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
 addToUnscopables(FIND);
 
+var internalFindIndex = arrayMethods(6);
+var FIND_INDEX = 'findIndex';
+var SKIPS_HOLES$1 = true;
+
+// Shouldn't skip holes
+if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
+
+// `Array.prototype.findIndex` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.findindex
+_export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 }, {
+  findIndex: function findIndex(callbackfn /* , that = undefined */) {
+    return internalFindIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables(FIND_INDEX);
+
 var internalMap = arrayMethods(1);
 
 var SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('map');
@@ -1049,6 +1101,99 @@ var SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('map');
 _export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$2 }, {
   map: function map(callbackfn /* , thisArg */) {
     return internalMap(this, callbackfn, arguments[1]);
+  }
+});
+
+var sloppyArrayMethod = function (METHOD_NAME, argument) {
+  var method = [][METHOD_NAME];
+  return !method || !fails(function () {
+    // eslint-disable-next-line no-useless-call,no-throw-literal
+    method.call(null, argument || function () { throw 1; }, 1);
+  });
+};
+
+var nativeSort = [].sort;
+var test = [1, 2, 3];
+
+// IE8-
+var FAILS_ON_UNDEFINED = fails(function () {
+  test.sort(undefined);
+});
+// V8 bug
+var FAILS_ON_NULL = fails(function () {
+  test.sort(null);
+});
+// Old WebKit
+var SLOPPY_METHOD = sloppyArrayMethod('sort');
+
+var FORCED$1 = FAILS_ON_UNDEFINED || !FAILS_ON_NULL || SLOPPY_METHOD;
+
+// `Array.prototype.sort` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.sort
+_export({ target: 'Array', proto: true, forced: FORCED$1 }, {
+  sort: function sort(comparefn) {
+    return comparefn === undefined
+      ? nativeSort.call(toObject(this))
+      : nativeSort.call(toObject(this), aFunction(comparefn));
+  }
+});
+
+var max$1 = Math.max;
+var min$2 = Math.min;
+var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
+var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
+
+var SPECIES_SUPPORT$3 = arrayMethodHasSpeciesSupport('splice');
+
+// `Array.prototype.splice` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.splice
+// with adding support of @@species
+_export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$3 }, {
+  splice: function splice(start, deleteCount /* , ...items */) {
+    var O = toObject(this);
+    var len = toLength(O.length);
+    var actualStart = toAbsoluteIndex(start, len);
+    var argumentsLength = arguments.length;
+    var insertCount, actualDeleteCount, A, k, from, to;
+    if (argumentsLength === 0) {
+      insertCount = actualDeleteCount = 0;
+    } else if (argumentsLength === 1) {
+      insertCount = 0;
+      actualDeleteCount = len - actualStart;
+    } else {
+      insertCount = argumentsLength - 2;
+      actualDeleteCount = min$2(max$1(toInteger(deleteCount), 0), len - actualStart);
+    }
+    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
+      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
+    }
+    A = arraySpeciesCreate(O, actualDeleteCount);
+    for (k = 0; k < actualDeleteCount; k++) {
+      from = actualStart + k;
+      if (from in O) createProperty(A, k, O[from]);
+    }
+    A.length = actualDeleteCount;
+    if (insertCount < actualDeleteCount) {
+      for (k = actualStart; k < len - actualDeleteCount; k++) {
+        from = k + actualDeleteCount;
+        to = k + insertCount;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
+    } else if (insertCount > actualDeleteCount) {
+      for (k = len - actualDeleteCount; k > actualStart; k--) {
+        from = k + actualDeleteCount - 1;
+        to = k + insertCount - 1;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+    }
+    for (k = 0; k < insertCount; k++) {
+      O[k + actualStart] = arguments[k + 2];
+    }
+    O.length = len - actualDeleteCount + insertCount;
+    return A;
   }
 });
 
@@ -1088,22 +1233,14 @@ var domIterables = {
   TouchList: 0
 };
 
-var sloppyArrayMethod = function (METHOD_NAME, argument) {
-  var method = [][METHOD_NAME];
-  return !method || !fails(function () {
-    // eslint-disable-next-line no-useless-call,no-throw-literal
-    method.call(null, argument || function () { throw 1; }, 1);
-  });
-};
-
 var nativeForEach = [].forEach;
 var internalForEach = arrayMethods(0);
 
-var SLOPPY_METHOD = sloppyArrayMethod('forEach');
+var SLOPPY_METHOD$1 = sloppyArrayMethod('forEach');
 
 // `Array.prototype.forEach` method implementation
 // https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-var arrayForEach = SLOPPY_METHOD ? function forEach(callbackfn /* , thisArg */) {
+var arrayForEach = SLOPPY_METHOD$1 ? function forEach(callbackfn /* , thisArg */) {
   return internalForEach(this, callbackfn, arguments[1]);
 } : nativeForEach;
 
@@ -1483,11 +1620,11 @@ addToUnscopables('entries');
 var nativeJoin = [].join;
 
 var ES3_STRINGS = indexedObject != Object;
-var SLOPPY_METHOD$1 = sloppyArrayMethod('join', ',');
+var SLOPPY_METHOD$2 = sloppyArrayMethod('join', ',');
 
 // `Array.prototype.join` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.join
-_export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$1 }, {
+_export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$2 }, {
   join: function join(separator) {
     return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
   }
@@ -1495,14 +1632,14 @@ _export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$1 }
 
 var SPECIES$2 = wellKnownSymbol('species');
 var nativeSlice = [].slice;
-var max$1 = Math.max;
+var max$2 = Math.max;
 
-var SPECIES_SUPPORT$3 = arrayMethodHasSpeciesSupport('slice');
+var SPECIES_SUPPORT$4 = arrayMethodHasSpeciesSupport('slice');
 
 // `Array.prototype.slice` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.slice
 // fallback for not array-like ES3 strings and DOM objects
-_export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$3 }, {
+_export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$4 }, {
   slice: function slice(start, end) {
     var O = toIndexedObject(this);
     var length = toLength(O.length);
@@ -1523,69 +1660,10 @@ _export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$3 }, {
         return nativeSlice.call(O, k, fin);
       }
     }
-    result = new (Constructor === undefined ? Array : Constructor)(max$1(fin - k, 0));
+    result = new (Constructor === undefined ? Array : Constructor)(max$2(fin - k, 0));
     for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
     result.length = n;
     return result;
-  }
-});
-
-var max$2 = Math.max;
-var min$2 = Math.min;
-var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
-var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
-
-var SPECIES_SUPPORT$4 = arrayMethodHasSpeciesSupport('splice');
-
-// `Array.prototype.splice` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.splice
-// with adding support of @@species
-_export({ target: 'Array', proto: true, forced: !SPECIES_SUPPORT$4 }, {
-  splice: function splice(start, deleteCount /* , ...items */) {
-    var O = toObject(this);
-    var len = toLength(O.length);
-    var actualStart = toAbsoluteIndex(start, len);
-    var argumentsLength = arguments.length;
-    var insertCount, actualDeleteCount, A, k, from, to;
-    if (argumentsLength === 0) {
-      insertCount = actualDeleteCount = 0;
-    } else if (argumentsLength === 1) {
-      insertCount = 0;
-      actualDeleteCount = len - actualStart;
-    } else {
-      insertCount = argumentsLength - 2;
-      actualDeleteCount = min$2(max$2(toInteger(deleteCount), 0), len - actualStart);
-    }
-    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
-      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
-    }
-    A = arraySpeciesCreate(O, actualDeleteCount);
-    for (k = 0; k < actualDeleteCount; k++) {
-      from = actualStart + k;
-      if (from in O) createProperty(A, k, O[from]);
-    }
-    A.length = actualDeleteCount;
-    if (insertCount < actualDeleteCount) {
-      for (k = actualStart; k < len - actualDeleteCount; k++) {
-        from = k + actualDeleteCount;
-        to = k + insertCount;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
-    } else if (insertCount > actualDeleteCount) {
-      for (k = len - actualDeleteCount; k > actualStart; k--) {
-        from = k + actualDeleteCount - 1;
-        to = k + insertCount - 1;
-        if (from in O) O[to] = O[from];
-        else delete O[to];
-      }
-    }
-    for (k = 0; k < insertCount; k++) {
-      O[k + actualStart] = arguments[k + 2];
-    }
-    O.length = len - actualDeleteCount + insertCount;
-    return A;
   }
 });
 
@@ -2064,15 +2142,15 @@ var objectAssign = !nativeAssign || fails(function () {
 _export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, { assign: objectAssign });
 
 var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
-var test = {};
+var test$1 = {};
 
-test[TO_STRING_TAG$2] = 'z';
+test$1[TO_STRING_TAG$2] = 'z';
 
 // `Object.prototype.toString` method implementation
 // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-var objectToString = String(test) !== '[object z]' ? function toString() {
+var objectToString = String(test$1) !== '[object z]' ? function toString() {
   return '[object ' + classof(this) + ']';
-} : test.toString;
+} : test$1.toString;
 
 var ObjectPrototype$1 = Object.prototype;
 
@@ -2346,7 +2424,7 @@ var HANDLED = 1;
 var UNHANDLED = 2;
 var Internal, OwnPromiseCapability, PromiseWrapper;
 
-var FORCED$1 = isForced_1(PROMISE, function () {
+var FORCED$2 = isForced_1(PROMISE, function () {
   // correct subclassing with @@species support
   var promise = PromiseConstructor.resolve(1);
   var empty = function () { /* empty */ };
@@ -2364,7 +2442,7 @@ var FORCED$1 = isForced_1(PROMISE, function () {
     && userAgent.indexOf('Chrome/66') === -1);
 });
 
-var INCORRECT_ITERATION$1 = FORCED$1 || !checkCorrectnessOfIteration(function (iterable) {
+var INCORRECT_ITERATION$1 = FORCED$2 || !checkCorrectnessOfIteration(function (iterable) {
   PromiseConstructor.all(iterable)['catch'](function () { /* empty */ });
 });
 
@@ -2509,7 +2587,7 @@ var internalResolve = function (promise, state, value, unwrap) {
 };
 
 // constructor polyfill
-if (FORCED$1) {
+if (FORCED$2) {
   // 25.4.3.1 Promise(executor)
   PromiseConstructor = function Promise(executor) {
     anInstance(this, PromiseConstructor, PROMISE);
@@ -2577,7 +2655,7 @@ if (FORCED$1) {
   });
 }
 
-_export({ global: true, wrap: true, forced: FORCED$1 }, { Promise: PromiseConstructor });
+_export({ global: true, wrap: true, forced: FORCED$2 }, { Promise: PromiseConstructor });
 
 setToStringTag(PromiseConstructor, PROMISE, false, true);
 setSpecies(PROMISE);
@@ -2585,7 +2663,7 @@ setSpecies(PROMISE);
 PromiseWrapper = path[PROMISE];
 
 // statics
-_export({ target: PROMISE, stat: true, forced: FORCED$1 }, {
+_export({ target: PROMISE, stat: true, forced: FORCED$2 }, {
   // `Promise.reject` method
   // https://tc39.github.io/ecma262/#sec-promise.reject
   reject: function reject(r) {
@@ -2595,7 +2673,7 @@ _export({ target: PROMISE, stat: true, forced: FORCED$1 }, {
   }
 });
 
-_export({ target: PROMISE, stat: true, forced: FORCED$1 }, {
+_export({ target: PROMISE, stat: true, forced: FORCED$2 }, {
   // `Promise.resolve` method
   // https://tc39.github.io/ecma262/#sec-promise.resolve
   resolve: function resolve(x) {
@@ -3149,11 +3227,11 @@ var forcedStringHtmlMethod = function (METHOD_NAME) {
   });
 };
 
-var FORCED$2 = forcedStringHtmlMethod('anchor');
+var FORCED$3 = forcedStringHtmlMethod('anchor');
 
 // `String.prototype.anchor` method
 // https://tc39.github.io/ecma262/#sec-string.prototype.anchor
-_export({ target: 'String', proto: true, forced: FORCED$2 }, {
+_export({ target: 'String', proto: true, forced: FORCED$3 }, {
   anchor: function anchor(name) {
     return createHtml(this, 'a', 'name', name);
   }
@@ -3619,143 +3697,6 @@ function () {
   return SvelteComponent;
 }();
 
-var internalFindIndex = arrayMethods(6);
-var FIND_INDEX = 'findIndex';
-var SKIPS_HOLES$1 = true;
-
-// Shouldn't skip holes
-if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
-
-// `Array.prototype.findIndex` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.findindex
-_export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 }, {
-  findIndex: function findIndex(callbackfn /* , that = undefined */) {
-    return internalFindIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables(FIND_INDEX);
-
-var nativeSort = [].sort;
-var test$1 = [1, 2, 3];
-
-// IE8-
-var FAILS_ON_UNDEFINED = fails(function () {
-  test$1.sort(undefined);
-});
-// V8 bug
-var FAILS_ON_NULL = fails(function () {
-  test$1.sort(null);
-});
-// Old WebKit
-var SLOPPY_METHOD$2 = sloppyArrayMethod('sort');
-
-var FORCED$3 = FAILS_ON_UNDEFINED || !FAILS_ON_NULL || SLOPPY_METHOD$2;
-
-// `Array.prototype.sort` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.sort
-_export({ target: 'Array', proto: true, forced: FORCED$3 }, {
-  sort: function sort(comparefn) {
-    return comparefn === undefined
-      ? nativeSort.call(toObject(this))
-      : nativeSort.call(toObject(this), aFunction(comparefn));
-  }
-});
-
-function dispatchEvents(dispatch, el, key, data) {
-  dispatch(key, data);
-
-  if (el) {
-    el.parentNode.dispatchEvent(new CustomEvent("calio:".concat(key), {
-      detail: data
-    }));
-  }
-}
-function makeDates(view, disabled) {
-  var current = view.clone().startOfMonth(),
-      dates = [],
-      dayOfFirst,
-      dayOfLast; // if (!Array.isArray(disabled)) {
-  //     return [];
-  // }
-
-  dayOfFirst = current.dayOfWeek();
-
-  for (var i = 0; i < dayOfFirst; i++) {
-    dates.unshift(current.clone().date(-i));
-  }
-
-  current.endOfMonth();
-
-  for (var _i = 1, days = current.date(); _i <= days; _i++) {
-    dates.push(current.clone().date(_i));
-  }
-
-  dayOfLast = current.dayOfWeek();
-  current.startOfMonth().addMonth();
-
-  for (var _i2 = 1; _i2 < 7 - dayOfLast; _i2++) {
-    dates.push(current.clone().date(_i2));
-  }
-
-  return dates;
-}
-function updateRange(day, current, strict, disabled) {
-  var selection = new Array().concat(current).filter(Boolean) || [],
-      index = selection.findIndex(function (s) {
-    return s.isSame(day);
-  });
-
-  if (index > -1) {
-    selection.splice(index, 1);
-    return selection;
-  } else if (selection.length > 1) {
-    return [day.clone()];
-  }
-
-  selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
-    return a.timestamp() - b.timestamp();
-  });
-
-  if (strict) {
-    var _selection = selection,
-        _selection2 = _slicedToArray(_selection, 2),
-        start = _selection2[0],
-        end = _selection2[1],
-        isInvalid = end && !!disabled.find(function (d) {
-      return d.isAfter(start) && d.isBefore(end);
-    });
-
-    if (isInvalid) {
-      return;
-    }
-  }
-
-  return selection;
-}
-function updateMulti(day, current, limit) {
-  var selection = new Array().concat(current).filter(Boolean) || [],
-      index = selection.findIndex(function (s) {
-    return s.isSame(day);
-  });
-
-  if (index > -1) {
-    selection.splice(index, 1);
-    return selection;
-  } else if (!limit || selection.length < limit) {
-    selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
-      return a.timestamp() - b.timestamp();
-    });
-    return selection;
-  }
-
-  return selection;
-}
-function updateSingle(day, view) {
-  return [day.clone(), !view.isSameMonth(day) ? day.clone().startOfMonth() : view];
-}
-
 var TO_STRING = 'toString';
 var nativeToString = /./[TO_STRING];
 
@@ -3975,6 +3916,11 @@ function () {
     key: "isSame",
     value: function isSame(day) {
       return this.year() === day.year() && this.month() === day.month() && this.date() === day.date();
+    }
+  }, {
+    key: "isBetween",
+    value: function isBetween(day1, day2) {
+      return this.isAfter(day1) && this.isBefore(day2) || this.isAfter(day2) && this.isBefore(day1);
     }
   }, {
     key: "isSameMonth",
@@ -4423,6 +4369,79 @@ function create_fragment$1(ctx) {
   };
 }
 
+function dispatchEvents(dispatch, el, key, data) {
+  if (data && typeof data.clone === 'function') {
+    data = data.clone();
+  } else {
+    data = _objectSpread({}, data);
+  }
+
+  if (el) {
+    el.parentNode.dispatchEvent(new CustomEvent("calio:".concat(key), {
+      detail: data
+    }));
+  }
+
+  dispatch(key, data);
+}
+
+function updateRange(day, current, strict, disabled) {
+  var selection = new Array().concat(current).filter(Boolean) || [],
+      index = selection.findIndex(function (s) {
+    return s.isSame(day);
+  });
+
+  if (index > -1) {
+    selection.splice(index, 1);
+    return selection;
+  } else if (selection.length > 1) {
+    return [day.clone()];
+  }
+
+  selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
+    return a.timestamp() - b.timestamp();
+  });
+
+  if (strict) {
+    var _selection = selection,
+        _selection2 = _slicedToArray(_selection, 2),
+        start = _selection2[0],
+        end = _selection2[1],
+        isInvalid = end && !!disabled.find(function (d) {
+      return d.isAfter(start) && d.isBefore(end);
+    });
+
+    if (isInvalid) {
+      return;
+    }
+  }
+
+  return selection;
+}
+
+function updateMulti(day, current, limit) {
+  var selection = new Array().concat(current).filter(Boolean) || [],
+      index = selection.findIndex(function (s) {
+    return s.isSame(day);
+  });
+
+  if (index > -1) {
+    selection.splice(index, 1);
+    return selection;
+  } else if (!limit || selection.length < limit) {
+    selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
+      return a.timestamp() - b.timestamp();
+    });
+    return selection;
+  }
+
+  return selection;
+}
+
+function updateSingle(day, view) {
+  return [day.clone(), !view.isSameMonth(day) ? day.clone().startOfMonth() : view];
+}
+
 function makeMyDay() {
   var day = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
   return day ? day instanceof LilEpoch ? day : Array.isArray(day) ? _construct(LilEpoch, _toConsumableArray(day)) : new LilEpoch(day) : null;
@@ -4463,6 +4482,75 @@ function instance$1($$self, $$props, $$invalidate) {
       selection && dispatchEvents(dispatcher, el, 'selection', selection);
     });
   });
+
+  function watchInvalidDates(_ref) {
+    var min = _ref.min,
+        max = _ref.max,
+        disabled = _ref.disabled;
+    // eslint-disable-next-line complexity
+    tick().then(function () {
+      min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
+      max && max.isBefore(view) && goTo(max);
+
+      if (mode === 'single' && selection) {
+        min && min.isAfter(selection) && select(min);
+        max && max.isBefore(selection) && select(max);
+        disabled.find(function (disabled) {
+          return disabled.isSame(selection);
+        }) && (selection = null);
+        $$invalidate('selection', selection);
+      } else if (selection && selection.length) {
+        min && (selection = selection.filter(function (s) {
+          return min.isBefore(s);
+        }));
+        $$invalidate('selection', selection);
+        max && (selection = selection.filter(function (s) {
+          return max.isAfter(s);
+        }));
+        $$invalidate('selection', selection);
+        disabled.length && (selection = selection.filter(function (s) {
+          return !disabled.find(function (disabled) {
+            return disabled.isSame(s);
+          });
+        }));
+        $$invalidate('selection', selection);
+
+        if (mode === 'range' && strict && selection.length === 2) {
+          disabled.find(function (disabled) {
+            return disabled.isBetween.apply(disabled, _toConsumableArray(selection));
+          }) && (selection = null);
+          $$invalidate('selection', selection);
+        }
+      }
+    });
+  }
+
+  function makeDates(view, disabled) {
+    var current = view.clone().startOfMonth(),
+        dates = [],
+        dayOfFirst,
+        dayOfLast;
+    dayOfFirst = current.dayOfWeek();
+
+    for (var i = 0; i < dayOfFirst; i++) {
+      dates.unshift(current.clone().date(-i));
+    }
+
+    current.endOfMonth();
+
+    for (var _i2 = 1, days = current.date(); _i2 <= days; _i2++) {
+      dates.push(current.clone().date(_i2));
+    }
+
+    dayOfLast = current.dayOfWeek();
+    current.startOfMonth().addMonth();
+
+    for (var _i3 = 1; _i3 < 7 - dayOfLast; _i3++) {
+      dates.push(current.clone().date(_i3));
+    }
+
+    return dates;
+  }
 
   function select(day) {
     day = makeMyDay(day);
@@ -4539,8 +4627,8 @@ function instance$1($$self, $$props, $$invalidate) {
     }
   }
 
-  function select_handler(_ref, event) {
-    var day = _ref.day;
+  function select_handler(_ref2, event) {
+    var day = _ref2.day;
     return select(day);
   }
 
@@ -4620,6 +4708,10 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$dirty.el || $$dirty.props) {
       dispatchEvents(dispatcher, el, 'update', props);
+    }
+
+    if ($$dirty.computed) {
+      watchInvalidDates(computed);
     }
   };
 
