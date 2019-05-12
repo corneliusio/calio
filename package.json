@@ -22,6 +22,7 @@
   "unpkg": "dist/calio.polyfilled.min.js",
   "license": "MIT",
   "files": [
+    "polyfilled.js",
     "dist/",
     "src/"
   ],
