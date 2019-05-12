@@ -24,8 +24,7 @@ import Calio from 'calio';
 import Calio from 'calio/polyfilled';
 ```
 
-| IE\*
-  | Chrome | Edge | Firefox | Safari / iOS | UC Android | Samsung |
+| IE\*  | Chrome | Edge | Firefox | Safari / iOS | UC Android | Samsung |
 | ----- | ------ | ---- | ------- | ------------ | ---------- | ------- |
 | 11    | 60+    | 15+  | 53+     | 10+          | 11+        | 6+      |
 
