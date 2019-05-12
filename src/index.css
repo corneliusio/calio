@@ -1,0 +1,168 @@
+@import "tailwindcss/base";
+
+@-ms-viewport {
+    width: device-width;
+}
+
+html {
+    height: 100%;
+    background: linear-gradient(130deg, #FC466B 0%, #3F5EFB 100%);
+}
+
+body {
+    position: relative;
+    display: table;
+    width: 100%;
+    height: 90%;
+    font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    color: #FFF;
+    user-select: none;
+    animation: blur-in 1s ease 0.25s;
+    animation-fill-mode: backwards;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+h4 {
+    position: relative;
+    margin: 0.75rem 0;
+    color: #FFF;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.toggle-ui {
+    position: absolute;
+    top: 2vmin;
+    left: 50vw;
+    font-size: 3vmin;
+    cursor: pointer;
+    transform: translateX(-50%);
+}
+
+.toggle-ui:hover::after {
+    content: " ";
+    position: absolute;
+    top: 5%;
+    left: 0;
+    display: block;
+    width: 100%;
+    padding-top: 100%;
+    background-color: hsla(0, 0%, 100%, 0.25);
+    border-radius: 50%;
+    transform: scale(1.5);
+}
+
+
+.ui {
+    vertical-align: middle;
+    transition: all 200ms ease;
+}
+
+.hide-ui .ui {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.selected {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    display: block;
+    white-space: nowrap;
+    transform: translate(-50%, 0);
+}
+
+.prev,
+.next {
+    position: absolute;
+    top: 50%;
+    padding: 2vmin;
+    font-size: 5vmin;
+    cursor: pointer;
+    transform: translate(0, -50%);
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+#calio {
+    & .calio {
+        display: block;
+        max-width: 15.75rem;
+        width: 100%;
+        margin: auto;
+        text-align: center;
+        user-select: none;
+        overflow: hidden;
+    }
+
+    & .calio-head {
+        color: #333;
+        font-weight: bold;
+    }
+
+    & .calio-head,
+    & .calio-day {
+        display: block;
+        float: left;
+        width: 2.25rem;
+        color: #FFF;
+        line-height: 2rem;
+        cursor: pointer;
+    }
+
+    & .calio-head:nth-child(7n + 1),
+    & .calio-day:nth-child(7n + 1) {
+        clear: left;
+    }
+
+    & .calio-day:hover {
+        color: #FFF;
+        background: color(#FFF, alpha(0.2));
+    }
+
+    & .calio-day.is-today {
+        font-weight: 900;
+    }
+
+    & .calio-day.is-prev,
+    & .calio-day.is-next {
+        color: #CCC;
+        background: transparent;
+    }
+
+    & .calio-day.is-disabled {
+        color: #CCC;
+        background: transparent;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    & .calio-day.is-ranged {
+        color: white;
+        background: rgba(100, 149, 237, 0.66);
+    }
+
+    & .calio-day.is-active {
+        color: white;
+        background: #E0528B;
+    }
+}
+
+@keyframes blur-in {
+    0% { opacity: 0; filter: blur(3rem); }
+    33% { opacity: 1; }
+    100% { filter: blur(0); }
+}

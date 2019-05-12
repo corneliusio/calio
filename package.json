@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "dev": "webpack --mode=development",
+        "build": "webpack --mode=production"
+    },
+    "devDependencies": {
+        "brightpack": "https://bitbucket.org/corneliusio/brightpack",
+        "tailwindcss": "^1.0.0-beta"
+    },
+    "dependencies": {
+        "calio": "https://github.com/corneliusio/calio#v3"
+    }
+}
