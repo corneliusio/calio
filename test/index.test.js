@@ -1,4 +1,5 @@
 import CalioComponent from '../src/components/Calio.svelte';
+import CalioPolyfilled from '../src/index.polyfilled';
 import LilEpoch from '../src/modules/LilEpoch';
 import Calio from '../src';
 
@@ -6,6 +7,10 @@ document.body.innerHTML = '<div id="calio"></div>';
 
 test('it returns an instance of Calio (component)', () => {
     expect(new Calio() instanceof CalioComponent).toBe(true);
+});
+
+test('it has a polyfilled version that returns an instance of Calio (component)', () => {
+    expect(new CalioPolyfilled() instanceof CalioComponent).toBe(true);
 });
 
 test('can be passed a selector or dom node', () => {

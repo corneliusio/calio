@@ -15,7 +15,7 @@ module.exports = {
 
         const result = transformSync(src, {
             filename,
-            presets: [jest]
+            presets: [ jest ]
         });
 
         return result ? result.code : src;
