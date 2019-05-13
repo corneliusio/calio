@@ -4,7 +4,6 @@
 ![Github File Size](https://img.shields.io/github/size/corneliusio/calio/dist/calio.min.js.svg?style=flat-square)
 ![Gzip File Size](https://img.badgesize.io/https://unpkg.com/calio/dist/calio.min.js?compression=gzip&label=gzip&style=flat-square)
 [![Build Status](https://img.shields.io/travis/corneliusio/calio/master.svg?style=flat-square)](https://travis-ci.org/corneliusio/calio)
-[![Codecov](https://img.shields.io/codecov/c/github/corneliusio/calio.svg?style=flat-square)](https://codecov.io/gh/corneliusio/calio)
 [![License](https://img.shields.io/github/license/corneliusio/calio.svg?style=flat-square)](https://github.com/corneliusio/calio/blob/master/LICENSE)
 
 Calio is an un-opinionated date picker built for modern browsers using [Svelte](https://svelte.technology/).  

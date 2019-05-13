@@ -1,6 +1,6 @@
 module.exports = {
     collectCoverageFrom: [
-        'src/**/*.{js,svlt}'
+        'src/**/*.{js,svelte}'
     ],
     transform: {
         '\\.(js|svelte)$': './test/babel-svelte-jest'
