@@ -130,7 +130,7 @@ h4 {
 
     & .calio-day:hover {
         color: #FFF;
-        background: color(#FFF, alpha(0.2));
+        background: color(#FFF alpha(0.2));
     }
 
     & .calio-day.is-today {
@@ -140,7 +140,6 @@ h4 {
     & .calio-day.is-prev,
     & .calio-day.is-next {
         color: #CCC;
-        background: transparent;
     }
 
     & .calio-day.is-disabled {
@@ -152,7 +151,7 @@ h4 {
 
     & .calio-day.is-ranged {
         color: white;
-        background: rgba(100, 149, 237, 0.66);
+        background: color(#FFF alpha(0.6));
     }
 
     & .calio-day.is-active {
