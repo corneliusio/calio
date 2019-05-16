@@ -34,7 +34,6 @@ h4 {
     margin: 0.75rem 0;
     color: #FFF;
     line-height: 1.5;
-    text-align: center;
 }
 
 .toggle-ui {
@@ -61,8 +60,19 @@ h4 {
 
 
 .ui {
+    text-align: center;
     vertical-align: middle;
     transition: all 200ms ease;
+}
+
+.mode {
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+    outline: none !important;
+
+    &.is-active {
+        background-color: color(#FFF alpha(0.2));
+    }
 }
 
 .hide-ui .ui {
@@ -98,6 +108,12 @@ h4 {
 }
 
 #calio {
+    margin-bottom: 1rem;
+
+    & + .ui {
+        margin-bottom: 1rem;
+    }
+
     & .calio {
         display: block;
         max-width: 15.75rem;
@@ -151,7 +167,7 @@ h4 {
 
     & .calio-day.is-ranged {
         color: white;
-        background: color(#FFF alpha(0.6));
+        background: color(#E0528B alpha(0.4));
     }
 
     & .calio-day.is-active {

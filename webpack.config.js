@@ -1,6 +1,6 @@
 const brightpack = require('brightpack');
 
-module.exports = brightpack({ filename: '[name]' }, config => {
+module.exports = brightpack({ watch: 'index.html', filename: '[name]' }, config => {
     config.optimization && (config.optimization.splitChunks = false);
 
     return config;
