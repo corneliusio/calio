@@ -152,6 +152,10 @@ class Epoch {
     toString() {
         return this.value.toString();
     }
+
+    get length() {
+        return this.value ? 1 : 0;
+    }
 }
 
 export default Epoch;

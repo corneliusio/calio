@@ -15,12 +15,6 @@
     const today = new Epoch();
     const dispatcher = createEventDispatcher();
 
-    let el;
-    let props;
-    let computed;
-    let selection = null;
-    let view = new Epoch();
-
     export let headers = [ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ];
     export let mode = 'single';
     export let strict = false;
@@ -30,15 +24,16 @@
     export let min = null;
     export let max = null;
 
-    onMount(() => {
-        view = view;
-        selection = selection;
-        new Array().concat(value).forEach(v => select(v));
+    let el;
+    let view = new Epoch();
+    let selection = Array.isArray(value)
+        ? value.map(makeMyDay)
+        : makeMyDay(value);
 
-        tick().then(() => {
-            view && dispatchEvents(dispatcher, el, 'view', view);
-            selection && dispatchEvents(dispatcher, el, 'selection', selection);
-        });
+    onMount(() => {
+        goToSelection();
+        view && dispatchEvents(dispatcher, el, 'view', view);
+        selection && dispatchEvents(dispatcher, el, 'selection', selection);
     });
 
     $: computed = {
@@ -96,10 +91,14 @@
         if (min) {
             min.isAfter(view.clone().endOfMonth()) && goTo(min);
 
-            if (mode === 'single' && selection) {
-                min.isAfter(selection) && select(min);
-            } else if (selection && selection.length) {
-                (selection = selection.filter(s => min.isBefore(s)));
+            if (selection && selection.length) {
+                if (mode === 'single') {
+                    min.isAfter(selection) && select(min);
+                } else {
+                    const valid = selection.filter(s => min.isAfter(s));
+
+                    valid.length ? tick().then(() => selection = valid) : select(min);
+                }
             }
         }
 
@@ -110,10 +109,14 @@
         if (max) {
             max.isBefore(view) && goTo(max);
 
-            if (mode === 'single' && selection) {
-                max.isBefore(selection) && select(max);
-            } else if (selection && selection.length) {
-                (selection = selection.filter(s => max.isAfter(s)));
+            if (selection && selection.length) {
+                if (mode === 'single') {
+                    max.isBefore(selection) && select(max);
+                } else {
+                    const valid = selection.filter(s => max.isAfter(s));
+
+                    valid.length ? tick().then(() => selection = valid) : select(max);
+                }
             }
         }
 
@@ -121,15 +124,19 @@
     }
 
     function watchInvalidDatesDisabled(disabled) {
-        if (mode === 'single' && selection) {
-            disabled.find(disabled => disabled.isSame(selection)) && (selection = null);
-        } else if (selection && selection.length) {
-            disabled.length && (selection = selection.filter(s => {
-                return !disabled.find(disabled => disabled.isSame(s));
-            }));
+        if (selection && selection.length) {
+            if (mode === 'single') {
+                computed.disabled.find(d => d.isSame(selection)) && select(null);
+            } else {
+                const valid = computed.disabled.length && selection.filter(s => {
+                    return !computed.disabled.find(d => d.isSame(s));
+                });
 
-            if (mode === 'range' && strict && selection.length === 2) {
-                disabled.find(disabled => disabled.isBetween(...selection)) && (selection = null);
+                valid.length ? tick().then(() => selection = valid) : select(null);
+
+                if (mode === 'range' && strict && selection.length === 2) {
+                    computed.disabled.find(d => d.isBetween(...selection)) && select(null);
+                }
             }
         }
 
@@ -222,10 +229,13 @@
         ];
     }
 
-    export function select(day) {
+    export async function select(day = null) {
+        await tick();
         day = makeMyDay(day);
 
-        if (day) {
+        if (!day) {
+            selection = null;
+        } else {
             if (computed.disabled.find(d => d.isSame(day))
                 || (computed.min && day.isBefore(computed.min))
                 || (computed.max && day.isAfter(computed.max))) {

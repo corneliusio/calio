@@ -1,3 +1,4 @@
+import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';
@@ -13,8 +14,9 @@ test('updates selection if before new min', async () => {
 
     expect(context(calio, 'selection')).toEqual(today);
 
-    await act(() => {
+    await act(async () => {
         calio.component.setMin(min);
+        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual(min);
@@ -26,8 +28,9 @@ test('updates selection if after new max', async () => {
 
     expect(context(calio, 'selection')).toEqual(today);
 
-    await act(() => {
+    await act(async () => {
         calio.component.setMax(max);
+        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual(max);
@@ -39,8 +42,9 @@ test('invalidates selection if equal to new disabled', async () => {
 
     expect(context(calio, 'selection')).toEqual(today);
 
-    await act(() => {
+    await act(async () => {
         calio.component.setDisabled(disabled);
+        await tick();
     });
 
     expect(context(calio, 'selection')).toBeNull();
