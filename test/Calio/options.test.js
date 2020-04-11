@@ -1,95 +1,97 @@
 import { tick } from 'svelte';
+import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
+import { render, cleanup, act } from '@testing-library/svelte';
 
-document.body.innerHTML = '<div id="calio"></div>';
+afterEach(() => cleanup());
 
 test('can set a default selection from passed value', () => {
     const epoch = new LilEpoch();
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { value: epoch }
     });
 
-    expect(calio.$$.ctx.selection).toEqual(epoch);
+    expect(context(calio, 'selection')).toEqual(epoch);
 });
 
 test('prevents selection of dates before min', async () => {
     const epoch = new LilEpoch();
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { min: epoch }
     });
 
-    calio.select(epoch.clone().subDay());
-    await tick();
+    await act(() => {
+        calio.component.select(epoch.clone().subDay());
+    });
 
-    expect(calio.$$.ctx.selection).toBeNull();
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('prevents selection of dates after max', async () => {
     const epoch = new LilEpoch();
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { max: epoch }
     });
 
-    calio.select(epoch.clone().addDay());
-    await tick();
+    await act(() => {
+        calio.component.select(epoch.clone().addDay());
+    });
 
-    expect(calio.$$.ctx.selection).toBeNull();
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('prevents selection of disabled dates', async () => {
     const epoch = new LilEpoch();
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { disabled: epoch }
     });
 
-    calio.select(epoch);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch);
+    });
 
-    expect(calio.$$.ctx.selection).toBeNull();
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('adds selected day to array in multi mode', async () => {
     const epoch1 = new LilEpoch(2018, 0);
     const epoch2 = new LilEpoch(2017, 0);
     const epoch3 = new LilEpoch(2016, 0);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { mode: 'multi' }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+        calio.component.select(epoch2);
+        calio.component.select(epoch3);
+    });
 
-    expect(calio.$$.ctx.selection).toContainEqual(epoch1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch2);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch3);
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toContainEqual(epoch2);
+    expect(context(calio, 'selection')).toContainEqual(epoch3);
 });
 
 test('toggles date selection if selected date is reselected in multi mode', async () => {
     const epoch1 = new LilEpoch(2018, 0);
     const epoch2 = new LilEpoch(2018, 0);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { mode: 'multi' }
     });
 
-    calio.select(epoch1);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+    });
 
-    expect(calio.$$.ctx.selection).toHaveLength(1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toHaveLength(1);
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
 
-    calio.select(epoch2);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch2);
+    });
 
-    expect(calio.$$.ctx.selection).toEqual([]);
+    expect(context(calio, 'selection')).toEqual([]);
 });
 
 test('can limit number of selected dates in multi mode', async () => {
@@ -98,108 +100,110 @@ test('can limit number of selected dates in multi mode', async () => {
     const epoch3 = new LilEpoch(2018, 0, 3);
     const epoch4 = new LilEpoch(2018, 0, 4);
     const epoch5 = new LilEpoch(2018, 0, 5);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: {
             mode: 'multi',
             limit: 3
         }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
-    calio.select(epoch4);
-    calio.select(epoch5);
+    await act(() => {
+        calio.component.select(epoch1);
+        calio.component.select(epoch2);
+        calio.component.select(epoch3);
+        calio.component.select(epoch4);
+        calio.component.select(epoch5);
+    });
 
-    await tick();
-
-    expect(calio.$$.ctx.selection).toHaveLength(3);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch2);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch3);
+    expect(context(calio, 'selection')).toHaveLength(3);
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toContainEqual(epoch2);
+    expect(context(calio, 'selection')).toContainEqual(epoch3);
 });
 
 test('adds selected day to array in range mode', async () => {
     const epoch1 = new LilEpoch(2018, 0);
     const epoch2 = new LilEpoch(2017, 0);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { mode: 'range' }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+        calio.component.select(epoch2);
+    });
 
-    expect(calio.$$.ctx.selection).toContainEqual(epoch1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch2);
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toContainEqual(epoch2);
 });
 
 test('limits selection to two selected days in range mode', async () => {
     const epoch1 = new LilEpoch(2018, 0);
     const epoch2 = new LilEpoch(2017, 0);
     const epoch3 = new LilEpoch(2016, 0);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { mode: 'range' }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+        calio.component.select(epoch2);
+        calio.component.select(epoch3);
+    });
 
-    expect(calio.$$.ctx.selection).toHaveLength(1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch3);
+    expect(context(calio, 'selection')).toHaveLength(1);
+    expect(context(calio, 'selection')).toContainEqual(epoch3);
 });
 
 test('toggles date selection if selected date is reselected in range mode', async () => {
     const epoch1 = new LilEpoch(2018, 0);
     const epoch2 = new LilEpoch(2017, 0);
     const epoch3 = new LilEpoch(2017, 0);
-    const calio = new Calio({
-        target: document.querySelector('#calio'),
+    const calio = render(Calio, {
         props: { mode: 'range' }
     });
 
-    calio.select(epoch1);
-    calio.select(epoch2);
-    calio.select(epoch3);
-    await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+        calio.component.select(epoch2);
+        calio.component.select(epoch3);
+    });
 
-    expect(calio.$$.ctx.selection).toHaveLength(1);
-    expect(calio.$$.ctx.selection).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toHaveLength(1);
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
 });
 
-// test('prevents selection of date in strict range mode if range overlaps disabled date', async () => {
-//     const epoch1 = new LilEpoch(2018, 0, 1);
-//     const epoch2 = new LilEpoch(2018, 0, 20);
-//     const epoch3 = new LilEpoch(2018, 0, 10);
-//     const calio = new Calio({
-//         target: document.querySelector('#calio'),
-//         props: {
-//             mode: 'range',
-//             strict: true,
-//             disabled: [
-//                 epoch3
-//             ]
-//         }
-//     });
+test('prevents selection of date in strict range mode if range overlaps disabled date', async () => {
+    const epoch1 = new LilEpoch(2018, 0, 1);
+    const epoch2 = new LilEpoch(2018, 0, 20);
+    const epoch3 = new LilEpoch(2018, 0, 10);
+    const calio = render(Calio, {
+        props: {
+            mode: 'range',
+            strict: true,
+            disabled: [
+                epoch3
+            ]
+        }
+    });
 
-//     calio.select(epoch1);
-//     calio.select(epoch2);
-//     await tick();
+    await act(() => {
+        calio.component.select(epoch1);
+    });
 
-//     expect(calio.$$.ctx.selection).toHaveLength(1);
-//     expect(calio.$$.ctx.selection).toContainEqual(epoch1);
-// });
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
+
+    await act(() => {
+        calio.component.select(epoch2);
+    });
+
+    expect(context(calio, 'selection')).toBeNull();
+});
 
 test('delays dates being generated if non-array passed to disabled', () => {
     const toHaveGottenThisFar = true;
 
-    new Calio({
-        target: document.querySelector('#calio'),
+    render(Calio, {
         props: { disabled: null }
     });
 

@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 10
+  - 12
 if: tag IS present
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
@@ -11,7 +11,7 @@ script:
   - npm run coverage
 deploy:
   provider: npm
-  email: guy@cornelius.io
+  email: guy@cornelius.dev
   api_key: $NPM_API_KEY
   skip_cleanup: true
   on:

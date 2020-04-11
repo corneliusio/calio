@@ -8,7 +8,7 @@
 </div>
 
 <script>
-    import { createEventDispatcher, onMount, tick } from 'svelte';
+    import { createEventDispatcher, onMount, tick, setContext } from 'svelte';
     import LilEpoch from '../modules/LilEpoch';
     import Day from './Day.svelte';
 
@@ -67,7 +67,7 @@
     $: dispatchEvents(dispatcher, el, 'selection', selection);
     $: dispatchEvents(dispatcher, el, 'view', view);
 
-    $: watchInvalidDates(computed);
+    $: watchInvalidDates(computed, selection);
 
     function dispatchEvents(dispatch, el, key, data) {
         if (data && typeof data.clone === 'function') {
@@ -156,16 +156,16 @@
             return a.timestamp() - b.timestamp();
         });
 
-        if (strict) {
-            let [ start, end ] = selection,
-                isInvalid = end && !!disabled.find(d => {
-                    return d.isAfter(start) && d.isBefore(end);
-                });
+        // if (strict) {
+        //     let [ start, end ] = selection,
+        //         isInvalid = end && !!disabled.find(d => {
+        //             return d.isAfter(start) && d.isBefore(end);
+        //         });
 
-            if (isInvalid) {
-                return;
-            }
-        }
+        //     if (isInvalid) {
+        //         return null;
+        //     }
+        // }
 
         return selection;
     }
@@ -272,6 +272,23 @@
         if (day) {
             view = day.clone().startOfMonth();
         }
+    }
+
+    $: if (process.env.NODE_ENV === 'testing') {
+        setContext('el', el);
+        setContext('props', props);
+        setContext('computed', computed);
+        setContext('selection', selection);
+        setContext('view', view);
+        setContext('headers', headers);
+        setContext('mode', mode);
+        setContext('strict', strict);
+        setContext('disabled', disabled);
+        setContext('value', value);
+        setContext('limit', limit);
+        setContext('min', min);
+        setContext('max', max);
+        setContext('dates', dates);
     }
 </script>
 
