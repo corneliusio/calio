@@ -1,32 +1,32 @@
 import Epoch from '../src/modules/Epoch';
 
-test('it accepts year, month, date arguments', () => {
+test('accepts year, month, date arguments', () => {
     expect(new Epoch(2018, 0, 1)).toHaveProperty('value', new Date(2018, 0, 1));
 });
 
-test('it defaults to 1st if on date provided', () => {
+test('defaults to 1st if on date provided', () => {
     expect(new Epoch(2018, 0)).toHaveProperty('value', new Date(2018, 0, 1));
 });
 
-test('it accepts another Epoch instance', () => {
+test('accepts another Epoch instance', () => {
     let epoch = new Epoch();
 
     expect(new Epoch(epoch)).toEqual(epoch);
 });
 
-test('it accepts a Date object', () => {
+test('accepts a Date object', () => {
     let date = new Date();
 
     expect(new Epoch(date)).toHaveProperty('value', date);
 });
 
-test('it accepts a timestamp', () => {
+test('accepts a timestamp', () => {
     let timestamp = new Date(2018, 0).getTime();
 
     expect(new Epoch(timestamp)).toHaveProperty('value', new Date(timestamp));
 });
 
-test('it accepts a date string', () => {
+test('accepts a date string', () => {
     let date = new Date('2018-01-01');
 
     date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
@@ -37,7 +37,7 @@ test('it accepts a date string', () => {
     expect(new Epoch('2018-01-01')).toHaveProperty('value', date);
 });
 
-test('it resets hours, minutes, seconds, and milliseconds', () => {
+test('resets hours, minutes, seconds, and milliseconds', () => {
     let date = new Date(2018, 0, 1);
 
     date.setHours(0);
@@ -48,7 +48,7 @@ test('it resets hours, minutes, seconds, and milliseconds', () => {
     expect(new Epoch(2018, 0, 1)).toHaveProperty('value', date);
 });
 
-test('it gets/set the year', () => {
+test('gets/set the year', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.year()).toBe(1988);
@@ -58,7 +58,7 @@ test('it gets/set the year', () => {
     expect(epoch.year()).toBe(1992);
 });
 
-test('it gets/set the month', () => {
+test('gets/set the month', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.month()).toBe(10);
@@ -68,7 +68,7 @@ test('it gets/set the month', () => {
     expect(epoch.month()).toBe(5);
 });
 
-test('it gets/set the date', () => {
+test('gets/set the date', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.date()).toBe(25);
@@ -78,7 +78,7 @@ test('it gets/set the date', () => {
     expect(epoch.date()).toBe(27);
 });
 
-test('it can add days', () => {
+test('can add days', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.addDay();
@@ -90,7 +90,7 @@ test('it can add days', () => {
     expect(epoch.date()).toBe(28);
 });
 
-test('it can add months', () => {
+test('can add months', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.addMonth();
@@ -102,7 +102,7 @@ test('it can add months', () => {
     expect(epoch.month()).toBe(1);
 });
 
-test('it can add years', () => {
+test('can add years', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.addYear();
@@ -114,7 +114,7 @@ test('it can add years', () => {
     expect(epoch.year()).toBe(1995);
 });
 
-test('it can subtract days', () => {
+test('can subtract days', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.subDay();
@@ -126,7 +126,7 @@ test('it can subtract days', () => {
     expect(epoch.date()).toBe(22);
 });
 
-test('it can subtract months', () => {
+test('can subtract months', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.subMonth();
@@ -138,7 +138,7 @@ test('it can subtract months', () => {
     expect(epoch.month()).toBe(7);
 });
 
-test('it can subtract years', () => {
+test('can subtract years', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.subYear();
@@ -150,13 +150,13 @@ test('it can subtract years', () => {
     expect(epoch.year()).toBe(1981);
 });
 
-test('it gets the day of the week', () => {
+test('gets the day of the week', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.dayOfWeek()).toBe(5);
 });
 
-test('it jumps to end of month', () => {
+test('jumps to end of month', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.endOfMonth();
@@ -165,7 +165,7 @@ test('it jumps to end of month', () => {
     expect(epoch.date()).toBe(30);
 });
 
-test('it jumps to start of month', () => {
+test('jumps to start of month', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     epoch.startOfMonth();
@@ -174,7 +174,7 @@ test('it jumps to start of month', () => {
     expect(epoch.date()).toBe(1);
 });
 
-test('it checks if date is after another date', () => {
+test('checks if date is after another date', () => {
     let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = new Epoch(1992, 10, 27);
 
@@ -182,7 +182,7 @@ test('it checks if date is after another date', () => {
     expect(epoch2.isAfter(epoch1)).toBe(true);
 });
 
-test('it checks if date is before another date', () => {
+test('checks if date is before another date', () => {
     let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = new Epoch(1992, 10, 27);
 
@@ -190,7 +190,7 @@ test('it checks if date is before another date', () => {
     expect(epoch2.isBefore(epoch1)).toBe(false);
 });
 
-test('it checks if two dates are the same', () => {
+test('checks if two dates are the same', () => {
     let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = new Epoch(1988, 10, 25),
         epoch3 = new Epoch(1992, 10, 27);
@@ -199,7 +199,7 @@ test('it checks if two dates are the same', () => {
     expect(epoch1.isSame(epoch3)).toBe(false);
 });
 
-test('it checks if date is between two other dates', () => {
+test('checks if date is between two other dates', () => {
     let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = new Epoch(1988, 10, 26),
         epoch3 = new Epoch(1992, 10, 27),
@@ -209,7 +209,7 @@ test('it checks if date is between two other dates', () => {
     expect(epoch4.isBetween(epoch1, epoch3)).toBe(false);
 });
 
-test('it checks if two dates are in the same month', () => {
+test('checks if two dates are in the same month', () => {
     let epoch1 = new Epoch(1988, 10, 23),
         epoch2 = new Epoch(1988, 10, 25),
         epoch3 = new Epoch(1992, 10, 27);
@@ -218,7 +218,7 @@ test('it checks if two dates are in the same month', () => {
     expect(epoch1.isSameMonth(epoch3)).toBe(false);
 });
 
-test('it checks if two dates are in the same year', () => {
+test('checks if two dates are in the same year', () => {
     let epoch1 = new Epoch(1988, 9, 23),
         epoch2 = new Epoch(1988, 10, 25),
         epoch3 = new Epoch(1992, 11, 27);
@@ -227,19 +227,19 @@ test('it checks if two dates are in the same year', () => {
     expect(epoch1.isSameYear(epoch3)).toBe(false);
 });
 
-test('it gets the timestamp', () => {
+test('gets the timestamp', () => {
     let timestamp = new Date(1988, 10, 25).getTime();
 
     expect(new Epoch(1988, 10, 25).timestamp()).toBe(timestamp);
 });
 
-test('it gets a string format of the date', () => {
+test('gets a string format of the date', () => {
     let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.format()).toBe('Fri Nov 25 1988 12:00:00');
 });
 
-test('it creates a clone date', () => {
+test('creates a clone date', () => {
     let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = epoch1.clone();
 
@@ -251,7 +251,7 @@ test('it creates a clone date', () => {
     expect(epoch2.year()).toBe(2018);
 });
 
-test('it deferes toString to underlying Date object', () => {
+test('deferes toString to underlying Date object', () => {
     let epoch = new Epoch(1988, 10, 25),
         date = new Date(1988, 10, 25);
 

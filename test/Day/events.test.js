@@ -13,7 +13,7 @@ const props = {
     mode: 'single'
 };
 
-test('it fires a "selection" event when clicked', () => {
+test('fires a "selection" event when clicked', () => {
     const day = render(Day, {
         props: { ...props, day: today }
     });

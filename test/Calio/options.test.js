@@ -1,4 +1,3 @@
-import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';

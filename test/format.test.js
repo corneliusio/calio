@@ -36,12 +36,12 @@ test('format isoUtcDateTime', () => {
     expect(format(date, 'isoUtcDateTime')).toBe('1988-11-01T00:00:00Z');
 });
 
-test('it has some flags', () => {
+test('has some flags', () => {
     expect(format(date, 'D Do DD DDD DDDD M Mo MM MMM MMMM YY YYYY'))
         .toBe('1 1st 01 Tue Tuesday 11 11th 11 Nov November 88 1988');
 });
 
-test('it can format an instance of Epoch', () => {
+test('can format an instance of Epoch', () => {
     expect(format(new Epoch(date), 'D Do DD DDD DDDD M Mo MM MMM MMMM YY YYYY'))
         .toBe('1 1st 01 Tue Tuesday 11 11th 11 Nov November 88 1988');
 });

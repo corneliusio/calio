@@ -31,6 +31,39 @@ test('selects a day', async () => {
     expect(context(calio, 'selection')).toEqual(epoch);
 });
 
+test('can set min', async () => {
+    const epoch = new Epoch(2018, 0, 1);
+    const calio = render(Calio);
+
+    await act(() => {
+        calio.component.setMin(epoch);
+    });
+
+    expect(context(calio, 'computed').min).toEqual(epoch);
+});
+
+test('can set max', async () => {
+    const epoch = new Epoch(2018, 0, 1);
+    const calio = render(Calio);
+
+    await act(() => {
+        calio.component.setMax(epoch);
+    });
+
+    expect(context(calio, 'computed').max).toEqual(epoch);
+});
+
+test('can set disabled', async () => {
+    const epoch = new Epoch(2018, 0, 1);
+    const calio = render(Calio);
+
+    await act(() => {
+        calio.component.setDisabled(epoch);
+    });
+
+    expect(context(calio, 'computed').disabled).toContainEqual(epoch);
+});
+
 test('can go to year', async () => {
     const calio = render(Calio, {
         props: {
