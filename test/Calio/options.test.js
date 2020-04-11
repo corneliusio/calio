@@ -15,6 +15,23 @@ test('can set a default selection from passed value', () => {
     expect(context(calio, 'selection')).toEqual(epoch);
 });
 
+test('can set a default selection from passed array of values', () => {
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2017, 0);
+    const calio = render(Calio, {
+        props: {
+            mode: 'multi',
+            value: [
+                epoch1,
+                epoch2
+            ]
+        }
+    });
+
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toContainEqual(epoch2);
+});
+
 test('prevents selection of dates before min', async () => {
     const epoch = new Epoch();
     const calio = render(Calio, {

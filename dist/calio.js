@@ -595,7 +595,7 @@ class Epoch {
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1l2ul15-style";
+	style.id = "svelte-18kp2rj-style";
 	style.textContent = ".calio-day{cursor:pointer;color:var(--color, #333)}.calio-day:hover{color:var(--color-hover, var(--color, #333));background:var(--bg-hover, #EEE)}.calio-day.is-today{font-weight:900}.calio-day.is-prev,.calio-day.is-next{color:var(--color-inactive, #CCC);background:var(--bg-inactive, transparent)}.calio-day.is-disabled{pointer-events:none;color:var(--color-disabled, var(--color-inactive, #CCC));background:var(--bg-disabled, transparent);opacity:var(--opacity-disabled, 0.5)}.calio-day.is-ranged{color:var(--color-ranged, var(--color-active, white));background:var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)))}.calio-day.is-active{color:var(--color-active, white);background:var(--bg-active, rgb(100, 149, 237))}";
 	append(document.head, style);
 }
@@ -723,7 +723,7 @@ function instance($$self, $$props, $$invalidate) {
 class Day extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1l2ul15-style")) add_css();
+		if (!document.getElementById("svelte-18kp2rj-style")) add_css();
 
 		init(this, options, instance, create_fragment, safe_not_equal, {
 			view: 4,
@@ -743,27 +743,27 @@ const { Boolean: Boolean_1 } = globals;
 
 function add_css$1() {
 	var style = element("style");
-	style.id = "svelte-1uuu3r4-style";
+	style.id = "svelte-i8ptc6-style";
 	style.textContent = ".calio{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
 	append(document.head, style);
 }
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[36] = list[i];
+	child_ctx[38] = list[i];
 	return child_ctx;
 }
 
 function get_each_context_1(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[36] = list[i];
+	child_ctx[38] = list[i];
 	return child_ctx;
 }
 
-// (2:4) {#each computed.headers as day}
+// (1:35) {#each computed.headers as day}
 function create_each_block_1(ctx) {
 	let span;
-	let t_value = /*day*/ ctx[36] + "";
+	let t_value = /*day*/ ctx[38] + "";
 	let t;
 
 	return {
@@ -777,7 +777,7 @@ function create_each_block_1(ctx) {
 			append(span, t);
 		},
 		p(ctx, dirty) {
-			if (dirty[0] & /*computed*/ 4 && t_value !== (t_value = /*day*/ ctx[36] + "")) set_data(t, t_value);
+			if (dirty[0] & /*computed*/ 2 && t_value !== (t_value = /*day*/ ctx[38] + "")) set_data(t, t_value);
 		},
 		d(detaching) {
 			if (detaching) detach(span);
@@ -785,15 +785,10 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (5:4) {#each dates as day}
+// (1:115) {#each dates as day}
 function create_each_block(ctx) {
 	let current;
-	const day_spread_levels = [{ day: /*day*/ ctx[36] }, /*props*/ ctx[4]];
-
-	function select_handler(...args) {
-		return /*select_handler*/ ctx[34](/*day*/ ctx[36], ...args);
-	}
-
+	const day_spread_levels = [{ day: /*day*/ ctx[38] }, /*props*/ ctx[3]];
 	let day_props = {};
 
 	for (let i = 0; i < day_spread_levels.length; i += 1) {
@@ -801,7 +796,7 @@ function create_each_block(ctx) {
 	}
 
 	const day = new Day({ props: day_props });
-	day.$on("select", select_handler);
+	day.$on("select", /*onSelect*/ ctx[4]);
 
 	return {
 		c() {
@@ -811,13 +806,11 @@ function create_each_block(ctx) {
 			mount_component(day, target, anchor);
 			current = true;
 		},
-		p(new_ctx, dirty) {
-			ctx = new_ctx;
-
-			const day_changes = (dirty[0] & /*dates, props*/ 24)
+		p(ctx, dirty) {
+			const day_changes = (dirty[0] & /*dates, props*/ 12)
 			? get_spread_update(day_spread_levels, [
-					dirty[0] & /*dates*/ 8 && { day: /*day*/ ctx[36] },
-					dirty[0] & /*props*/ 16 && get_spread_object(/*props*/ ctx[4])
+					dirty[0] & /*dates*/ 4 && { day: /*day*/ ctx[38] },
+					dirty[0] & /*props*/ 8 && get_spread_object(/*props*/ ctx[3])
 				])
 			: {};
 
@@ -842,14 +835,14 @@ function create_fragment$1(ctx) {
 	let div;
 	let t;
 	let current;
-	let each_value_1 = /*computed*/ ctx[2].headers;
+	let each_value_1 = /*computed*/ ctx[1].headers;
 	let each_blocks_1 = [];
 
 	for (let i = 0; i < each_value_1.length; i += 1) {
 		each_blocks_1[i] = create_each_block_1(get_each_context_1(ctx, each_value_1, i));
 	}
 
-	let each_value = /*dates*/ ctx[3];
+	let each_value = /*dates*/ ctx[2];
 	let each_blocks = [];
 
 	for (let i = 0; i < each_value.length; i += 1) {
@@ -889,12 +882,12 @@ function create_fragment$1(ctx) {
 				each_blocks[i].m(div, null);
 			}
 
-			/*div_binding*/ ctx[35](div);
+			/*div_binding*/ ctx[37](div);
 			current = true;
 		},
 		p(ctx, dirty) {
-			if (dirty[0] & /*computed*/ 4) {
-				each_value_1 = /*computed*/ ctx[2].headers;
+			if (dirty[0] & /*computed*/ 2) {
+				each_value_1 = /*computed*/ ctx[1].headers;
 				let i;
 
 				for (i = 0; i < each_value_1.length; i += 1) {
@@ -916,8 +909,8 @@ function create_fragment$1(ctx) {
 				each_blocks_1.length = each_value_1.length;
 			}
 
-			if (dirty[0] & /*dates, props, select*/ 25) {
-				each_value = /*dates*/ ctx[3];
+			if (dirty[0] & /*dates, props, onSelect*/ 28) {
+				each_value = /*dates*/ ctx[2];
 				let i;
 
 				for (i = 0; i < each_value.length; i += 1) {
@@ -965,7 +958,7 @@ function create_fragment$1(ctx) {
 			if (detaching) detach(div);
 			destroy_each(each_blocks_1, detaching);
 			destroy_each(each_blocks, detaching);
-			/*div_binding*/ ctx[35](null);
+			/*div_binding*/ ctx[37](null);
 		}
 	};
 }
@@ -974,9 +967,7 @@ function dispatchEvents(dispatch, el, key, data) {
 	if (data && typeof data.clone === "function") {
 		data = data.clone();
 	} else if (Array.isArray(data)) {
-		data = data.map(d => {
-			return typeof d.clone === "function" ? d.clone() : d;
-		});
+		data = data.map(d => d.clone());
 	}
 
 	if (el) {
@@ -984,53 +975,6 @@ function dispatchEvents(dispatch, el, key, data) {
 	}
 
 	dispatch(key, data);
-}
-
-function updateRange(day, current, strict, disabled) {
-	let selection = new Array().concat(current).filter(Boolean) || [],
-		index = selection.findIndex(s => s.isSame(day));
-
-	if (index > -1) {
-		selection.splice(index, 1);
-		return selection;
-	} else if (selection.length > 1) {
-		return [day.clone()];
-	}
-
-	selection = [...selection, day.clone()].sort((a, b) => {
-		return a.timestamp() - b.timestamp();
-	});
-
-	if (strict) {
-		let [start, end] = selection,
-			isInvalid = end && !!disabled.find(d => {
-				return d.isAfter(start) && d.isBefore(end);
-			});
-
-		if (isInvalid) {
-			return current;
-		}
-	}
-
-	return selection;
-}
-
-function updateMulti(day, current, limit) {
-	let selection = new Array().concat(current).filter(Boolean) || [],
-		index = selection.findIndex(s => s.isSame(day));
-
-	if (index > -1) {
-		selection.splice(index, 1);
-		return selection;
-	} else if (!limit || selection.length < limit) {
-		selection = [...selection, day.clone()].sort((a, b) => {
-			return a.timestamp() - b.timestamp();
-		});
-
-		return selection;
-	}
-
-	return selection;
 }
 
 function updateSingle(day, view) {
@@ -1064,10 +1008,6 @@ function instance$1($$self, $$props, $$invalidate) {
 	let el;
 	let view = new Epoch();
 
-	let selection = Array.isArray(value)
-	? value.map(makeMyDay)
-	: makeMyDay(value);
-
 	onMount(() => {
 		goToSelection();
 
@@ -1085,10 +1025,10 @@ function instance$1($$self, $$props, $$invalidate) {
 				if (mode === "single") {
 					min.isAfter(selection) && select(min);
 				} else {
-					const valid = selection.filter(s => min.isAfter(s));
+					const valid = selection.filter(s => s.isAfter(min) || s.isSame(min));
 
 					valid.length
-					? tick().then(() => $$invalidate(27, selection = valid))
+					? tick().then(() => $$invalidate(6, value = valid))
 					: select(min);
 				}
 			}
@@ -1105,10 +1045,10 @@ function instance$1($$self, $$props, $$invalidate) {
 				if (mode === "single") {
 					max.isBefore(selection) && select(max);
 				} else {
-					const valid = selection.filter(s => max.isAfter(s));
+					const valid = selection.filter(s => s.isBefore(max) || s.isSame(max));
 
 					valid.length
-					? tick().then(() => $$invalidate(27, selection = valid))
+					? tick().then(() => $$invalidate(6, value = valid))
 					: select(max);
 				}
 			}
@@ -1123,11 +1063,11 @@ function instance$1($$self, $$props, $$invalidate) {
 				computed.disabled.find(d => d.isSame(selection)) && select(null);
 			} else {
 				const valid = computed.disabled.length && selection.filter(s => {
-					return !computed.disabled.find(d => d.isSame(s));
+					return computed.disabled.find(d => !d.isSame(s));
 				});
 
 				valid.length
-				? tick().then(() => $$invalidate(27, selection = valid))
+				? tick().then(() => $$invalidate(6, value = valid))
 				: select(null);
 
 				if (mode === "range" && strict && selection.length === 2) {
@@ -1163,12 +1103,63 @@ function instance$1($$self, $$props, $$invalidate) {
 		return dates;
 	}
 
+	function updateRange(day, current, strict, disabled) {
+		let selection = new Array().concat(current).filter(Boolean) || [],
+			index = selection.findIndex(s => s.isSame(day));
+
+		if (index > -1) {
+			selection.splice(index, 1);
+			return selection;
+		} else if (selection.length > 1) {
+			return [day.clone()];
+		}
+
+		selection = [...selection, day.clone()].sort((a, b) => {
+			return a.timestamp() - b.timestamp();
+		});
+
+		if (strict) {
+			let [start, end] = selection,
+				isInvalid = end && !!disabled.find(d => {
+					return d.isAfter(start) && d.isBefore(end);
+				});
+
+			if (isInvalid) {
+				return current;
+			}
+		}
+
+		return selection;
+	}
+
+	function updateMulti(day, current, limit) {
+		let selection = new Array().concat(current).filter(Boolean) || [],
+			index = selection.findIndex(s => s.isSame(day));
+
+		if (index > -1) {
+			selection.splice(index, 1);
+			return selection;
+		} else if (!limit || selection.length < limit) {
+			selection = [...selection, day.clone()].sort((a, b) => {
+				return a.timestamp() - b.timestamp();
+			});
+
+			return selection;
+		}
+
+		return selection;
+	}
+
+	function onSelect(event) {
+		return select(event.detail);
+	}
+
 	async function select(day = null) {
 		await tick();
 		day = makeMyDay(day);
 
 		if (!day) {
-			$$invalidate(27, selection = null);
+			$$invalidate(28, selection = null);
 		} else {
 			if (computed.disabled.find(d => d.isSame(day)) || computed.min && day.isBefore(computed.min) || computed.max && day.isAfter(computed.max)) {
 				return;
@@ -1176,24 +1167,24 @@ function instance$1($$self, $$props, $$invalidate) {
 
 			switch (mode) {
 				case "range":
-					$$invalidate(27, selection = updateRange(day, selection, strict, computed.disabled));
+					$$invalidate(28, selection = updateRange(day, selection, strict, computed.disabled));
 					break;
 				case "multi":
-					$$invalidate(27, selection = updateMulti(day, selection, limit));
+					$$invalidate(28, selection = updateMulti(day, selection, limit));
 					break;
 				default:
-					$$invalidate(27, [selection, view] = updateSingle(day, view), selection, $$invalidate(26, view));
+					$$invalidate(28, [selection, view] = updateSingle(day, view), selection, $$invalidate(27, view));
 					break;
 			}
 		}
 	}
 
 	function setMin(date) {
-		$$invalidate(6, min = date || null);
+		$$invalidate(7, min = date || null);
 	}
 
 	function setMax(date) {
-		$$invalidate(7, max = date || null);
+		$$invalidate(8, max = date || null);
 	}
 
 	function setDisabled(date) {
@@ -1201,36 +1192,36 @@ function instance$1($$self, $$props, $$invalidate) {
 	}
 
 	function goToYear(y) {
-		$$invalidate(26, view = view.clone().year(y));
+		$$invalidate(27, view = view.clone().year(y));
 	}
 
 	function goToNextYear() {
-		$$invalidate(26, view = view.clone().addYear());
+		$$invalidate(27, view = view.clone().addYear());
 	}
 
 	function goToLastYear() {
-		$$invalidate(26, view = view.clone().subYear());
+		$$invalidate(27, view = view.clone().subYear());
 	}
 
 	function goToMonth(m) {
-		$$invalidate(26, view = view.clone().startOfMonth().month(m - 1));
+		$$invalidate(27, view = view.clone().startOfMonth().month(m - 1));
 	}
 
 	function goToNextMonth() {
-		$$invalidate(26, view = view.clone().startOfMonth().addMonth());
+		$$invalidate(27, view = view.clone().startOfMonth().addMonth());
 	}
 
 	function goToLastMonth() {
-		$$invalidate(26, view = view.clone().startOfMonth().subMonth());
+		$$invalidate(27, view = view.clone().startOfMonth().subMonth());
 	}
 
 	function goToThisMonth() {
-		$$invalidate(26, view = today.clone().startOfMonth());
+		$$invalidate(27, view = today.clone().startOfMonth());
 	}
 
 	function goToSelection() {
 		if (mode === "single" && selection) {
-			$$invalidate(26, view = selection.clone().startOfMonth());
+			$$invalidate(27, view = selection.clone().startOfMonth());
 		}
 	}
 
@@ -1238,36 +1229,41 @@ function instance$1($$self, $$props, $$invalidate) {
 		day = makeMyDay(day);
 
 		if (day) {
-			$$invalidate(26, view = day.clone().startOfMonth());
+			$$invalidate(27, view = day.clone().startOfMonth());
 		}
 	}
 
-	const select_handler = (day, event) => select(day);
-
 	function div_binding($$value) {
 		binding_callbacks[$$value ? "unshift" : "push"](() => {
-			$$invalidate(1, el = $$value);
+			$$invalidate(0, el = $$value);
 		});
 	}
 
 	$$self.$set = $$props => {
-		if ("headers" in $$props) $$invalidate(8, headers = $$props.headers);
-		if ("mode" in $$props) $$invalidate(9, mode = $$props.mode);
-		if ("strict" in $$props) $$invalidate(10, strict = $$props.strict);
+		if ("headers" in $$props) $$invalidate(9, headers = $$props.headers);
+		if ("mode" in $$props) $$invalidate(10, mode = $$props.mode);
+		if ("strict" in $$props) $$invalidate(11, strict = $$props.strict);
 		if ("disabled" in $$props) $$invalidate(5, disabled = $$props.disabled);
-		if ("value" in $$props) $$invalidate(11, value = $$props.value);
+		if ("value" in $$props) $$invalidate(6, value = $$props.value);
 		if ("limit" in $$props) $$invalidate(12, limit = $$props.limit);
-		if ("min" in $$props) $$invalidate(6, min = $$props.min);
-		if ("max" in $$props) $$invalidate(7, max = $$props.max);
+		if ("min" in $$props) $$invalidate(7, min = $$props.min);
+		if ("max" in $$props) $$invalidate(8, max = $$props.max);
 	};
 
+	let selection;
 	let computed;
 	let dates;
 	let props;
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty[0] & /*min, max, headers, disabled*/ 480) {
-			 $$invalidate(2, computed = {
+		if ($$self.$$.dirty[0] & /*value*/ 64) {
+			 $$invalidate(28, selection = Array.isArray(value)
+			? value.map(makeMyDay)
+			: makeMyDay(value));
+		}
+
+		if ($$self.$$.dirty[0] & /*min, max, headers, disabled*/ 928) {
+			 $$invalidate(1, computed = {
 				min: makeMyDay(min),
 				max: makeMyDay(max),
 				headers: headers.length
@@ -1277,12 +1273,12 @@ function instance$1($$self, $$props, $$invalidate) {
 			});
 		}
 
-		if ($$self.$$.dirty[0] & /*view, computed*/ 67108868) {
-			 $$invalidate(3, dates = makeDates(view, computed.disabled));
+		if ($$self.$$.dirty[0] & /*view, computed*/ 134217730) {
+			 $$invalidate(2, dates = makeDates(view, computed.disabled));
 		}
 
-		if ($$self.$$.dirty[0] & /*computed, selection, view, mode*/ 201327108) {
-			 $$invalidate(4, props = {
+		if ($$self.$$.dirty[0] & /*computed, selection, view, mode*/ 402654210) {
+			 $$invalidate(3, props = {
 				disabled: computed.disabled,
 				min: computed.min,
 				max: computed.max,
@@ -1292,43 +1288,44 @@ function instance$1($$self, $$props, $$invalidate) {
 			});
 		}
 
-		if ($$self.$$.dirty[0] & /*el, selection*/ 134217730) {
+		if ($$self.$$.dirty[0] & /*el, selection*/ 268435457) {
 			 dispatchEvents(dispatcher, el, "selection", selection);
 		}
 
-		if ($$self.$$.dirty[0] & /*el, view*/ 67108866) {
+		if ($$self.$$.dirty[0] & /*el, view*/ 134217729) {
 			 dispatchEvents(dispatcher, el, "view", view);
 		}
 
-		if ($$self.$$.dirty[0] & /*computed*/ 4) {
+		if ($$self.$$.dirty[0] & /*computed*/ 2) {
 			 watchInvalidDatesMin(computed.min);
 		}
 
-		if ($$self.$$.dirty[0] & /*computed*/ 4) {
+		if ($$self.$$.dirty[0] & /*computed*/ 2) {
 			 watchInvalidDatesMax(computed.max);
 		}
 
-		if ($$self.$$.dirty[0] & /*computed*/ 4) {
+		if ($$self.$$.dirty[0] & /*computed*/ 2) {
 			 watchInvalidDatesDisabled(computed.disabled);
 		}
 
-		if ($$self.$$.dirty[0] & /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/ 201334782) ;
+		if ($$self.$$.dirty[0] & /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/ 402661359) ;
 	};
 
 	return [
-		select,
 		el,
 		computed,
 		dates,
 		props,
+		onSelect,
 		disabled,
+		value,
 		min,
 		max,
 		headers,
 		mode,
 		strict,
-		value,
 		limit,
+		select,
 		makeMyDay,
 		setMin,
 		setMax,
@@ -1350,7 +1347,8 @@ function instance$1($$self, $$props, $$invalidate) {
 		watchInvalidDatesMax,
 		watchInvalidDatesDisabled,
 		makeDates,
-		select_handler,
+		updateRange,
+		updateMulti,
 		div_binding
 	];
 }
@@ -1358,7 +1356,7 @@ function instance$1($$self, $$props, $$invalidate) {
 class Calio extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1uuu3r4-style")) add_css$1();
+		if (!document.getElementById("svelte-i8ptc6-style")) add_css$1();
 
 		init(
 			this,
@@ -1367,35 +1365,35 @@ class Calio extends SvelteComponent {
 			create_fragment$1,
 			safe_not_equal,
 			{
-				headers: 8,
-				mode: 9,
-				strict: 10,
+				headers: 9,
+				mode: 10,
+				strict: 11,
 				disabled: 5,
-				value: 11,
+				value: 6,
 				limit: 12,
-				min: 6,
-				max: 7,
-				select: 0,
-				makeMyDay: 13,
-				setMin: 14,
-				setMax: 15,
-				setDisabled: 16,
-				goToYear: 17,
-				goToNextYear: 18,
-				goToLastYear: 19,
-				goToMonth: 20,
-				goToNextMonth: 21,
-				goToLastMonth: 22,
-				goToThisMonth: 23,
-				goToSelection: 24,
-				goTo: 25
+				min: 7,
+				max: 8,
+				select: 13,
+				makeMyDay: 14,
+				setMin: 15,
+				setMax: 16,
+				setDisabled: 17,
+				goToYear: 18,
+				goToNextYear: 19,
+				goToLastYear: 20,
+				goToMonth: 21,
+				goToNextMonth: 22,
+				goToLastMonth: 23,
+				goToThisMonth: 24,
+				goToSelection: 25,
+				goTo: 26
 			},
 			[-1, -1]
 		);
 	}
 
 	get select() {
-		return this.$$.ctx[0];
+		return this.$$.ctx[13];
 	}
 
 	get makeMyDay() {
@@ -1403,51 +1401,51 @@ class Calio extends SvelteComponent {
 	}
 
 	get setMin() {
-		return this.$$.ctx[14];
-	}
-
-	get setMax() {
 		return this.$$.ctx[15];
 	}
 
-	get setDisabled() {
+	get setMax() {
 		return this.$$.ctx[16];
 	}
 
-	get goToYear() {
+	get setDisabled() {
 		return this.$$.ctx[17];
 	}
 
-	get goToNextYear() {
+	get goToYear() {
 		return this.$$.ctx[18];
 	}
 
-	get goToLastYear() {
+	get goToNextYear() {
 		return this.$$.ctx[19];
 	}
 
-	get goToMonth() {
+	get goToLastYear() {
 		return this.$$.ctx[20];
 	}
 
-	get goToNextMonth() {
+	get goToMonth() {
 		return this.$$.ctx[21];
 	}
 
-	get goToLastMonth() {
+	get goToNextMonth() {
 		return this.$$.ctx[22];
 	}
 
-	get goToThisMonth() {
+	get goToLastMonth() {
 		return this.$$.ctx[23];
 	}
 
-	get goToSelection() {
+	get goToThisMonth() {
 		return this.$$.ctx[24];
 	}
 
-	get goTo() {
+	get goToSelection() {
 		return this.$$.ctx[25];
+	}
+
+	get goTo() {
+		return this.$$.ctx[26];
 	}
 }
 

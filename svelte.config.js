@@ -5,6 +5,11 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
     extensions: [ '.svlt', '.svelte' ],
     preprocess: {
+        markup: true ? ({ content }) => ({
+            code: content.replace(/[\n\r\s\t]+(?=<\w|<\/|{#|{:|{\/|{\w)/g, ' ')
+        }) : ({ content }) => ({
+            code: content
+        }),
         style: async ({ content, filename }) => {
             const result = await postcss([
                 autoprefixer({ flexbox: 'no-2009', grid: 'no-autoplace' })
