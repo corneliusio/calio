@@ -2,7 +2,7 @@ export function promiseEvent(handler) {
     return new Promise((resolve, reject) => {
         setTimeout(() => reject(`${handler}`), 100);
 
-        return handler(resolve);
+        return handler(resolve, reject);
     });
 }
 
