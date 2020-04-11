@@ -1,15 +1,16 @@
-import { tick } from 'svelte';
-import Calio from '../../src/components/Calio.svelte';
+import { context } from '../helpers';
 import LilEpoch from '../../src/modules/LilEpoch';
+import Calio from '../../src/components/Calio.svelte';
+import { render, cleanup } from '@testing-library/svelte';
 
-document.body.innerHTML = '<div id="calio"></div>';
+afterEach(() => cleanup());
 
-const calio = new Calio({
-    target: document.querySelector('#calio')
-});
+const calio = render(Calio);
 
 test('defaults headers to two char days', () => {
-    expect(calio.$$.ctx.headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+    expect(context(calio, 'headers')).toEqual([
+        'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'
+    ]);
 });
 
 test('defaults view to 1st of this month', () => {
@@ -17,37 +18,33 @@ test('defaults view to 1st of this month', () => {
 
     epoch.date(1);
 
-    expect(calio.$$.ctx.view).toEqual(epoch);
+    expect(context(calio, 'view')).toEqual(epoch);
 });
 
 test('defaults mode to single', () => {
-    expect(calio.$$.ctx.mode).toBe('single');
+    expect(context(calio, 'mode')).toBe('single');
 });
 
 test('defaults strict to false', () => {
-    expect(calio.$$.ctx.strict).toBe(false);
-});
-
-test('defaults strict to false', () => {
-    expect(calio.$$.ctx.strict).toBe(false);
+    expect(context(calio, 'strict')).toBe(false);
 });
 
 test('defaults disabled to empty array', () => {
-    expect(calio.$$.ctx.disabled).toEqual([]);
+    expect(context(calio, 'disabled')).toEqual([]);
 });
 
 test('defaults selection to null', () => {
-    expect(calio.$$.ctx.selection).toBeNull();
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('defaults limit to null', () => {
-    expect(calio.$$.ctx.limit).toBeNull();
+    expect(context(calio, 'limit')).toBeNull();
 });
 
 test('defaults min to null', () => {
-    expect(calio.$$.ctx.min).toBeNull();
+    expect(context(calio, 'min')).toBeNull();
 });
 
 test('defaults max to null', () => {
-    expect(calio.$$.ctx.max).toBeNull();
+    expect(context(calio, 'max')).toBeNull();
 });

@@ -8,7 +8,7 @@
   },
   "author": {
     "name": "Cornelius Ukena",
-    "email": "guy@cornelius.io"
+    "email": "guy@cornelius.dev"
   },
   "keywords": [
     "datepicker",
@@ -27,10 +27,10 @@
     "src/"
   ],
   "scripts": {
-    "test": "NODE_ENV=testing jest",
+    "test": "NODE_ENV=testing jest --no-cache",
     "coverage": "NODE_ENV=testing jest --coverage --no-cache && npx codecov",
     "clean": "rm -rf dist/*",
-    "lint": "eslint -c .eslintrc.json src/**.* --fix",
+    "lint": "eslint -c .eslintrc.js src/**.* --fix",
     "dev": "npm run clean && rollup --config rollup.config.dev.js --environment NODE_ENV:development --watch",
     "build": "npm run lint && npm run clean && npm run prod",
     "prod": "rollup --config rollup.config.js --environment NODE_ENV:production",
@@ -40,24 +40,26 @@
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@testing-library/svelte": "^3.0.0",
     "autoprefixer": "^9.4.10",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.3.1",
-    "babel-preset-jest": "^24.6.0",
+    "babel-jest": "^25.3.0",
+    "babel-preset-jest": "^25.3.0",
     "codecov": "^3.0.2",
     "core-js": "^3.0.1",
     "custom-event-polyfill": "^1.0.7",
-    "eslint": "^5.16.0",
-    "eslint-plugin-svelte3": "^1.1.0",
-    "jest": "^24.3.1",
+    "eslint": "^6.8.0",
+    "eslint-plugin-svelte3": "^2.7.3",
+    "jest": "^25.3.0",
     "postcss": "^7.0.14",
-    "rollup": "^1.6.0",
+    "rollup": "^2.6.0",
     "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-commonjs": "^9.2.1",
-    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-svelte": "^5.0.3",
-    "rollup-plugin-terser": "^4.0.4",
-    "svelte": "^3.0.1"
+    "rollup-plugin-terser": "^5.3.0",
+    "svelte": "^3.0.1",
+    "svelte-jester": "^1.0.5"
   }
 }

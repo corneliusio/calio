@@ -1,14 +1,14 @@
+import { context, queryAll, map } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import LilEpoch from '../../src/modules/LilEpoch';
+import { render, cleanup } from '@testing-library/svelte';
 
-document.body.innerHTML = '<div id="calio"></div>';
+afterEach(() => cleanup());
 
 test('it has state accessible through state', () => {
-    const calio = new Calio({
-        target: document.querySelector('#calio')
-    });
+    const calio = render(Calio);
 
-    expect(calio.$$.props).toEqual([
+    expect(Object.keys(calio.component.$$.props)).toEqual([
         'headers',
         'mode',
         'strict',
@@ -32,30 +32,36 @@ test('it has state accessible through state', () => {
 });
 
 test('it has head for each day of week', () => {
-    const calio1 = new Calio({
-        target: document.querySelector('#calio')
+    const targetA = document.createElement('div');
+    const targetB = document.createElement('div');
+    const targetC = document.createElement('div');
+
+    render(Calio, {
+        target: targetA
     });
 
-    const calio2 = new Calio({
-        target: document.querySelector('#calio'),
-        props: { headers: [false, 'a', 'b', 'c', false] }
+    render(Calio, {
+        target: targetB,
+        props: { headers: [ false, 'a', 'b', 'c', false ] }
     });
 
-    const calio3 = new Calio({
-        target: document.querySelector('#calio'),
+    render(Calio, {
+        target: targetC,
         props: { headers: false }
     });
 
-    expect(calio1.$$.ctx.computed.headers).toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
-    expect(calio2.$$.ctx.computed.headers).toEqual(['', 'a', 'b', 'c', '', '', '']);
-    expect(calio3.$$.ctx.computed.headers).toEqual([]);
+    expect(map(targetA.querySelectorAll('.calio-head'), h => h.textContent))
+        .toEqual([ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ]);
+    expect(map(targetB.querySelectorAll('.calio-head'), h => h.textContent))
+        .toEqual([ '', 'a', 'b', 'c', '', '', '' ]);
+    expect(map(targetC.querySelectorAll('.calio-head'), h => h.textContent))
+        .toEqual([]);
 });
 
 test('it has dates', () => {
     const epoch = new LilEpoch();
-    const calio = new Calio({
-        target: document.querySelector('#calio')
-    });
+
+    render(Calio);
 
     let current = epoch.clone().startOfMonth(),
         dates = [],
@@ -81,5 +87,6 @@ test('it has dates', () => {
         dates.push(current.clone().date(i));
     }
 
-    expect(calio.$$.ctx.dates).toEqual(dates);
+    expect(map(queryAll('.calio-day'), e => parseInt(e.textContent)))
+        .toEqual(dates.map(d => d.date()));
 });
