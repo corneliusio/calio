@@ -1,11 +1,11 @@
 import format from '../src/modules/format';
-import LilEpoch from '../src/modules/LilEpoch';
+import Epoch from '../src/modules/Epoch';
 
-const date = new Date(Date.UTC(1988, 10, 1));
+const date = new Date(1988, 10, 1);
 
 test('formats default', () => {
-    expect(format(date)).toBe('Tue Nov 01 1988 00:00:00');
-    expect(format(date, null)).toBe('Tue Nov 01 1988 00:00:00');
+    expect(format(date)).toBe('Tue Nov 01 1988 12:00:00');
+    expect(format(date, null)).toBe('Tue Nov 01 1988 12:00:00');
 });
 
 test('format shortDate', () => {
@@ -37,11 +37,11 @@ test('format isoUtcDateTime', () => {
 });
 
 test('it has some flags', () => {
-    expect(format(date, 'd dd ddd dddd m mm mmm mmmm yy yyyy S'))
-        .toBe('1 01 Tue Tuesday 11 11 Nov November 88 1988 st');
+    expect(format(date, 'D Do DD DDD DDDD M Mo MM MMM MMMM YY YYYY'))
+        .toBe('1 1st 01 Tue Tuesday 11 11th 11 Nov November 88 1988');
 });
 
-test('it can format an instance of LilEpoch', () => {
-    expect(format(new LilEpoch(date), 'd dd ddd dddd m mm mmm mmmm yy yyyy S'))
-        .toBe('1 01 Tue Tuesday 11 11 Nov November 88 1988 st');
+test('it can format an instance of Epoch', () => {
+    expect(format(new Epoch(date), 'D Do DD DDD DDDD M Mo MM MMM MMMM YY YYYY'))
+        .toBe('1 1st 01 Tue Tuesday 11 11th 11 Nov November 88 1988');
 });

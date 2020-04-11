@@ -1,59 +1,59 @@
 import format from './format';
 
-class LilEpoch {
-
+class Epoch {
     constructor(...args) {
-        const [ a, b, c ] = args;
+        const [ Y, M, D, h, m, s ] = args;
 
         if (args.length > 1) {
-            this.value = new Date(a, b, c || 1);
-        } else if (a instanceof LilEpoch) {
-            this.value = a.clone().value;
-        } else if (a instanceof Date) {
-            this.value = a;
-        } else if ([ 'number', 'string' ].includes(typeof a)) {
-            this.value = new Date(a);
+            this.value = new Date(Y, M, D || 1, h || 0, m || 0, s || 0);
+        } else if (Y instanceof Epoch) {
+            this.value = Y.clone().value;
+        } else if (Y instanceof Date) {
+            this.value = Y;
+        } else if ([ 'number', 'string' ].includes(typeof Y)) {
+            this.value = new Date(Y);
         } else {
             this.value = new Date();
         }
 
-        this.value.setUTCHours(0);
-        this.value.setUTCMinutes(0);
-        this.value.setUTCSeconds(0);
-        this.value.setUTCMilliseconds(0);
+        if (typeof Y === 'string') {
+            this.value.setHours(
+                this.value.getHours() + (this.value.getTimezoneOffset() / 60)
+            );
+        }
+
+        this.value.setSeconds(0);
+        this.value.setMilliseconds(0);
     }
 
     year(y = null) {
-
         if (y !== null) {
-            this.value.setUTCFullYear(y);
+            this.value.setFullYear(y);
 
             return this;
         }
 
-        return this.value.getUTCFullYear();
+        return this.value.getFullYear();
     }
 
     month(m = null) {
-
         if (m !== null) {
-            this.value.setUTCMonth(m);
+            this.value.setMonth(m);
 
             return this;
         }
 
-        return this.value.getUTCMonth();
+        return this.value.getMonth();
     }
 
     date(d = null) {
-
         if (d !== null) {
-            this.value.setUTCDate(d);
+            this.value.setDate(d);
 
             return this;
         }
 
-        return this.value.getUTCDate();
+        return this.value.getDate();
     }
 
     addDay(d = 1) {
@@ -93,7 +93,7 @@ class LilEpoch {
     }
 
     dayOfWeek() {
-        return this.value.getUTCDay();
+        return this.value.getDay();
     }
 
     endOfMonth() {
@@ -142,11 +142,11 @@ class LilEpoch {
     }
 
     format(mask) {
-        return format(this.timestamp(), mask, true);
+        return format(this.value, mask, true);
     }
 
     clone() {
-        return new LilEpoch(this.timestamp());
+        return new Epoch(this.timestamp());
     }
 
     toString() {
@@ -154,4 +154,4 @@ class LilEpoch {
     }
 }
 
-export default LilEpoch;
+export default Epoch;

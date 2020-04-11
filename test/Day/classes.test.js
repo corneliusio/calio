@@ -1,11 +1,11 @@
 import { query } from '../helpers';
 import Day from '../../src/components/Day.svelte';
-import LilEpoch from '../../src/modules/LilEpoch';
+import Epoch from '../../src/modules/Epoch';
 import { render, cleanup } from '@testing-library/svelte';
 
 afterEach(() => cleanup());
 
-const today = new LilEpoch();
+const today = new Epoch();
 const past = today.clone().subYear();
 const future = today.clone().addYear();
 

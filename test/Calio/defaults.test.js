@@ -1,5 +1,5 @@
 import { context } from '../helpers';
-import LilEpoch from '../../src/modules/LilEpoch';
+import Epoch from '../../src/modules/Epoch';
 import Calio from '../../src/components/Calio.svelte';
 import { render, cleanup } from '@testing-library/svelte';
 
@@ -14,7 +14,7 @@ test('defaults headers to two char days', () => {
 });
 
 test('defaults view to 1st of this month', () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
 
     epoch.date(1);
 

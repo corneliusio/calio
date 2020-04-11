@@ -1,16 +1,16 @@
-const token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhsTt])\1?|[LloS]|"[^"]*"|'[^']*'/g;
+const token = /s{1,2}|m{1,2}|h{1,4}|Do|D{1,4}|Mo|M{1,4}|YY(?:YY)?|[aA]|"[^"]*"|'[^']*'/g;
 const formats = {
     masks: {
-        default: 'ddd mmm dd yyyy 00:00:00',
-        shortDate: 'm/d/yy',
-        mediumDate: 'mmm d, yyyy',
-        longDate: 'mmmm d, yyyy',
-        fullDate: 'dddd, mmmm d, yyyy',
-        isoDate: 'yyyy-mm-dd',
-        isoDateTime: "yyyy-mm-dd'T'00:00:00",
-        isoUtcDateTime: "yyyy-mm-dd'T'00:00:00'Z'"
+        default: 'DDD MMM DD YYYY hhh:mm:ss',
+        shortDate: 'M/D/YY',
+        mediumDate: 'MMM D, YYYY',
+        longDate: 'MMMM D, YYYY',
+        fullDate: 'DDDD, MMMM D, YYYY',
+        isoDate: 'YYYY-MM-DD',
+        isoDateTime: "YYYY-MM-DD'T'hh:mm:ss",
+        isoUtcDateTime: "YYYY-MM-DD'T'hh:mm:ss'Z'"
     },
-    i18n: {
+    words: {
         dayNames: [
             'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
             'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
@@ -32,30 +32,43 @@ function pad(val, len = 2) {
 }
 
 export default function(date, mask = 'default') {
-
-    if (typeof date === 'object' && 'timestamp' in date) {
-        date = date.timestamp();
-    }
-
     date = date instanceof Date ? date : new Date(date);
     mask = `${formats.masks[mask] || mask || formats.masks.default}`;
 
-    let d = date.getUTCDate(),
-        D = date.getUTCDay(),
-        m = date.getUTCMonth(),
-        y = date.getUTCFullYear(),
+    let d = date.getDate(),
+        s = date.getSeconds(),
+        m = date.getMinutes(),
+        h = date.getHours(),
+        D = date.getDay(),
+        M = date.getMonth(),
+        Y = date.getFullYear(),
+        a = h > 11 ? 'pm' : 'am',
+        o = n => {
+            return [ 'th', 'st', 'nd', 'rd' ][n % 10 > 3 ? 0 : (n % 100 - n % 10 !== 10) * n % 10];
+        },
         flags = {
-            d: d,
-            dd: pad(d),
-            ddd: formats.i18n.dayNames[D],
-            dddd: formats.i18n.dayNames[D + 7],
-            m: m + 1,
-            mm: pad(m + 1),
-            mmm: formats.i18n.monthNames[m],
-            mmmm: formats.i18n.monthNames[m + 12],
-            yy: String(y).slice(2),
-            yyyy: y,
-            S: [ 'th', 'st', 'nd', 'rd' ][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+            s: s,
+            ss: pad(s),
+            m: m,
+            mm: pad(m),
+            h: h,
+            hh: pad(h),
+            hhh: h % 12 || 12,
+            hhhh: pad(h % 12 || 12),
+            a: a,
+            A: a.toUpperCase(),
+            D: d,
+            Do: `${d}${o(d)}`,
+            DD: pad(d),
+            DDD: formats.words.dayNames[D],
+            DDDD: formats.words.dayNames[D + 7],
+            M: M + 1,
+            Mo: `${M + 1}${o(M + 1)}`,
+            MM: pad(M + 1),
+            MMM: formats.words.monthNames[M],
+            MMMM: formats.words.monthNames[M + 12],
+            YY: String(Y).slice(2),
+            YYYY: Y
         };
 
     return mask.replace(token, $0 => {

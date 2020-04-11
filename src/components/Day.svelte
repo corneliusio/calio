@@ -4,12 +4,12 @@
 
 <script>
     import { createEventDispatcher } from 'svelte';
-    import LilEpoch from '../modules/LilEpoch';
+    import Epoch from '../modules/Epoch';
 
-    const today = new LilEpoch();
+    const today = new Epoch();
     const dispatch = createEventDispatcher();
 
-    export let view = new LilEpoch();
+    export let view = new Epoch();
     export let selection = [];
     export let disabled = [];
     export let day;
