@@ -2,11 +2,11 @@ import Calio from '../src';
 import CalioPolyfilled from '../src/index.polyfilled';
 import CalioComponent from '../src/components/Calio.svelte';
 
-test('it returns an instance of Calio (component)', () => {
+test('returns an instance of Calio (component)', () => {
     expect(new Calio(document.body) instanceof CalioComponent).toBe(true);
 });
 
-test('it has a polyfilled version that returns an instance of Calio (component)', () => {
+test('has a polyfilled version that returns an instance of Calio (component)', () => {
     expect(new CalioPolyfilled(document.body) instanceof CalioComponent).toBe(true);
 });
 

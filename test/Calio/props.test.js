@@ -1,11 +1,11 @@
-import { context, queryAll, map } from '../helpers';
+import { queryAll, map } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';
 import { render, cleanup } from '@testing-library/svelte';
 
 afterEach(() => cleanup());
 
-test('it has state accessible through state', () => {
+test('has specific props', () => {
     const calio = render(Calio);
 
     expect(Object.keys(calio.component.$$.props)).toEqual([
@@ -19,6 +19,9 @@ test('it has state accessible through state', () => {
         'max',
         'select',
         'makeMyDay',
+        'setMin',
+        'setMax',
+        'setDisabled',
         'goToYear',
         'goToNextYear',
         'goToLastYear',
@@ -31,7 +34,7 @@ test('it has state accessible through state', () => {
     ]);
 });
 
-test('it has head for each day of week', () => {
+test('has head for each day of week', () => {
     const targetA = document.createElement('div');
     const targetB = document.createElement('div');
     const targetC = document.createElement('div');
@@ -60,7 +63,7 @@ test('it has head for each day of week', () => {
         .toEqual([]);
 });
 
-test('it has dates', () => {
+test('has dates', () => {
     const epoch = new Epoch();
 
     render(Calio);

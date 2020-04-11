@@ -4897,13 +4897,13 @@ function add_css$1() {
 
 function get_each_context(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[31] = list[i];
+  child_ctx[36] = list[i];
   return child_ctx;
 }
 
 function get_each_context_1(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[31] = list[i];
+  child_ctx[36] = list[i];
   return child_ctx;
 } // (2:4) {#each computed.headers as day}
 
@@ -4912,7 +4912,7 @@ function create_each_block_1(ctx) {
   var span;
   var t_value =
   /*day*/
-  ctx[31] + "";
+  ctx[36] + "";
   var t;
   return {
     c: function c() {
@@ -4929,7 +4929,7 @@ function create_each_block_1(ctx) {
       /*computed*/
       8 && t_value !== (t_value =
       /*day*/
-      ctx[31] + "")) set_data(t, t_value);
+      ctx[36] + "")) set_data(t, t_value);
     },
     d: function d(detaching) {
       if (detaching) detach(span);
@@ -4943,7 +4943,7 @@ function create_each_block(ctx) {
   var day_spread_levels = [{
     day:
     /*day*/
-    ctx[31]
+    ctx[36]
   },
   /*props*/
   ctx[2]];
@@ -4957,9 +4957,9 @@ function create_each_block(ctx) {
 
     return (
       /*select_handler*/
-      (_ctx = ctx)[29].apply(_ctx, [
+      (_ctx = ctx)[34].apply(_ctx, [
       /*day*/
-      ctx[31]].concat(args))
+      ctx[36]].concat(args))
     );
   }
 
@@ -4990,7 +4990,7 @@ function create_each_block(ctx) {
       16 && {
         day:
         /*day*/
-        ctx[31]
+        ctx[36]
       }, dirty[0] &
       /*props*/
       4 && get_spread_object(
@@ -5072,7 +5072,7 @@ function create_fragment$1(ctx) {
       /*div_binding*/
 
 
-      ctx[30](div);
+      ctx[35](div);
       current = true;
     },
     p: function p(ctx, dirty) {
@@ -5166,7 +5166,7 @@ function create_fragment$1(ctx) {
       destroy_each(each_blocks, detaching);
       /*div_binding*/
 
-      ctx[30](null);
+      ctx[35](null);
     }
   };
 }
@@ -5182,7 +5182,8 @@ function dispatchEvents(dispatch, el, key, data) {
 
   if (el) {
     el.parentNode.dispatchEvent(new CustomEvent("calio:".concat(key), {
-      detail: data
+      detail: data,
+      bubbles: true
     }));
   }
 
@@ -5276,8 +5277,8 @@ function instance$1($$self, $$props, $$invalidate) {
   var _$$props$max = $$props.max,
       max = _$$props$max === void 0 ? null : _$$props$max;
   onMount(function () {
-    $$invalidate(24, view);
-    $$invalidate(23, selection);
+    $$invalidate(27, view);
+    $$invalidate(26, selection);
     new Array().concat(value).forEach(function (v) {
       return select(v);
     });
@@ -5287,35 +5288,58 @@ function instance$1($$self, $$props, $$invalidate) {
     });
   });
 
-  function watchInvalidDates(_ref) {
-    var min = _ref.min,
-        max = _ref.max,
-        disabled = _ref.disabled;
-    // eslint-disable-next-line complexity
-    tick().then(function () {
-      min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
-      max && max.isBefore(view) && goTo(max);
+  function watchInvalidDatesMin(min) {
+    if (min) {
+      min.isAfter(view.clone().endOfMonth()) && goTo(min);
 
       if (mode === "single" && selection) {
-        min && min.isAfter(selection) && select(min);
-        max && max.isBefore(selection) && select(max);
-        disabled.find(function (disabled) {
-          return disabled.isSame(selection);
-        }) && $$invalidate(23, selection = null);
+        min.isAfter(selection) && select(min);
       } else if (selection && selection.length) {
-        min && $$invalidate(23, selection = selection.filter(function (s) {
+        $$invalidate(26, selection = selection.filter(function (s) {
           return min.isBefore(s);
         }));
-        max && $$invalidate(23, selection = selection.filter(function (s) {
+      }
+    }
+
+    dispatchEvents(dispatcher, el, "min", min);
+  }
+
+  function watchInvalidDatesMax(max) {
+    if (max) {
+      max.isBefore(view) && goTo(max);
+
+      if (mode === "single" && selection) {
+        max.isBefore(selection) && select(max);
+      } else if (selection && selection.length) {
+        $$invalidate(26, selection = selection.filter(function (s) {
           return max.isAfter(s);
         }));
-        disabled.length && $$invalidate(23, selection = selection.filter(function (s) {
-          return !disabled.find(function (disabled) {
-            return disabled.isSame(s);
-          });
-        }));
       }
-    });
+    }
+
+    dispatchEvents(dispatcher, el, "max", max);
+  }
+
+  function watchInvalidDatesDisabled(disabled) {
+    if (mode === "single" && selection) {
+      disabled.find(function (disabled) {
+        return disabled.isSame(selection);
+      }) && $$invalidate(26, selection = null);
+    } else if (selection && selection.length) {
+      disabled.length && $$invalidate(26, selection = selection.filter(function (s) {
+        return !disabled.find(function (disabled) {
+          return disabled.isSame(s);
+        });
+      }));
+
+      if (mode === "range" && strict && selection.length === 2) {
+        disabled.find(function (disabled) {
+          return disabled.isBetween.apply(disabled, _toConsumableArray(selection));
+        }) && $$invalidate(26, selection = null);
+      }
+    }
+
+    dispatchEvents(dispatcher, el, "disabled", disabled);
   }
 
   function makeDates(view, disabled) {
@@ -5359,51 +5383,63 @@ function instance$1($$self, $$props, $$invalidate) {
 
       switch (mode) {
         case "range":
-          $$invalidate(23, selection = updateRange(day, selection, strict, computed.disabled));
+          $$invalidate(26, selection = updateRange(day, selection, strict, computed.disabled));
           break;
 
         case "multi":
-          $$invalidate(23, selection = updateMulti(day, selection, limit));
+          $$invalidate(26, selection = updateMulti(day, selection, limit));
           break;
 
         default:
-          $$invalidate(23, (_updateSingle = updateSingle(day, view), _updateSingle2 = _slicedToArray(_updateSingle, 2), selection = _updateSingle2[0], view = _updateSingle2[1], _updateSingle), selection, $$invalidate(24, view));
+          $$invalidate(26, (_updateSingle = updateSingle(day, view), _updateSingle2 = _slicedToArray(_updateSingle, 2), selection = _updateSingle2[0], view = _updateSingle2[1], _updateSingle), selection, $$invalidate(27, view));
           break;
       }
     }
   }
 
+  function setMin(date) {
+    $$invalidate(6, min = date || null);
+  }
+
+  function setMax(date) {
+    $$invalidate(7, max = date || null);
+  }
+
+  function setDisabled(date) {
+    $$invalidate(5, disabled = date);
+  }
+
   function goToYear(y) {
-    $$invalidate(24, view = view.clone().year(y));
+    $$invalidate(27, view = view.clone().year(y));
   }
 
   function goToNextYear() {
-    $$invalidate(24, view = view.clone().addYear());
+    $$invalidate(27, view = view.clone().addYear());
   }
 
   function goToLastYear() {
-    $$invalidate(24, view = view.clone().subYear());
+    $$invalidate(27, view = view.clone().subYear());
   }
 
   function goToMonth(m) {
-    $$invalidate(24, view = view.clone().startOfMonth().month(m - 1));
+    $$invalidate(27, view = view.clone().startOfMonth().month(m - 1));
   }
 
   function goToNextMonth() {
-    $$invalidate(24, view = view.clone().startOfMonth().addMonth());
+    $$invalidate(27, view = view.clone().startOfMonth().addMonth());
   }
 
   function goToLastMonth() {
-    $$invalidate(24, view = view.clone().startOfMonth().subMonth());
+    $$invalidate(27, view = view.clone().startOfMonth().subMonth());
   }
 
   function goToThisMonth() {
-    $$invalidate(24, view = today.clone().startOfMonth());
+    $$invalidate(27, view = today.clone().startOfMonth());
   }
 
   function goToSelection() {
     if (mode === "single" && selection) {
-      $$invalidate(24, view = selection.clone().startOfMonth());
+      $$invalidate(27, view = selection.clone().startOfMonth());
     }
   }
 
@@ -5411,7 +5447,7 @@ function instance$1($$self, $$props, $$invalidate) {
     day = makeMyDay(day);
 
     if (day) {
-      $$invalidate(24, view = day.clone().startOfMonth());
+      $$invalidate(27, view = day.clone().startOfMonth());
     }
   }
 
@@ -5426,14 +5462,14 @@ function instance$1($$self, $$props, $$invalidate) {
   }
 
   $$self.$set = function ($$props) {
-    if ("headers" in $$props) $$invalidate(5, headers = $$props.headers);
-    if ("mode" in $$props) $$invalidate(6, mode = $$props.mode);
-    if ("strict" in $$props) $$invalidate(7, strict = $$props.strict);
-    if ("disabled" in $$props) $$invalidate(8, disabled = $$props.disabled);
-    if ("value" in $$props) $$invalidate(9, value = $$props.value);
-    if ("limit" in $$props) $$invalidate(10, limit = $$props.limit);
-    if ("min" in $$props) $$invalidate(11, min = $$props.min);
-    if ("max" in $$props) $$invalidate(12, max = $$props.max);
+    if ("headers" in $$props) $$invalidate(8, headers = $$props.headers);
+    if ("mode" in $$props) $$invalidate(9, mode = $$props.mode);
+    if ("strict" in $$props) $$invalidate(10, strict = $$props.strict);
+    if ("disabled" in $$props) $$invalidate(5, disabled = $$props.disabled);
+    if ("value" in $$props) $$invalidate(11, value = $$props.value);
+    if ("limit" in $$props) $$invalidate(12, limit = $$props.limit);
+    if ("min" in $$props) $$invalidate(6, min = $$props.min);
+    if ("max" in $$props) $$invalidate(7, max = $$props.max);
   };
 
   var dates;
@@ -5441,7 +5477,7 @@ function instance$1($$self, $$props, $$invalidate) {
   $$self.$$.update = function () {
     if ($$self.$$.dirty[0] &
     /*min, max, headers, disabled*/
-    6432) {
+    480) {
        $$invalidate(3, computed = {
         min: makeMyDay(min),
         max: makeMyDay(max),
@@ -5454,13 +5490,13 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$self.$$.dirty[0] &
     /*view, computed*/
-    16777224) {
+    134217736) {
        $$invalidate(4, dates = makeDates(view, computed.disabled));
     }
 
     if ($$self.$$.dirty[0] &
     /*computed, selection, view, mode*/
-    25165896) {
+    201327112) {
        $$invalidate(2, props = {
         disabled: computed.disabled,
         min: computed.min,
@@ -5473,28 +5509,40 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$self.$$.dirty[0] &
     /*el, selection*/
-    8388610) {
+    67108866) {
        dispatchEvents(dispatcher, el, "selection", selection);
     }
 
     if ($$self.$$.dirty[0] &
     /*el, view*/
-    16777218) {
+    134217730) {
        dispatchEvents(dispatcher, el, "view", view);
     }
 
     if ($$self.$$.dirty[0] &
     /*computed*/
     8) {
-       watchInvalidDates(computed);
+       watchInvalidDatesMin(computed.min);
+    }
+
+    if ($$self.$$.dirty[0] &
+    /*computed*/
+    8) {
+       watchInvalidDatesMax(computed.max);
+    }
+
+    if ($$self.$$.dirty[0] &
+    /*computed*/
+    8) {
+       watchInvalidDatesDisabled(computed.disabled);
     }
 
     if ($$self.$$.dirty[0] &
     /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/
-    25174014) ;
+    201334782) ;
   };
 
-  return [select, el, props, computed, dates, headers, mode, strict, disabled, value, limit, min, max, makeMyDay, goToYear, goToNextYear, goToLastYear, goToMonth, goToNextMonth, goToLastMonth, goToThisMonth, goToSelection, goTo, selection, view, today, dispatcher, watchInvalidDates, makeDates, select_handler, div_binding];
+  return [select, el, props, computed, dates, disabled, min, max, headers, mode, strict, value, limit, makeMyDay, setMin, setMax, setDisabled, goToYear, goToNextYear, goToLastYear, goToMonth, goToNextMonth, goToLastMonth, goToThisMonth, goToSelection, goTo, selection, view, today, dispatcher, watchInvalidDatesMin, watchInvalidDatesMax, watchInvalidDatesDisabled, makeDates, select_handler, div_binding];
 }
 
 var Calio = /*#__PURE__*/function (_SvelteComponent) {
@@ -5510,25 +5558,28 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
     _this = _super.call(this);
     if (!document.getElementById("svelte-1uuu3r4-style")) add_css$1();
     init(_assertThisInitialized(_this), options, instance$1, create_fragment$1, safe_not_equal, {
-      headers: 5,
-      mode: 6,
-      strict: 7,
-      disabled: 8,
-      value: 9,
-      limit: 10,
-      min: 11,
-      max: 12,
+      headers: 8,
+      mode: 9,
+      strict: 10,
+      disabled: 5,
+      value: 11,
+      limit: 12,
+      min: 6,
+      max: 7,
       select: 0,
       makeMyDay: 13,
-      goToYear: 14,
-      goToNextYear: 15,
-      goToLastYear: 16,
-      goToMonth: 17,
-      goToNextMonth: 18,
-      goToLastMonth: 19,
-      goToThisMonth: 20,
-      goToSelection: 21,
-      goTo: 22
+      setMin: 14,
+      setMax: 15,
+      setDisabled: 16,
+      goToYear: 17,
+      goToNextYear: 18,
+      goToLastYear: 19,
+      goToMonth: 20,
+      goToNextMonth: 21,
+      goToLastMonth: 22,
+      goToThisMonth: 23,
+      goToSelection: 24,
+      goTo: 25
     }, [-1, -1]);
     return _this;
   }
@@ -5544,49 +5595,64 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
       return makeMyDay;
     }
   }, {
-    key: "goToYear",
+    key: "setMin",
     get: function get() {
       return this.$$.ctx[14];
     }
   }, {
-    key: "goToNextYear",
+    key: "setMax",
     get: function get() {
       return this.$$.ctx[15];
     }
   }, {
-    key: "goToLastYear",
+    key: "setDisabled",
     get: function get() {
       return this.$$.ctx[16];
     }
   }, {
-    key: "goToMonth",
+    key: "goToYear",
     get: function get() {
       return this.$$.ctx[17];
     }
   }, {
-    key: "goToNextMonth",
+    key: "goToNextYear",
     get: function get() {
       return this.$$.ctx[18];
     }
   }, {
-    key: "goToLastMonth",
+    key: "goToLastYear",
     get: function get() {
       return this.$$.ctx[19];
     }
   }, {
-    key: "goToThisMonth",
+    key: "goToMonth",
     get: function get() {
       return this.$$.ctx[20];
     }
   }, {
-    key: "goToSelection",
+    key: "goToNextMonth",
     get: function get() {
       return this.$$.ctx[21];
     }
   }, {
-    key: "goTo",
+    key: "goToLastMonth",
     get: function get() {
       return this.$$.ctx[22];
+    }
+  }, {
+    key: "goToThisMonth",
+    get: function get() {
+      return this.$$.ctx[23];
+    }
+  }, {
+    key: "goToSelection",
+    get: function get() {
+      return this.$$.ctx[24];
+    }
+  }, {
+    key: "goTo",
+    get: function get() {
+      return this.$$.ctx[25];
     }
   }]);
 

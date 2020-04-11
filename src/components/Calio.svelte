@@ -67,7 +67,9 @@
     $: dispatchEvents(dispatcher, el, 'selection', selection);
     $: dispatchEvents(dispatcher, el, 'view', view);
 
-    $: watchInvalidDates(computed);
+    $: watchInvalidDatesMin(computed.min);
+    $: watchInvalidDatesMax(computed.max);
+    $: watchInvalidDatesDisabled(computed.disabled);
 
     function dispatchEvents(dispatch, el, key, data) {
         if (data && typeof data.clone === 'function') {
@@ -82,31 +84,56 @@
 
         if (el) {
             el.parentNode.dispatchEvent(new CustomEvent(`calio:${key}`, {
-                detail: data
+                detail: data,
+                bubbles: true
             }));
         }
 
         dispatch(key, data);
     }
 
-    function watchInvalidDates({ min, max, disabled }) {
-        // eslint-disable-next-line complexity
-        tick().then(() => {
-            min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
-            max && max.isBefore(view) && goTo(max);
+    function watchInvalidDatesMin(min) {
+        if (min) {
+            min.isAfter(view.clone().endOfMonth()) && goTo(min);
 
             if (mode === 'single' && selection) {
-                min && min.isAfter(selection) && select(min);
-                max && max.isBefore(selection) && select(max);
-                disabled.find(disabled => disabled.isSame(selection)) && (selection = null);
+                min.isAfter(selection) && select(min);
             } else if (selection && selection.length) {
-                min && (selection = selection.filter(s => min.isBefore(s)));
-                max && (selection = selection.filter(s => max.isAfter(s)));
-                disabled.length && (selection = selection.filter(s => {
-                    return !disabled.find(disabled => disabled.isSame(s));
-                }));
+                (selection = selection.filter(s => min.isBefore(s)));
             }
-        });
+        }
+
+        dispatchEvents(dispatcher, el, 'min', min);
+    }
+
+    function watchInvalidDatesMax(max) {
+        if (max) {
+            max.isBefore(view) && goTo(max);
+
+            if (mode === 'single' && selection) {
+                max.isBefore(selection) && select(max);
+            } else if (selection && selection.length) {
+                (selection = selection.filter(s => max.isAfter(s)));
+            }
+        }
+
+        dispatchEvents(dispatcher, el, 'max', max);
+    }
+
+    function watchInvalidDatesDisabled(disabled) {
+        if (mode === 'single' && selection) {
+            disabled.find(disabled => disabled.isSame(selection)) && (selection = null);
+        } else if (selection && selection.length) {
+            disabled.length && (selection = selection.filter(s => {
+                return !disabled.find(disabled => disabled.isSame(s));
+            }));
+
+            if (mode === 'range' && strict && selection.length === 2) {
+                disabled.find(disabled => disabled.isBetween(...selection)) && (selection = null);
+            }
+        }
+
+        dispatchEvents(dispatcher, el, 'disabled', disabled);
     }
 
     function makeDates(view, disabled) {
@@ -227,6 +254,18 @@
                     ? new Epoch(...day)
                     : new Epoch(day)
             : null;
+    }
+
+    export function setMin(date) {
+        min = date || null;
+    }
+
+    export function setMax(date) {
+        max = date || null;
+    }
+
+    export function setDisabled(date) {
+        disabled = date;
     }
 
     export function goToYear(y) {
