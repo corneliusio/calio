@@ -302,6 +302,33 @@ if (selection.isBefore(today)) {
 }
 ```
 
+### setMin(day)
+Updates minimum date that can be selected to any passed selection value object, `Date` object, or `Date` parsable string/integer.
+
+```js
+const calio = new Calio(el);
+
+calio.setMin(Date.now()); // Only future dates are selectable.
+```
+
+### setMax(day)
+Updates minimum date that can be selected to any passed selection value object, `Date` object, or `Date` parsable string/integer.
+
+```js
+const calio = new Calio(el);
+
+calio.setMax(Date.now()); // Only past dates are selectable.
+```
+
+### setDisabled(day)
+Updates the date or array of dates that cannot be selected.
+
+```js
+const calio = new Calio(el);
+
+calio.setDisabled(Date.now()); // Today cannot be selected.
+```
+
 ### goToYear(y)
 Jump to the (full 4-digit) year provided.
 

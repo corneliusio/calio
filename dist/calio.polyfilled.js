@@ -5509,7 +5509,7 @@ var Epoch = /*#__PURE__*/function () {
 
 function add_css() {
   var style = element("style");
-  style.id = "svelte-1l2ul15-style";
+  style.id = "svelte-18kp2rj-style";
   style.textContent = ".calio-day{cursor:pointer;color:var(--color, #333)}.calio-day:hover{color:var(--color-hover, var(--color, #333));background:var(--bg-hover, #EEE)}.calio-day.is-today{font-weight:900}.calio-day.is-prev,.calio-day.is-next{color:var(--color-inactive, #CCC);background:var(--bg-inactive, transparent)}.calio-day.is-disabled{pointer-events:none;color:var(--color-disabled, var(--color-inactive, #CCC));background:var(--bg-disabled, transparent);opacity:var(--opacity-disabled, 0.5)}.calio-day.is-ranged{color:var(--color-ranged, var(--color-active, white));background:var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)))}.calio-day.is-active{color:var(--color-active, white);background:var(--bg-active, rgb(100, 149, 237))}";
   append(document.head, style);
 }
@@ -5660,7 +5660,7 @@ var Day = /*#__PURE__*/function (_SvelteComponent) {
     _classCallCheck(this, Day);
 
     _this = _super.call(this);
-    if (!document.getElementById("svelte-1l2ul15-style")) add_css();
+    if (!document.getElementById("svelte-18kp2rj-style")) add_css();
     init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, {
       view: 4,
       selection: 3,
@@ -5680,29 +5680,29 @@ var Boolean_1 = globals.Boolean;
 
 function add_css$1() {
   var style = element("style");
-  style.id = "svelte-1uuu3r4-style";
+  style.id = "svelte-i8ptc6-style";
   style.textContent = ".calio{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
   append(document.head, style);
 }
 
 function get_each_context(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[36] = list[i];
+  child_ctx[38] = list[i];
   return child_ctx;
 }
 
 function get_each_context_1(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[36] = list[i];
+  child_ctx[38] = list[i];
   return child_ctx;
-} // (2:4) {#each computed.headers as day}
+} // (1:35) {#each computed.headers as day}
 
 
 function create_each_block_1(ctx) {
   var span;
   var t_value =
   /*day*/
-  ctx[36] + "";
+  ctx[38] + "";
   var t;
   return {
     c: function c() {
@@ -5717,15 +5717,15 @@ function create_each_block_1(ctx) {
     p: function p(ctx, dirty) {
       if (dirty[0] &
       /*computed*/
-      4 && t_value !== (t_value =
+      2 && t_value !== (t_value =
       /*day*/
-      ctx[36] + "")) set_data(t, t_value);
+      ctx[38] + "")) set_data(t, t_value);
     },
     d: function d(detaching) {
       if (detaching) detach(span);
     }
   };
-} // (5:4) {#each dates as day}
+} // (1:115) {#each dates as day}
 
 
 function create_each_block(ctx) {
@@ -5733,26 +5733,10 @@ function create_each_block(ctx) {
   var day_spread_levels = [{
     day:
     /*day*/
-    ctx[36]
+    ctx[38]
   },
   /*props*/
-  ctx[4]];
-
-  function select_handler() {
-    var _ctx;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return (
-      /*select_handler*/
-      (_ctx = ctx)[34].apply(_ctx, [
-      /*day*/
-      ctx[36]].concat(args))
-    );
-  }
-
+  ctx[3]];
   var day_props = {};
 
   for (var i = 0; i < day_spread_levels.length; i += 1) {
@@ -5762,7 +5746,9 @@ function create_each_block(ctx) {
   var day = new Day({
     props: day_props
   });
-  day.$on("select", select_handler);
+  day.$on("select",
+  /*onSelect*/
+  ctx[4]);
   return {
     c: function c() {
       create_component(day.$$.fragment);
@@ -5771,21 +5757,20 @@ function create_each_block(ctx) {
       mount_component(day, target, anchor);
       current = true;
     },
-    p: function p(new_ctx, dirty) {
-      ctx = new_ctx;
+    p: function p(ctx, dirty) {
       var day_changes = dirty[0] &
       /*dates, props*/
-      24 ? get_spread_update(day_spread_levels, [dirty[0] &
+      12 ? get_spread_update(day_spread_levels, [dirty[0] &
       /*dates*/
-      8 && {
+      4 && {
         day:
         /*day*/
-        ctx[36]
+        ctx[38]
       }, dirty[0] &
       /*props*/
-      16 && get_spread_object(
+      8 && get_spread_object(
       /*props*/
-      ctx[4])]) : {};
+      ctx[3])]) : {};
       day.$set(day_changes);
     },
     i: function i(local) {
@@ -5809,7 +5794,7 @@ function create_fragment$1(ctx) {
   var current;
   var each_value_1 =
   /*computed*/
-  ctx[2].headers;
+  ctx[1].headers;
   var each_blocks_1 = [];
 
   for (var i = 0; i < each_value_1.length; i += 1) {
@@ -5818,7 +5803,7 @@ function create_fragment$1(ctx) {
 
   var each_value =
   /*dates*/
-  ctx[3];
+  ctx[2];
   var each_blocks = [];
 
   for (var _i = 0; _i < each_value.length; _i += 1) {
@@ -5862,16 +5847,16 @@ function create_fragment$1(ctx) {
       /*div_binding*/
 
 
-      ctx[35](div);
+      ctx[37](div);
       current = true;
     },
     p: function p(ctx, dirty) {
       if (dirty[0] &
       /*computed*/
-      4) {
+      2) {
         each_value_1 =
         /*computed*/
-        ctx[2].headers;
+        ctx[1].headers;
 
         var _i6;
 
@@ -5897,11 +5882,11 @@ function create_fragment$1(ctx) {
       }
 
       if (dirty[0] &
-      /*dates, props, select*/
-      25) {
+      /*dates, props, onSelect*/
+      28) {
         each_value =
         /*dates*/
-        ctx[3];
+        ctx[2];
 
         var _i7;
 
@@ -5956,7 +5941,7 @@ function create_fragment$1(ctx) {
       destroy_each(each_blocks, detaching);
       /*div_binding*/
 
-      ctx[35](null);
+      ctx[37](null);
     }
   };
 }
@@ -5966,7 +5951,7 @@ function dispatchEvents(dispatch, el, key, data) {
     data = data.clone();
   } else if (Array.isArray(data)) {
     data = data.map(function (d) {
-      return typeof d.clone === "function" ? d.clone() : d;
+      return d.clone();
     });
   }
 
@@ -5978,59 +5963,6 @@ function dispatchEvents(dispatch, el, key, data) {
   }
 
   dispatch(key, data);
-}
-
-function updateRange(day, current, strict, disabled) {
-  var selection = new Array().concat(current).filter(Boolean) || [],
-      index = selection.findIndex(function (s) {
-    return s.isSame(day);
-  });
-
-  if (index > -1) {
-    selection.splice(index, 1);
-    return selection;
-  } else if (selection.length > 1) {
-    return [day.clone()];
-  }
-
-  selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
-    return a.timestamp() - b.timestamp();
-  });
-
-  if (strict) {
-    var _selection = selection,
-        _selection2 = _slicedToArray(_selection, 2),
-        start = _selection2[0],
-        end = _selection2[1],
-        isInvalid = end && !!disabled.find(function (d) {
-      return d.isAfter(start) && d.isBefore(end);
-    });
-
-    if (isInvalid) {
-      return current;
-    }
-  }
-
-  return selection;
-}
-
-function updateMulti(day, current, limit) {
-  var selection = new Array().concat(current).filter(Boolean) || [],
-      index = selection.findIndex(function (s) {
-    return s.isSame(day);
-  });
-
-  if (index > -1) {
-    selection.splice(index, 1);
-    return selection;
-  } else if (!limit || selection.length < limit) {
-    selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
-      return a.timestamp() - b.timestamp();
-    });
-    return selection;
-  }
-
-  return selection;
 }
 
 function updateSingle(day, view) {
@@ -6063,7 +5995,6 @@ function instance$1($$self, $$props, $$invalidate) {
       max = _$$props$max === void 0 ? null : _$$props$max;
   var el;
   var view = new Epoch();
-  var selection = Array.isArray(value) ? value.map(makeMyDay) : makeMyDay(value);
   onMount(function () {
     goToSelection();
     tick().then(function () {
@@ -6081,10 +6012,10 @@ function instance$1($$self, $$props, $$invalidate) {
           min.isAfter(selection) && select(min);
         } else {
           var valid = selection.filter(function (s) {
-            return min.isAfter(s);
+            return s.isAfter(min) || s.isSame(min);
           });
           valid.length ? tick().then(function () {
-            return $$invalidate(27, selection = valid);
+            return $$invalidate(6, value = valid);
           }) : select(min);
         }
       }
@@ -6102,10 +6033,10 @@ function instance$1($$self, $$props, $$invalidate) {
           max.isBefore(selection) && select(max);
         } else {
           var valid = selection.filter(function (s) {
-            return max.isAfter(s);
+            return s.isBefore(max) || s.isSame(max);
           });
           valid.length ? tick().then(function () {
-            return $$invalidate(27, selection = valid);
+            return $$invalidate(6, value = valid);
           }) : select(max);
         }
       }
@@ -6122,12 +6053,12 @@ function instance$1($$self, $$props, $$invalidate) {
         }) && select(null);
       } else {
         var valid = computed.disabled.length && selection.filter(function (s) {
-          return !computed.disabled.find(function (d) {
-            return d.isSame(s);
+          return computed.disabled.find(function (d) {
+            return !d.isSame(s);
           });
         });
         valid.length ? tick().then(function () {
-          return $$invalidate(27, selection = valid);
+          return $$invalidate(6, value = valid);
         }) : select(null);
 
         if (mode === "range" && strict && selection.length === 2) {
@@ -6168,6 +6099,63 @@ function instance$1($$self, $$props, $$invalidate) {
     return dates;
   }
 
+  function updateRange(day, current, strict, disabled) {
+    var selection = new Array().concat(current).filter(Boolean) || [],
+        index = selection.findIndex(function (s) {
+      return s.isSame(day);
+    });
+
+    if (index > -1) {
+      selection.splice(index, 1);
+      return selection;
+    } else if (selection.length > 1) {
+      return [day.clone()];
+    }
+
+    selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
+      return a.timestamp() - b.timestamp();
+    });
+
+    if (strict) {
+      var _selection = selection,
+          _selection2 = _slicedToArray(_selection, 2),
+          start = _selection2[0],
+          end = _selection2[1],
+          isInvalid = end && !!disabled.find(function (d) {
+        return d.isAfter(start) && d.isBefore(end);
+      });
+
+      if (isInvalid) {
+        return current;
+      }
+    }
+
+    return selection;
+  }
+
+  function updateMulti(day, current, limit) {
+    var selection = new Array().concat(current).filter(Boolean) || [],
+        index = selection.findIndex(function (s) {
+      return s.isSame(day);
+    });
+
+    if (index > -1) {
+      selection.splice(index, 1);
+      return selection;
+    } else if (!limit || selection.length < limit) {
+      selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
+        return a.timestamp() - b.timestamp();
+      });
+      return selection;
+    }
+
+    return selection;
+  }
+
+  function onSelect(event) {
+    return select(event.detail);
+  }
+
   function select() {
     return _select.apply(this, arguments);
   }
@@ -6194,7 +6182,7 @@ function instance$1($$self, $$props, $$invalidate) {
                 break;
               }
 
-              $$invalidate(27, selection = null);
+              $$invalidate(28, selection = null);
               _context.next = 19;
               break;
 
@@ -6214,15 +6202,15 @@ function instance$1($$self, $$props, $$invalidate) {
               break;
 
             case 13:
-              $$invalidate(27, selection = updateRange(day, selection, strict, computed.disabled));
+              $$invalidate(28, selection = updateRange(day, selection, strict, computed.disabled));
               return _context.abrupt("break", 19);
 
             case 15:
-              $$invalidate(27, selection = updateMulti(day, selection, limit));
+              $$invalidate(28, selection = updateMulti(day, selection, limit));
               return _context.abrupt("break", 19);
 
             case 17:
-              $$invalidate(27, (_updateSingle = updateSingle(day, view), _updateSingle2 = _slicedToArray(_updateSingle, 2), selection = _updateSingle2[0], view = _updateSingle2[1], _updateSingle), selection, $$invalidate(26, view));
+              $$invalidate(28, (_updateSingle = updateSingle(day, view), _updateSingle2 = _slicedToArray(_updateSingle, 2), selection = _updateSingle2[0], view = _updateSingle2[1], _updateSingle), selection, $$invalidate(27, view));
               return _context.abrupt("break", 19);
 
             case 19:
@@ -6236,11 +6224,11 @@ function instance$1($$self, $$props, $$invalidate) {
   }
 
   function setMin(date) {
-    $$invalidate(6, min = date || null);
+    $$invalidate(7, min = date || null);
   }
 
   function setMax(date) {
-    $$invalidate(7, max = date || null);
+    $$invalidate(8, max = date || null);
   }
 
   function setDisabled(date) {
@@ -6248,36 +6236,36 @@ function instance$1($$self, $$props, $$invalidate) {
   }
 
   function goToYear(y) {
-    $$invalidate(26, view = view.clone().year(y));
+    $$invalidate(27, view = view.clone().year(y));
   }
 
   function goToNextYear() {
-    $$invalidate(26, view = view.clone().addYear());
+    $$invalidate(27, view = view.clone().addYear());
   }
 
   function goToLastYear() {
-    $$invalidate(26, view = view.clone().subYear());
+    $$invalidate(27, view = view.clone().subYear());
   }
 
   function goToMonth(m) {
-    $$invalidate(26, view = view.clone().startOfMonth().month(m - 1));
+    $$invalidate(27, view = view.clone().startOfMonth().month(m - 1));
   }
 
   function goToNextMonth() {
-    $$invalidate(26, view = view.clone().startOfMonth().addMonth());
+    $$invalidate(27, view = view.clone().startOfMonth().addMonth());
   }
 
   function goToLastMonth() {
-    $$invalidate(26, view = view.clone().startOfMonth().subMonth());
+    $$invalidate(27, view = view.clone().startOfMonth().subMonth());
   }
 
   function goToThisMonth() {
-    $$invalidate(26, view = today.clone().startOfMonth());
+    $$invalidate(27, view = today.clone().startOfMonth());
   }
 
   function goToSelection() {
     if (mode === "single" && selection) {
-      $$invalidate(26, view = selection.clone().startOfMonth());
+      $$invalidate(27, view = selection.clone().startOfMonth());
     }
   }
 
@@ -6285,40 +6273,43 @@ function instance$1($$self, $$props, $$invalidate) {
     day = makeMyDay(day);
 
     if (day) {
-      $$invalidate(26, view = day.clone().startOfMonth());
+      $$invalidate(27, view = day.clone().startOfMonth());
     }
   }
 
-  var select_handler = function select_handler(day, event) {
-    return select(day);
-  };
-
   function div_binding($$value) {
     binding_callbacks[$$value ? "unshift" : "push"](function () {
-      $$invalidate(1, el = $$value);
+      $$invalidate(0, el = $$value);
     });
   }
 
   $$self.$set = function ($$props) {
-    if ("headers" in $$props) $$invalidate(8, headers = $$props.headers);
-    if ("mode" in $$props) $$invalidate(9, mode = $$props.mode);
-    if ("strict" in $$props) $$invalidate(10, strict = $$props.strict);
+    if ("headers" in $$props) $$invalidate(9, headers = $$props.headers);
+    if ("mode" in $$props) $$invalidate(10, mode = $$props.mode);
+    if ("strict" in $$props) $$invalidate(11, strict = $$props.strict);
     if ("disabled" in $$props) $$invalidate(5, disabled = $$props.disabled);
-    if ("value" in $$props) $$invalidate(11, value = $$props.value);
+    if ("value" in $$props) $$invalidate(6, value = $$props.value);
     if ("limit" in $$props) $$invalidate(12, limit = $$props.limit);
-    if ("min" in $$props) $$invalidate(6, min = $$props.min);
-    if ("max" in $$props) $$invalidate(7, max = $$props.max);
+    if ("min" in $$props) $$invalidate(7, min = $$props.min);
+    if ("max" in $$props) $$invalidate(8, max = $$props.max);
   };
 
+  var selection;
   var computed;
   var dates;
   var props;
 
   $$self.$$.update = function () {
     if ($$self.$$.dirty[0] &
+    /*value*/
+    64) {
+       $$invalidate(28, selection = Array.isArray(value) ? value.map(makeMyDay) : makeMyDay(value));
+    }
+
+    if ($$self.$$.dirty[0] &
     /*min, max, headers, disabled*/
-    480) {
-       $$invalidate(2, computed = {
+    928) {
+       $$invalidate(1, computed = {
         min: makeMyDay(min),
         max: makeMyDay(max),
         headers: headers.length ? new Array(7).fill("", 0, 7).map(function (n, i) {
@@ -6330,14 +6321,14 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$self.$$.dirty[0] &
     /*view, computed*/
-    67108868) {
-       $$invalidate(3, dates = makeDates(view, computed.disabled));
+    134217730) {
+       $$invalidate(2, dates = makeDates(view, computed.disabled));
     }
 
     if ($$self.$$.dirty[0] &
     /*computed, selection, view, mode*/
-    201327108) {
-       $$invalidate(4, props = {
+    402654210) {
+       $$invalidate(3, props = {
         disabled: computed.disabled,
         min: computed.min,
         max: computed.max,
@@ -6349,40 +6340,40 @@ function instance$1($$self, $$props, $$invalidate) {
 
     if ($$self.$$.dirty[0] &
     /*el, selection*/
-    134217730) {
+    268435457) {
        dispatchEvents(dispatcher, el, "selection", selection);
     }
 
     if ($$self.$$.dirty[0] &
     /*el, view*/
-    67108866) {
+    134217729) {
        dispatchEvents(dispatcher, el, "view", view);
     }
 
     if ($$self.$$.dirty[0] &
     /*computed*/
-    4) {
+    2) {
        watchInvalidDatesMin(computed.min);
     }
 
     if ($$self.$$.dirty[0] &
     /*computed*/
-    4) {
+    2) {
        watchInvalidDatesMax(computed.max);
     }
 
     if ($$self.$$.dirty[0] &
     /*computed*/
-    4) {
+    2) {
        watchInvalidDatesDisabled(computed.disabled);
     }
 
     if ($$self.$$.dirty[0] &
     /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/
-    201334782) ;
+    402661359) ;
   };
 
-  return [select, el, computed, dates, props, disabled, min, max, headers, mode, strict, value, limit, makeMyDay, setMin, setMax, setDisabled, goToYear, goToNextYear, goToLastYear, goToMonth, goToNextMonth, goToLastMonth, goToThisMonth, goToSelection, goTo, view, selection, today, dispatcher, watchInvalidDatesMin, watchInvalidDatesMax, watchInvalidDatesDisabled, makeDates, select_handler, div_binding];
+  return [el, computed, dates, props, onSelect, disabled, value, min, max, headers, mode, strict, limit, select, makeMyDay, setMin, setMax, setDisabled, goToYear, goToNextYear, goToLastYear, goToMonth, goToNextMonth, goToLastMonth, goToThisMonth, goToSelection, goTo, view, selection, today, dispatcher, watchInvalidDatesMin, watchInvalidDatesMax, watchInvalidDatesDisabled, makeDates, updateRange, updateMulti, div_binding];
 }
 
 var Calio = /*#__PURE__*/function (_SvelteComponent) {
@@ -6396,30 +6387,30 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
     _classCallCheck(this, Calio);
 
     _this = _super.call(this);
-    if (!document.getElementById("svelte-1uuu3r4-style")) add_css$1();
+    if (!document.getElementById("svelte-i8ptc6-style")) add_css$1();
     init(_assertThisInitialized(_this), options, instance$1, create_fragment$1, safe_not_equal, {
-      headers: 8,
-      mode: 9,
-      strict: 10,
+      headers: 9,
+      mode: 10,
+      strict: 11,
       disabled: 5,
-      value: 11,
+      value: 6,
       limit: 12,
-      min: 6,
-      max: 7,
-      select: 0,
-      makeMyDay: 13,
-      setMin: 14,
-      setMax: 15,
-      setDisabled: 16,
-      goToYear: 17,
-      goToNextYear: 18,
-      goToLastYear: 19,
-      goToMonth: 20,
-      goToNextMonth: 21,
-      goToLastMonth: 22,
-      goToThisMonth: 23,
-      goToSelection: 24,
-      goTo: 25
+      min: 7,
+      max: 8,
+      select: 13,
+      makeMyDay: 14,
+      setMin: 15,
+      setMax: 16,
+      setDisabled: 17,
+      goToYear: 18,
+      goToNextYear: 19,
+      goToLastYear: 20,
+      goToMonth: 21,
+      goToNextMonth: 22,
+      goToLastMonth: 23,
+      goToThisMonth: 24,
+      goToSelection: 25,
+      goTo: 26
     }, [-1, -1]);
     return _this;
   }
@@ -6427,7 +6418,7 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
   _createClass(Calio, [{
     key: "select",
     get: function get() {
-      return this.$$.ctx[0];
+      return this.$$.ctx[13];
     }
   }, {
     key: "makeMyDay",
@@ -6437,62 +6428,62 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
   }, {
     key: "setMin",
     get: function get() {
-      return this.$$.ctx[14];
+      return this.$$.ctx[15];
     }
   }, {
     key: "setMax",
     get: function get() {
-      return this.$$.ctx[15];
+      return this.$$.ctx[16];
     }
   }, {
     key: "setDisabled",
     get: function get() {
-      return this.$$.ctx[16];
+      return this.$$.ctx[17];
     }
   }, {
     key: "goToYear",
     get: function get() {
-      return this.$$.ctx[17];
+      return this.$$.ctx[18];
     }
   }, {
     key: "goToNextYear",
     get: function get() {
-      return this.$$.ctx[18];
+      return this.$$.ctx[19];
     }
   }, {
     key: "goToLastYear",
     get: function get() {
-      return this.$$.ctx[19];
+      return this.$$.ctx[20];
     }
   }, {
     key: "goToMonth",
     get: function get() {
-      return this.$$.ctx[20];
+      return this.$$.ctx[21];
     }
   }, {
     key: "goToNextMonth",
     get: function get() {
-      return this.$$.ctx[21];
+      return this.$$.ctx[22];
     }
   }, {
     key: "goToLastMonth",
     get: function get() {
-      return this.$$.ctx[22];
+      return this.$$.ctx[23];
     }
   }, {
     key: "goToThisMonth",
     get: function get() {
-      return this.$$.ctx[23];
+      return this.$$.ctx[24];
     }
   }, {
     key: "goToSelection",
     get: function get() {
-      return this.$$.ctx[24];
+      return this.$$.ctx[25];
     }
   }, {
     key: "goTo",
     get: function get() {
-      return this.$$.ctx[25];
+      return this.$$.ctx[26];
     }
   }]);
 

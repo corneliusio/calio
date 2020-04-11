@@ -1,9 +1,11 @@
 <div class="calio" bind:this={el}>
     {#each computed.headers as day}
-        <span class="calio-head">{day}</span>
+        <span class="calio-head">
+            {day}
+        </span>
     {/each}
     {#each dates as day}
-        <Day {day} {...props} on:select={event => select(day)} />
+        <Day {day} {...props} on:select={onSelect} />
     {/each}
 </div>
 
@@ -26,7 +28,8 @@
 
     let el;
     let view = new Epoch();
-    let selection = Array.isArray(value)
+
+    $: selection = Array.isArray(value)
         ? value.map(makeMyDay)
         : makeMyDay(value);
 
@@ -72,11 +75,7 @@
         if (data && typeof data.clone === 'function') {
             data = data.clone();
         } else if (Array.isArray(data)) {
-            data = data.map(d => {
-                return typeof d.clone === 'function'
-                    ? d.clone()
-                    : d;
-            });
+            data = data.map(d => d.clone());
         }
 
         if (el) {
@@ -97,9 +96,9 @@
                 if (mode === 'single') {
                     min.isAfter(selection) && select(min);
                 } else {
-                    const valid = selection.filter(s => min.isAfter(s));
+                    const valid = selection.filter(s => s.isAfter(min) || s.isSame(min));
 
-                    valid.length ? tick().then(() => selection = valid) : select(min);
+                    valid.length ? tick().then(() => value = valid) : select(min);
                 }
             }
         }
@@ -115,9 +114,9 @@
                 if (mode === 'single') {
                     max.isBefore(selection) && select(max);
                 } else {
-                    const valid = selection.filter(s => max.isAfter(s));
+                    const valid = selection.filter(s => s.isBefore(max) || s.isSame(max));
 
-                    valid.length ? tick().then(() => selection = valid) : select(max);
+                    valid.length ? tick().then(() => value = valid) : select(max);
                 }
             }
         }
@@ -131,10 +130,10 @@
                 computed.disabled.find(d => d.isSame(selection)) && select(null);
             } else {
                 const valid = computed.disabled.length && selection.filter(s => {
-                    return !computed.disabled.find(d => d.isSame(s));
+                    return computed.disabled.find(d => !d.isSame(s));
                 });
 
-                valid.length ? tick().then(() => selection = valid) : select(null);
+                valid.length ? tick().then(() => value = valid) : select(null);
 
                 if (mode === 'range' && strict && selection.length === 2) {
                     computed.disabled.find(d => d.isBetween(...selection)) && select(null);
@@ -229,6 +228,10 @@
                 ? day.clone().startOfMonth()
                 : view
         ];
+    }
+
+    function onSelect(event) {
+        return select(event.detail);
     }
 
     export async function select(day = null) {
