@@ -1,4 +1,4 @@
 node_modules/
 coverage/
 .cache/
-index.html
+demo/
