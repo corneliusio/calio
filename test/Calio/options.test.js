@@ -1,13 +1,13 @@
 import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
-import LilEpoch from '../../src/modules/LilEpoch';
+import Epoch from '../../src/modules/Epoch';
 import { render, cleanup, act } from '@testing-library/svelte';
 
 afterEach(() => cleanup());
 
 test('can set a default selection from passed value', () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
     const calio = render(Calio, {
         props: { value: epoch }
     });
@@ -16,7 +16,7 @@ test('can set a default selection from passed value', () => {
 });
 
 test('prevents selection of dates before min', async () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
     const calio = render(Calio, {
         props: { min: epoch }
     });
@@ -29,7 +29,7 @@ test('prevents selection of dates before min', async () => {
 });
 
 test('prevents selection of dates after max', async () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
     const calio = render(Calio, {
         props: { max: epoch }
     });
@@ -42,7 +42,7 @@ test('prevents selection of dates after max', async () => {
 });
 
 test('prevents selection of disabled dates', async () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
     const calio = render(Calio, {
         props: { disabled: epoch }
     });
@@ -55,9 +55,9 @@ test('prevents selection of disabled dates', async () => {
 });
 
 test('adds selected day to array in multi mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
-    const epoch3 = new LilEpoch(2016, 0);
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2017, 0);
+    const epoch3 = new Epoch(2016, 0);
     const calio = render(Calio, {
         props: { mode: 'multi' }
     });
@@ -74,8 +74,8 @@ test('adds selected day to array in multi mode', async () => {
 });
 
 test('toggles date selection if selected date is reselected in multi mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2018, 0);
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2018, 0);
     const calio = render(Calio, {
         props: { mode: 'multi' }
     });
@@ -95,11 +95,11 @@ test('toggles date selection if selected date is reselected in multi mode', asyn
 });
 
 test('can limit number of selected dates in multi mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0, 1);
-    const epoch2 = new LilEpoch(2018, 0, 2);
-    const epoch3 = new LilEpoch(2018, 0, 3);
-    const epoch4 = new LilEpoch(2018, 0, 4);
-    const epoch5 = new LilEpoch(2018, 0, 5);
+    const epoch1 = new Epoch(2018, 0, 1);
+    const epoch2 = new Epoch(2018, 0, 2);
+    const epoch3 = new Epoch(2018, 0, 3);
+    const epoch4 = new Epoch(2018, 0, 4);
+    const epoch5 = new Epoch(2018, 0, 5);
     const calio = render(Calio, {
         props: {
             mode: 'multi',
@@ -122,8 +122,8 @@ test('can limit number of selected dates in multi mode', async () => {
 });
 
 test('adds selected day to array in range mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2017, 0);
     const calio = render(Calio, {
         props: { mode: 'range' }
     });
@@ -138,9 +138,9 @@ test('adds selected day to array in range mode', async () => {
 });
 
 test('limits selection to two selected days in range mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
-    const epoch3 = new LilEpoch(2016, 0);
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2017, 0);
+    const epoch3 = new Epoch(2016, 0);
     const calio = render(Calio, {
         props: { mode: 'range' }
     });
@@ -156,9 +156,9 @@ test('limits selection to two selected days in range mode', async () => {
 });
 
 test('toggles date selection if selected date is reselected in range mode', async () => {
-    const epoch1 = new LilEpoch(2018, 0);
-    const epoch2 = new LilEpoch(2017, 0);
-    const epoch3 = new LilEpoch(2017, 0);
+    const epoch1 = new Epoch(2018, 0);
+    const epoch2 = new Epoch(2017, 0);
+    const epoch3 = new Epoch(2017, 0);
     const calio = render(Calio, {
         props: { mode: 'range' }
     });
@@ -174,9 +174,9 @@ test('toggles date selection if selected date is reselected in range mode', asyn
 });
 
 test('prevents selection of date in strict range mode if range overlaps disabled date', async () => {
-    const epoch1 = new LilEpoch(2018, 0, 1);
-    const epoch2 = new LilEpoch(2018, 0, 20);
-    const epoch3 = new LilEpoch(2018, 0, 10);
+    const epoch1 = new Epoch(2018, 0, 1);
+    const epoch2 = new Epoch(2018, 0, 20);
+    const epoch3 = new Epoch(2018, 0, 10);
     const calio = render(Calio, {
         props: {
             mode: 'range',
@@ -197,7 +197,7 @@ test('prevents selection of date in strict range mode if range overlaps disabled
         calio.component.select(epoch2);
     });
 
-    expect(context(calio, 'selection')).toBeNull();
+    expect(context(calio, 'selection')).toContainEqual(epoch1);
 });
 
 test('delays dates being generated if non-array passed to disabled', () => {

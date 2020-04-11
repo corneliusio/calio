@@ -834,8 +834,8 @@ var arraySpeciesCreate = function (originalArray, length) {
 
 var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
 
-var process$1 = global_1.process;
-var versions = process$1 && process$1.versions;
+var process = global_1.process;
+var versions = process && process.versions;
 var v8 = versions && versions.v8;
 var match, version;
 
@@ -2760,7 +2760,7 @@ var engineIsIos = /(iphone|ipod|ipad).*applewebkit/i.test(engineUserAgent);
 var location = global_1.location;
 var set$1 = global_1.setImmediate;
 var clear = global_1.clearImmediate;
-var process$2 = global_1.process;
+var process$1 = global_1.process;
 var MessageChannel = global_1.MessageChannel;
 var Dispatch = global_1.Dispatch;
 var counter = 0;
@@ -2809,9 +2809,9 @@ if (!set$1 || !clear) {
     delete queue[id];
   };
   // Node.js 0.8-
-  if (classofRaw(process$2) == 'process') {
+  if (classofRaw(process$1) == 'process') {
     defer = function (id) {
-      process$2.nextTick(runner(id));
+      process$1.nextTick(runner(id));
     };
   // Sphere (JS game engine) Dispatch API
   } else if (Dispatch && Dispatch.now) {
@@ -2863,9 +2863,9 @@ var macrotask = task.set;
 
 
 var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
-var process$3 = global_1.process;
+var process$2 = global_1.process;
 var Promise$1 = global_1.Promise;
-var IS_NODE = classofRaw(process$3) == 'process';
+var IS_NODE = classofRaw(process$2) == 'process';
 // Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
 var queueMicrotaskDescriptor = getOwnPropertyDescriptor$2(global_1, 'queueMicrotask');
 var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
@@ -2876,7 +2876,7 @@ var flush, head, last, notify, toggle, node, promise, then;
 if (!queueMicrotask) {
   flush = function () {
     var parent, fn;
-    if (IS_NODE && (parent = process$3.domain)) parent.exit();
+    if (IS_NODE && (parent = process$2.domain)) parent.exit();
     while (head) {
       fn = head.fn;
       head = head.next;
@@ -2894,7 +2894,7 @@ if (!queueMicrotask) {
   // Node.js
   if (IS_NODE) {
     notify = function () {
-      process$3.nextTick(flush);
+      process$2.nextTick(flush);
     };
   // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
   } else if (MutationObserver && !engineIsIos) {
@@ -2998,11 +2998,11 @@ var getInternalPromiseState = internalState.getterFor(PROMISE);
 var PromiseConstructor = nativePromiseConstructor;
 var TypeError$1 = global_1.TypeError;
 var document$2 = global_1.document;
-var process$4 = global_1.process;
+var process$3 = global_1.process;
 var $fetch = getBuiltIn('fetch');
 var newPromiseCapability$1 = newPromiseCapability.f;
 var newGenericPromiseCapability = newPromiseCapability$1;
-var IS_NODE$1 = classofRaw(process$4) == 'process';
+var IS_NODE$1 = classofRaw(process$3) == 'process';
 var DISPATCH_EVENT = !!(document$2 && document$2.createEvent && global_1.dispatchEvent);
 var UNHANDLED_REJECTION = 'unhandledrejection';
 var REJECTION_HANDLED = 'rejectionhandled';
@@ -3116,7 +3116,7 @@ var onUnhandled = function (promise, state) {
     if (IS_UNHANDLED) {
       result = perform(function () {
         if (IS_NODE$1) {
-          process$4.emit('unhandledRejection', value, promise);
+          process$3.emit('unhandledRejection', value, promise);
         } else dispatchEvent(UNHANDLED_REJECTION, promise, value);
       });
       // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
@@ -3133,7 +3133,7 @@ var isUnhandled = function (state) {
 var onHandleUnhandled = function (promise, state) {
   task$1.call(global_1, function () {
     if (IS_NODE$1) {
-      process$4.emit('rejectionHandled', promise);
+      process$3.emit('rejectionHandled', promise);
     } else dispatchEvent(REJECTION_HANDLED, promise, state.value);
   });
 };
@@ -3217,7 +3217,7 @@ if (FORCED$2) {
       var reaction = newPromiseCapability$1(speciesConstructor(this, PromiseConstructor));
       reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;
       reaction.fail = typeof onRejected == 'function' && onRejected;
-      reaction.domain = IS_NODE$1 ? process$4.domain : undefined;
+      reaction.domain = IS_NODE$1 ? process$3.domain : undefined;
       state.parent = true;
       state.reactions.push(reaction);
       if (state.state != PENDING) notify$1(this, state, false);
@@ -4110,10 +4110,6 @@ function createEventDispatcher() {
   };
 }
 
-function setContext(key, context) {
-  get_current_component().$$.context.set(key, context);
-}
-
 var dirty_components = [];
 var binding_callbacks = [];
 var render_callbacks = [];
@@ -4460,19 +4456,19 @@ if (NOT_GENERIC || INCORRECT_NAME) {
   }, { unsafe: true });
 }
 
-var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhsTt])\1?|[LloS]|"[^"]*"|'[^']*'/g;
+var token = /s{1,2}|m{1,2}|h{1,4}|Do|D{1,4}|Mo|M{1,4}|YY(?:YY)?|[aA]|"[^"]*"|'[^']*'/g;
 var formats = {
   masks: {
-    default: 'ddd mmm dd yyyy 00:00:00',
-    shortDate: 'm/d/yy',
-    mediumDate: 'mmm d, yyyy',
-    longDate: 'mmmm d, yyyy',
-    fullDate: 'dddd, mmmm d, yyyy',
-    isoDate: 'yyyy-mm-dd',
-    isoDateTime: "yyyy-mm-dd'T'00:00:00",
-    isoUtcDateTime: "yyyy-mm-dd'T'00:00:00'Z'"
+    default: 'DDD MMM DD YYYY hhh:mm:ss',
+    shortDate: 'M/D/YY',
+    mediumDate: 'MMM D, YYYY',
+    longDate: 'MMMM D, YYYY',
+    fullDate: 'DDDD, MMMM D, YYYY',
+    isoDate: 'YYYY-MM-DD',
+    isoDateTime: "YYYY-MM-DD'T'hh:mm:ss",
+    isoUtcDateTime: "YYYY-MM-DD'T'hh:mm:ss'Z'"
   },
-  i18n: {
+  words: {
     dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   }
@@ -4491,76 +4487,96 @@ function pad(val) {
 
 function _format (date) {
   var mask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'default';
-
-  if (_typeof(date) === 'object' && 'timestamp' in date) {
-    date = date.timestamp();
-  }
-
   date = date instanceof Date ? date : new Date(date);
   mask = "".concat(formats.masks[mask] || mask || formats.masks.default);
-  var d = date.getUTCDate(),
-      D = date.getUTCDay(),
-      m = date.getUTCMonth(),
-      y = date.getUTCFullYear(),
+
+  var d = date.getDate(),
+      s = date.getSeconds(),
+      m = date.getMinutes(),
+      h = date.getHours(),
+      D = date.getDay(),
+      M = date.getMonth(),
+      Y = date.getFullYear(),
+      a = h > 11 ? 'pm' : 'am',
+      o = function o(n) {
+    return ['th', 'st', 'nd', 'rd'][n % 10 > 3 ? 0 : (n % 100 - n % 10 !== 10) * n % 10];
+  },
       flags = {
-    d: d,
-    dd: pad(d),
-    ddd: formats.i18n.dayNames[D],
-    dddd: formats.i18n.dayNames[D + 7],
-    m: m + 1,
-    mm: pad(m + 1),
-    mmm: formats.i18n.monthNames[m],
-    mmmm: formats.i18n.monthNames[m + 12],
-    yy: String(y).slice(2),
-    yyyy: y,
-    S: ['th', 'st', 'nd', 'rd'][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+    s: s,
+    ss: pad(s),
+    m: m,
+    mm: pad(m),
+    h: h,
+    hh: pad(h),
+    hhh: h % 12 || 12,
+    hhhh: pad(h % 12 || 12),
+    a: a,
+    A: a.toUpperCase(),
+    D: d,
+    Do: "".concat(d).concat(o(d)),
+    DD: pad(d),
+    DDD: formats.words.dayNames[D],
+    DDDD: formats.words.dayNames[D + 7],
+    M: M + 1,
+    Mo: "".concat(M + 1).concat(o(M + 1)),
+    MM: pad(M + 1),
+    MMM: formats.words.monthNames[M],
+    MMMM: formats.words.monthNames[M + 12],
+    YY: String(Y).slice(2),
+    YYYY: Y
   };
+
   return mask.replace(token, function ($0) {
     return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
   });
 }
 
-var LilEpoch = /*#__PURE__*/function () {
-  function LilEpoch() {
-    _classCallCheck(this, LilEpoch);
+var Epoch = /*#__PURE__*/function () {
+  function Epoch() {
+    _classCallCheck(this, Epoch);
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    var a = args[0],
-        b = args[1],
-        c = args[2];
+    var Y = args[0],
+        M = args[1],
+        D = args[2],
+        h = args[3],
+        m = args[4],
+        s = args[5];
 
     if (args.length > 1) {
-      this.value = new Date(a, b, c || 1);
-    } else if (a instanceof LilEpoch) {
-      this.value = a.clone().value;
-    } else if (a instanceof Date) {
-      this.value = a;
-    } else if (['number', 'string'].includes(_typeof(a))) {
-      this.value = new Date(a);
+      this.value = new Date(Y, M, D || 1, h || 0, m || 0, s || 0);
+    } else if (Y instanceof Epoch) {
+      this.value = Y.clone().value;
+    } else if (Y instanceof Date) {
+      this.value = Y;
+    } else if (['number', 'string'].includes(_typeof(Y))) {
+      this.value = new Date(Y);
     } else {
       this.value = new Date();
     }
 
-    this.value.setUTCHours(0);
-    this.value.setUTCMinutes(0);
-    this.value.setUTCSeconds(0);
-    this.value.setUTCMilliseconds(0);
+    if (typeof Y === 'string') {
+      this.value.setHours(this.value.getHours() + this.value.getTimezoneOffset() / 60);
+    }
+
+    this.value.setSeconds(0);
+    this.value.setMilliseconds(0);
   }
 
-  _createClass(LilEpoch, [{
+  _createClass(Epoch, [{
     key: "year",
     value: function year() {
       var y = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (y !== null) {
-        this.value.setUTCFullYear(y);
+        this.value.setFullYear(y);
         return this;
       }
 
-      return this.value.getUTCFullYear();
+      return this.value.getFullYear();
     }
   }, {
     key: "month",
@@ -4568,11 +4584,11 @@ var LilEpoch = /*#__PURE__*/function () {
       var m = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (m !== null) {
-        this.value.setUTCMonth(m);
+        this.value.setMonth(m);
         return this;
       }
 
-      return this.value.getUTCMonth();
+      return this.value.getMonth();
     }
   }, {
     key: "date",
@@ -4580,11 +4596,11 @@ var LilEpoch = /*#__PURE__*/function () {
       var d = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
       if (d !== null) {
-        this.value.setUTCDate(d);
+        this.value.setDate(d);
         return this;
       }
 
-      return this.value.getUTCDate();
+      return this.value.getDate();
     }
   }, {
     key: "addDay",
@@ -4631,7 +4647,7 @@ var LilEpoch = /*#__PURE__*/function () {
   }, {
     key: "dayOfWeek",
     value: function dayOfWeek() {
-      return this.value.getUTCDay();
+      return this.value.getDay();
     }
   }, {
     key: "endOfMonth",
@@ -4684,12 +4700,12 @@ var LilEpoch = /*#__PURE__*/function () {
   }, {
     key: "format",
     value: function format(mask) {
-      return _format(this.timestamp(), mask, true);
+      return _format(this.value, mask, true);
     }
   }, {
     key: "clone",
     value: function clone() {
-      return new LilEpoch(this.timestamp());
+      return new Epoch(this.timestamp());
     }
   }, {
     key: "toString",
@@ -4698,7 +4714,7 @@ var LilEpoch = /*#__PURE__*/function () {
     }
   }]);
 
-  return LilEpoch;
+  return Epoch;
 }();
 
 function add_css() {
@@ -4760,10 +4776,10 @@ function create_fragment(ctx) {
 }
 
 function instance($$self, $$props, $$invalidate) {
-  var today = new LilEpoch();
+  var today = new Epoch();
   var dispatch = createEventDispatcher();
   var _$$props$view = $$props.view,
-      view = _$$props$view === void 0 ? new LilEpoch() : _$$props$view;
+      view = _$$props$view === void 0 ? new Epoch() : _$$props$view;
   var _$$props$selection = $$props.selection,
       selection = _$$props$selection === void 0 ? [] : _$$props$selection;
   var _$$props$disabled = $$props.disabled,
@@ -5188,15 +5204,21 @@ function updateRange(day, current, strict, disabled) {
 
   selection = [].concat(_toConsumableArray(selection), [day.clone()]).sort(function (a, b) {
     return a.timestamp() - b.timestamp();
-  }); // if (strict) {
-  //     let [ start, end ] = selection,
-  //         isInvalid = end && !!disabled.find(d => {
-  //             return d.isAfter(start) && d.isBefore(end);
-  //         });
-  //     if (isInvalid) {
-  //         return null;
-  //     }
-  // }
+  });
+
+  if (strict) {
+    var _selection = selection,
+        _selection2 = _slicedToArray(_selection, 2),
+        start = _selection2[0],
+        end = _selection2[1],
+        isInvalid = end && !!disabled.find(function (d) {
+      return d.isAfter(start) && d.isBefore(end);
+    });
+
+    if (isInvalid) {
+      return current;
+    }
+  }
 
   return selection;
 }
@@ -5226,17 +5248,17 @@ function updateSingle(day, view) {
 
 function makeMyDay() {
   var day = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  return day ? day instanceof LilEpoch ? day : Array.isArray(day) ? _construct(LilEpoch, _toConsumableArray(day)) : new LilEpoch(day) : null;
+  return day ? day instanceof Epoch ? day : Array.isArray(day) ? _construct(Epoch, _toConsumableArray(day)) : new Epoch(day) : null;
 }
 
 function instance$1($$self, $$props, $$invalidate) {
-  var today = new LilEpoch();
+  var today = new Epoch();
   var dispatcher = createEventDispatcher();
   var el;
   var props;
   var computed;
   var selection = null;
-  var view = new LilEpoch();
+  var view = new Epoch();
   var _$$props$headers = $$props.headers,
       headers = _$$props$headers === void 0 ? ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] : _$$props$headers;
   var _$$props$mode = $$props.mode,
@@ -5292,12 +5314,6 @@ function instance$1($$self, $$props, $$invalidate) {
             return disabled.isSame(s);
           });
         }));
-
-        if (mode === "range" && strict && selection.length === 2) {
-          disabled.find(function (disabled) {
-            return disabled.isBetween.apply(disabled, _toConsumableArray(selection));
-          }) && $$invalidate(23, selection = null);
-        }
       }
     });
   }
@@ -5468,31 +5484,14 @@ function instance$1($$self, $$props, $$invalidate) {
     }
 
     if ($$self.$$.dirty[0] &
-    /*computed, selection*/
-    8388616) {
+    /*computed*/
+    8) {
        watchInvalidDates(computed);
     }
 
     if ($$self.$$.dirty[0] &
     /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/
-    25174014) {
-       if (process.env.NODE_ENV === "testing") {
-        setContext("el", el);
-        setContext("props", props);
-        setContext("computed", computed);
-        setContext("selection", selection);
-        setContext("view", view);
-        setContext("headers", headers);
-        setContext("mode", mode);
-        setContext("strict", strict);
-        setContext("disabled", disabled);
-        setContext("value", value);
-        setContext("limit", limit);
-        setContext("min", min);
-        setContext("max", max);
-        setContext("dates", dates);
-      }
-    }
+    25174014) ;
   };
 
   return [select, el, props, computed, dates, headers, mode, strict, disabled, value, limit, min, max, makeMyDay, goToYear, goToNextYear, goToLastYear, goToMonth, goToNextMonth, goToLastMonth, goToThisMonth, goToSelection, goTo, selection, view, today, dispatcher, watchInvalidDates, makeDates, select_handler, div_binding];

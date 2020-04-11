@@ -2,6 +2,7 @@ const config = require('./svelte.config');
 const svelte = require('rollup-plugin-svelte');
 const common = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 
 module.exports = [
     {
@@ -13,7 +14,10 @@ module.exports = [
         plugins: [
             resolve(),
             common(),
-            svelte(config)
+            svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'development\''
+            })
         ]
     },
     {
@@ -27,7 +31,10 @@ module.exports = [
         plugins: [
             resolve(),
             common(),
-            svelte(config)
+            svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'development\''
+            })
         ]
     }
 ];

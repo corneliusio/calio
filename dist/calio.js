@@ -95,9 +95,6 @@ function createEventDispatcher() {
         }
     };
 }
-function setContext(key, context) {
-    get_current_component().$$.context.set(key, context);
-}
 
 const dirty_components = [];
 const binding_callbacks = [];
@@ -358,19 +355,19 @@ class SvelteComponent {
     }
 }
 
-const token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhsTt])\1?|[LloS]|"[^"]*"|'[^']*'/g;
+const token = /s{1,2}|m{1,2}|h{1,4}|Do|D{1,4}|Mo|M{1,4}|YY(?:YY)?|[aA]|"[^"]*"|'[^']*'/g;
 const formats = {
     masks: {
-        default: 'ddd mmm dd yyyy 00:00:00',
-        shortDate: 'm/d/yy',
-        mediumDate: 'mmm d, yyyy',
-        longDate: 'mmmm d, yyyy',
-        fullDate: 'dddd, mmmm d, yyyy',
-        isoDate: 'yyyy-mm-dd',
-        isoDateTime: "yyyy-mm-dd'T'00:00:00",
-        isoUtcDateTime: "yyyy-mm-dd'T'00:00:00'Z'"
+        default: 'DDD MMM DD YYYY hhh:mm:ss',
+        shortDate: 'M/D/YY',
+        mediumDate: 'MMM D, YYYY',
+        longDate: 'MMMM D, YYYY',
+        fullDate: 'DDDD, MMMM D, YYYY',
+        isoDate: 'YYYY-MM-DD',
+        isoDateTime: "YYYY-MM-DD'T'hh:mm:ss",
+        isoUtcDateTime: "YYYY-MM-DD'T'hh:mm:ss'Z'"
     },
-    i18n: {
+    words: {
         dayNames: [
             'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
             'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
@@ -392,30 +389,43 @@ function pad(val, len = 2) {
 }
 
 function format(date, mask = 'default') {
-
-    if (typeof date === 'object' && 'timestamp' in date) {
-        date = date.timestamp();
-    }
-
     date = date instanceof Date ? date : new Date(date);
     mask = `${formats.masks[mask] || mask || formats.masks.default}`;
 
-    let d = date.getUTCDate(),
-        D = date.getUTCDay(),
-        m = date.getUTCMonth(),
-        y = date.getUTCFullYear(),
+    let d = date.getDate(),
+        s = date.getSeconds(),
+        m = date.getMinutes(),
+        h = date.getHours(),
+        D = date.getDay(),
+        M = date.getMonth(),
+        Y = date.getFullYear(),
+        a = h > 11 ? 'pm' : 'am',
+        o = n => {
+            return [ 'th', 'st', 'nd', 'rd' ][n % 10 > 3 ? 0 : (n % 100 - n % 10 !== 10) * n % 10];
+        },
         flags = {
-            d: d,
-            dd: pad(d),
-            ddd: formats.i18n.dayNames[D],
-            dddd: formats.i18n.dayNames[D + 7],
-            m: m + 1,
-            mm: pad(m + 1),
-            mmm: formats.i18n.monthNames[m],
-            mmmm: formats.i18n.monthNames[m + 12],
-            yy: String(y).slice(2),
-            yyyy: y,
-            S: [ 'th', 'st', 'nd', 'rd' ][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+            s: s,
+            ss: pad(s),
+            m: m,
+            mm: pad(m),
+            h: h,
+            hh: pad(h),
+            hhh: h % 12 || 12,
+            hhhh: pad(h % 12 || 12),
+            a: a,
+            A: a.toUpperCase(),
+            D: d,
+            Do: `${d}${o(d)}`,
+            DD: pad(d),
+            DDD: formats.words.dayNames[D],
+            DDDD: formats.words.dayNames[D + 7],
+            M: M + 1,
+            Mo: `${M + 1}${o(M + 1)}`,
+            MM: pad(M + 1),
+            MMM: formats.words.monthNames[M],
+            MMMM: formats.words.monthNames[M + 12],
+            YY: String(Y).slice(2),
+            YYYY: Y
         };
 
     return mask.replace(token, $0 => {
@@ -423,60 +433,60 @@ function format(date, mask = 'default') {
     });
 }
 
-class LilEpoch {
-
+class Epoch {
     constructor(...args) {
-        const [ a, b, c ] = args;
+        const [ Y, M, D, h, m, s ] = args;
 
         if (args.length > 1) {
-            this.value = new Date(a, b, c || 1);
-        } else if (a instanceof LilEpoch) {
-            this.value = a.clone().value;
-        } else if (a instanceof Date) {
-            this.value = a;
-        } else if ([ 'number', 'string' ].includes(typeof a)) {
-            this.value = new Date(a);
+            this.value = new Date(Y, M, D || 1, h || 0, m || 0, s || 0);
+        } else if (Y instanceof Epoch) {
+            this.value = Y.clone().value;
+        } else if (Y instanceof Date) {
+            this.value = Y;
+        } else if ([ 'number', 'string' ].includes(typeof Y)) {
+            this.value = new Date(Y);
         } else {
             this.value = new Date();
         }
 
-        this.value.setUTCHours(0);
-        this.value.setUTCMinutes(0);
-        this.value.setUTCSeconds(0);
-        this.value.setUTCMilliseconds(0);
+        if (typeof Y === 'string') {
+            this.value.setHours(
+                this.value.getHours() + (this.value.getTimezoneOffset() / 60)
+            );
+        }
+
+        this.value.setSeconds(0);
+        this.value.setMilliseconds(0);
     }
 
     year(y = null) {
-
         if (y !== null) {
-            this.value.setUTCFullYear(y);
+            this.value.setFullYear(y);
 
             return this;
         }
 
-        return this.value.getUTCFullYear();
+        return this.value.getFullYear();
     }
 
     month(m = null) {
-
         if (m !== null) {
-            this.value.setUTCMonth(m);
+            this.value.setMonth(m);
 
             return this;
         }
 
-        return this.value.getUTCMonth();
+        return this.value.getMonth();
     }
 
     date(d = null) {
-
         if (d !== null) {
-            this.value.setUTCDate(d);
+            this.value.setDate(d);
 
             return this;
         }
 
-        return this.value.getUTCDate();
+        return this.value.getDate();
     }
 
     addDay(d = 1) {
@@ -516,7 +526,7 @@ class LilEpoch {
     }
 
     dayOfWeek() {
-        return this.value.getUTCDay();
+        return this.value.getDay();
     }
 
     endOfMonth() {
@@ -565,11 +575,11 @@ class LilEpoch {
     }
 
     format(mask) {
-        return format(this.timestamp(), mask);
+        return format(this.value, mask);
     }
 
     clone() {
-        return new LilEpoch(this.timestamp());
+        return new Epoch(this.timestamp());
     }
 
     toString() {
@@ -622,9 +632,9 @@ function create_fragment(ctx) {
 }
 
 function instance($$self, $$props, $$invalidate) {
-	const today = new LilEpoch();
+	const today = new Epoch();
 	const dispatch = createEventDispatcher();
-	let { view = new LilEpoch() } = $$props;
+	let { view = new Epoch() } = $$props;
 	let { selection = [] } = $$props;
 	let { disabled = [] } = $$props;
 	let { day } = $$props;
@@ -987,15 +997,17 @@ function updateRange(day, current, strict, disabled) {
 		return a.timestamp() - b.timestamp();
 	});
 
-	// if (strict) {
-	//     let [ start, end ] = selection,
-	//         isInvalid = end && !!disabled.find(d => {
-	//             return d.isAfter(start) && d.isBefore(end);
-	//         });
-	//     if (isInvalid) {
-	//         return null;
-	//     }
-	// }
+	if (strict) {
+		let [start, end] = selection,
+			isInvalid = end && !!disabled.find(d => {
+				return d.isAfter(start) && d.isBefore(end);
+			});
+
+		if (isInvalid) {
+			return current;
+		}
+	}
+
 	return selection;
 }
 
@@ -1028,22 +1040,20 @@ function updateSingle(day, view) {
 
 function makeMyDay(day = null) {
 	return day
-	? day instanceof LilEpoch
+	? day instanceof Epoch
 		? day
-		: Array.isArray(day)
-			? new LilEpoch(...day)
-			: new LilEpoch(day)
+		: Array.isArray(day) ? new Epoch(...day) : new Epoch(day)
 	: null;
 }
 
 function instance$1($$self, $$props, $$invalidate) {
-	const today = new LilEpoch();
+	const today = new Epoch();
 	const dispatcher = createEventDispatcher();
 	let el;
 	let props;
 	let computed;
 	let selection = null;
-	let view = new LilEpoch();
+	let view = new Epoch();
 	let { headers = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] } = $$props;
 	let { mode = "single" } = $$props;
 	let { strict = false } = $$props;
@@ -1081,10 +1091,6 @@ function instance$1($$self, $$props, $$invalidate) {
 				disabled.length && $$invalidate(23, selection = selection.filter(s => {
 					return !disabled.find(disabled => disabled.isSame(s));
 				}));
-
-				if (mode === "range" && strict && selection.length === 2) {
-					disabled.find(disabled => disabled.isBetween(...selection)) && $$invalidate(23, selection = null);
-				}
 			}
 		});
 	}
@@ -1233,28 +1239,11 @@ function instance$1($$self, $$props, $$invalidate) {
 			 dispatchEvents(dispatcher, el, "view", view);
 		}
 
-		if ($$self.$$.dirty[0] & /*computed, selection*/ 8388616) {
+		if ($$self.$$.dirty[0] & /*computed*/ 8) {
 			 watchInvalidDates(computed);
 		}
 
-		if ($$self.$$.dirty[0] & /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/ 25174014) {
-			 if (process.env.NODE_ENV === "testing") {
-				setContext("el", el);
-				setContext("props", props);
-				setContext("computed", computed);
-				setContext("selection", selection);
-				setContext("view", view);
-				setContext("headers", headers);
-				setContext("mode", mode);
-				setContext("strict", strict);
-				setContext("disabled", disabled);
-				setContext("value", value);
-				setContext("limit", limit);
-				setContext("min", min);
-				setContext("max", max);
-				setContext("dates", dates);
-			}
-		}
+		if ($$self.$$.dirty[0] & /*el, props, computed, selection, view, headers, mode, strict, disabled, value, limit, min, max, dates*/ 25174014) ;
 	};
 
 	return [

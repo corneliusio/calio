@@ -4,6 +4,7 @@ const svelte = require('rollup-plugin-svelte');
 const common = require('rollup-plugin-commonjs');
 const { terser } = require('rollup-plugin-terser');
 const resolve = require('rollup-plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 
 module.exports = [
     {
@@ -16,6 +17,9 @@ module.exports = [
             resolve(),
             common(),
             svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'production\''
+            }),
             babel({
                 extensions: [ '.js', '.mjs', '.svelte' ],
                 exclude: 'node_modules/core-js/**'
@@ -33,6 +37,9 @@ module.exports = [
             resolve(),
             common(),
             svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'production\''
+            }),
             babel({
                 extensions: [ '.js', '.mjs', '.svelte' ],
                 exclude: 'node_modules/core-js/**'
@@ -49,7 +56,10 @@ module.exports = [
         plugins: [
             resolve(),
             common(),
-            svelte(config)
+            svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'production\''
+            })
         ]
     },
     {
@@ -63,6 +73,9 @@ module.exports = [
             resolve(),
             common(),
             svelte(config),
+            replace({
+                'process.env.NODE_ENV': '\'production\''
+            }),
             terser()
         ]
     }

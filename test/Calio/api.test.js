@@ -1,12 +1,12 @@
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
-import LilEpoch from '../../src/modules/LilEpoch';
+import Epoch from '../../src/modules/Epoch';
 import { render, cleanup, act } from '@testing-library/svelte';
 
 afterEach(() => cleanup());
 
 test('normalizes a date', () => {
-    const epoch = new LilEpoch(2018, 0, 1);
+    const epoch = new Epoch(2018, 0, 1);
     const calio = render(Calio);
 
     let date1 = calio.component.makeMyDay(epoch),
@@ -21,7 +21,7 @@ test('normalizes a date', () => {
 });
 
 test('selects a day', async () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
     const calio = render(Calio);
 
     await act(() => {
@@ -34,7 +34,7 @@ test('selects a day', async () => {
 test('can go to year', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 0)
+            value: new Epoch(2018, 0)
         }
     });
 
@@ -42,13 +42,13 @@ test('can go to year', async () => {
         calio.component.goToYear(2000);
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2000, 0));
+    expect(context(calio, 'view')).toEqual(new Epoch(2000, 0));
 });
 
 test('can go to next year', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 0)
+            value: new Epoch(2018, 0)
         }
     });
 
@@ -56,13 +56,13 @@ test('can go to next year', async () => {
         calio.component.goToNextYear();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2019, 0));
+    expect(context(calio, 'view')).toEqual(new Epoch(2019, 0));
 });
 
 test('can go to last year', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 0)
+            value: new Epoch(2018, 0)
         }
     });
 
@@ -70,13 +70,13 @@ test('can go to last year', async () => {
         calio.component.goToLastYear();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2017, 0));
+    expect(context(calio, 'view')).toEqual(new Epoch(2017, 0));
 });
 
 test('can go to month', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 6)
+            value: new Epoch(2018, 6)
         }
     });
 
@@ -84,13 +84,13 @@ test('can go to month', async () => {
         calio.component.goToMonth(1);
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2018, 0));
+    expect(context(calio, 'view')).toEqual(new Epoch(2018, 0));
 });
 
 test('can go to next month', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 6)
+            value: new Epoch(2018, 6)
         }
     });
 
@@ -98,13 +98,13 @@ test('can go to next month', async () => {
         calio.component.goToNextMonth();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2018, 7));
+    expect(context(calio, 'view')).toEqual(new Epoch(2018, 7));
 });
 
 test('can go to last month', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(2018, 6)
+            value: new Epoch(2018, 6)
         }
     });
 
@@ -112,13 +112,13 @@ test('can go to last month', async () => {
         calio.component.goToLastMonth();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch(2018, 5));
+    expect(context(calio, 'view')).toEqual(new Epoch(2018, 5));
 });
 
 test('can go to this month', async () => {
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch(1988, 6)
+            value: new Epoch(1988, 6)
         }
     });
 
@@ -126,14 +126,14 @@ test('can go to this month', async () => {
         calio.component.goToThisMonth();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch().date(1));
+    expect(context(calio, 'view')).toEqual(new Epoch().date(1));
 });
 
 test('can go to current selection in single mode if it exists', async () => {
-    const epoch = new LilEpoch(1988, 0);
+    const epoch = new Epoch(1988, 0);
     const calio = render(Calio, {
         props: {
-            value: new LilEpoch()
+            value: new Epoch()
         }
     });
 
@@ -141,7 +141,7 @@ test('can go to current selection in single mode if it exists', async () => {
         calio.component.goToSelection();
     });
 
-    expect(context(calio, 'view')).toEqual(new LilEpoch().date(1));
+    expect(context(calio, 'view')).toEqual(new Epoch().date(1));
 
     await act(() => {
         calio.component.select(epoch);
@@ -152,7 +152,7 @@ test('can go to current selection in single mode if it exists', async () => {
 });
 
 test('can go to month containing valid day', async () => {
-    const epoch = new LilEpoch(1988, 10, 25);
+    const epoch = new Epoch(1988, 10, 25);
     const calio = render(Calio);
 
     await act(() => {

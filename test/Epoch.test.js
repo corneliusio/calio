@@ -1,48 +1,55 @@
-import LilEpoch from '../src/modules/LilEpoch';
+import Epoch from '../src/modules/Epoch';
 
 test('it accepts year, month, date arguments', () => {
-    expect(new LilEpoch(2018, 0, 1)).toHaveProperty('value', new Date(Date.UTC(2018, 0, 1)));
+    expect(new Epoch(2018, 0, 1)).toHaveProperty('value', new Date(2018, 0, 1));
 });
 
 test('it defaults to 1st if on date provided', () => {
-    expect(new LilEpoch(2018, 0)).toHaveProperty('value', new Date(Date.UTC(2018, 0, 1)));
+    expect(new Epoch(2018, 0)).toHaveProperty('value', new Date(2018, 0, 1));
 });
 
-test('it accepts another LilEpoch instance', () => {
-    let epoch = new LilEpoch();
+test('it accepts another Epoch instance', () => {
+    let epoch = new Epoch();
 
-    expect(new LilEpoch(epoch)).toEqual(epoch);
+    expect(new Epoch(epoch)).toEqual(epoch);
 });
 
 test('it accepts a Date object', () => {
     let date = new Date();
 
-    expect(new LilEpoch(date)).toHaveProperty('value', date);
+    expect(new Epoch(date)).toHaveProperty('value', date);
 });
 
 test('it accepts a timestamp', () => {
-    let timestamp = Date.UTC(2018, 0);
+    let timestamp = new Date(2018, 0).getTime();
 
-    expect(new LilEpoch(timestamp)).toHaveProperty('value', new Date(timestamp));
+    expect(new Epoch(timestamp)).toHaveProperty('value', new Date(timestamp));
 });
 
 test('it accepts a date string', () => {
-    expect(new LilEpoch('2018-01-01')).toHaveProperty('value', new Date('2018-01-01'));
+    let date = new Date('2018-01-01');
+
+    date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    expect(new Epoch('2018-01-01')).toHaveProperty('value', date);
 });
 
-test('it resets UTC hours, minutes, seconds, and milliseconds', () => {
+test('it resets hours, minutes, seconds, and milliseconds', () => {
     let date = new Date(2018, 0, 1);
 
-    date.setUTCHours(0);
-    date.setUTCMinutes(0);
-    date.setUTCSeconds(0);
-    date.setUTCMilliseconds(0);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
 
-    expect(new LilEpoch(2018, 0, 1)).toHaveProperty('value', date);
+    expect(new Epoch(2018, 0, 1)).toHaveProperty('value', date);
 });
 
 test('it gets/set the year', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.year()).toBe(1988);
 
@@ -52,7 +59,7 @@ test('it gets/set the year', () => {
 });
 
 test('it gets/set the month', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.month()).toBe(10);
 
@@ -62,7 +69,7 @@ test('it gets/set the month', () => {
 });
 
 test('it gets/set the date', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.date()).toBe(25);
 
@@ -72,7 +79,7 @@ test('it gets/set the date', () => {
 });
 
 test('it can add days', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.addDay();
 
@@ -84,7 +91,7 @@ test('it can add days', () => {
 });
 
 test('it can add months', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.addMonth();
 
@@ -96,7 +103,7 @@ test('it can add months', () => {
 });
 
 test('it can add years', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.addYear();
 
@@ -108,7 +115,7 @@ test('it can add years', () => {
 });
 
 test('it can subtract days', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.subDay();
 
@@ -120,7 +127,7 @@ test('it can subtract days', () => {
 });
 
 test('it can subtract months', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.subMonth();
 
@@ -132,7 +139,7 @@ test('it can subtract months', () => {
 });
 
 test('it can subtract years', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.subYear();
 
@@ -144,13 +151,13 @@ test('it can subtract years', () => {
 });
 
 test('it gets the day of the week', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     expect(epoch.dayOfWeek()).toBe(5);
 });
 
 test('it jumps to end of month', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.endOfMonth();
 
@@ -159,7 +166,7 @@ test('it jumps to end of month', () => {
 });
 
 test('it jumps to start of month', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
     epoch.startOfMonth();
 
@@ -168,72 +175,72 @@ test('it jumps to start of month', () => {
 });
 
 test('it checks if date is after another date', () => {
-    let epoch1 = new LilEpoch(1988, 10, 25),
-        epoch2 = new LilEpoch(1992, 10, 27);
+    let epoch1 = new Epoch(1988, 10, 25),
+        epoch2 = new Epoch(1992, 10, 27);
 
     expect(epoch1.isAfter(epoch2)).toBe(false);
     expect(epoch2.isAfter(epoch1)).toBe(true);
 });
 
 test('it checks if date is before another date', () => {
-    let epoch1 = new LilEpoch(1988, 10, 25),
-        epoch2 = new LilEpoch(1992, 10, 27);
+    let epoch1 = new Epoch(1988, 10, 25),
+        epoch2 = new Epoch(1992, 10, 27);
 
     expect(epoch1.isBefore(epoch2)).toBe(true);
     expect(epoch2.isBefore(epoch1)).toBe(false);
 });
 
 test('it checks if two dates are the same', () => {
-    let epoch1 = new LilEpoch(1988, 10, 25),
-        epoch2 = new LilEpoch(1988, 10, 25),
-        epoch3 = new LilEpoch(1992, 10, 27);
+    let epoch1 = new Epoch(1988, 10, 25),
+        epoch2 = new Epoch(1988, 10, 25),
+        epoch3 = new Epoch(1992, 10, 27);
 
     expect(epoch1.isSame(epoch2)).toBe(true);
     expect(epoch1.isSame(epoch3)).toBe(false);
 });
 
 test('it checks if date is between two other dates', () => {
-    let epoch1 = new LilEpoch(1988, 10, 25),
-        epoch2 = new LilEpoch(1988, 10, 26),
-        epoch3 = new LilEpoch(1992, 10, 27),
-        epoch4 = new LilEpoch(1992, 10, 28);
+    let epoch1 = new Epoch(1988, 10, 25),
+        epoch2 = new Epoch(1988, 10, 26),
+        epoch3 = new Epoch(1992, 10, 27),
+        epoch4 = new Epoch(1992, 10, 28);
 
     expect(epoch2.isBetween(epoch1, epoch3)).toBe(true);
     expect(epoch4.isBetween(epoch1, epoch3)).toBe(false);
 });
 
 test('it checks if two dates are in the same month', () => {
-    let epoch1 = new LilEpoch(1988, 10, 23),
-        epoch2 = new LilEpoch(1988, 10, 25),
-        epoch3 = new LilEpoch(1992, 10, 27);
+    let epoch1 = new Epoch(1988, 10, 23),
+        epoch2 = new Epoch(1988, 10, 25),
+        epoch3 = new Epoch(1992, 10, 27);
 
     expect(epoch1.isSameMonth(epoch2)).toBe(true);
     expect(epoch1.isSameMonth(epoch3)).toBe(false);
 });
 
 test('it checks if two dates are in the same year', () => {
-    let epoch1 = new LilEpoch(1988, 9, 23),
-        epoch2 = new LilEpoch(1988, 10, 25),
-        epoch3 = new LilEpoch(1992, 11, 27);
+    let epoch1 = new Epoch(1988, 9, 23),
+        epoch2 = new Epoch(1988, 10, 25),
+        epoch3 = new Epoch(1992, 11, 27);
 
     expect(epoch1.isSameYear(epoch2)).toBe(true);
     expect(epoch1.isSameYear(epoch3)).toBe(false);
 });
 
 test('it gets the timestamp', () => {
-    let timestamp = Date.UTC(1988, 10, 25);
+    let timestamp = new Date(1988, 10, 25).getTime();
 
-    expect(new LilEpoch(1988, 10, 25).timestamp()).toBe(timestamp);
+    expect(new Epoch(1988, 10, 25).timestamp()).toBe(timestamp);
 });
 
 test('it gets a string format of the date', () => {
-    let epoch = new LilEpoch(1988, 10, 25);
+    let epoch = new Epoch(1988, 10, 25);
 
-    expect(epoch.format()).toBe('Fri Nov 25 1988 00:00:00');
+    expect(epoch.format()).toBe('Fri Nov 25 1988 12:00:00');
 });
 
 test('it creates a clone date', () => {
-    let epoch1 = new LilEpoch(1988, 10, 25),
+    let epoch1 = new Epoch(1988, 10, 25),
         epoch2 = epoch1.clone();
 
     expect(epoch1).toEqual(epoch2);
@@ -245,8 +252,8 @@ test('it creates a clone date', () => {
 });
 
 test('it deferes toString to underlying Date object', () => {
-    let epoch = new LilEpoch(1988, 10, 25),
-        date = new Date(Date.UTC(1988, 10, 25));
+    let epoch = new Epoch(1988, 10, 25),
+        date = new Date(1988, 10, 25);
 
     expect(epoch.toString()).toBe(date.toString());
 });

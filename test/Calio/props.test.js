@@ -1,6 +1,6 @@
 import { context, queryAll, map } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
-import LilEpoch from '../../src/modules/LilEpoch';
+import Epoch from '../../src/modules/Epoch';
 import { render, cleanup } from '@testing-library/svelte';
 
 afterEach(() => cleanup());
@@ -52,14 +52,16 @@ test('it has head for each day of week', () => {
 
     expect(map(targetA.querySelectorAll('.calio-head'), h => h.textContent))
         .toEqual([ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ]);
+
     expect(map(targetB.querySelectorAll('.calio-head'), h => h.textContent))
         .toEqual([ '', 'a', 'b', 'c', '', '', '' ]);
+
     expect(map(targetC.querySelectorAll('.calio-head'), h => h.textContent))
         .toEqual([]);
 });
 
 test('it has dates', () => {
-    const epoch = new LilEpoch();
+    const epoch = new Epoch();
 
     render(Calio);
 

@@ -9,17 +9,17 @@
 
 <script>
     import { createEventDispatcher, onMount, tick, setContext } from 'svelte';
-    import LilEpoch from '../modules/LilEpoch';
+    import Epoch from '../modules/Epoch';
     import Day from './Day.svelte';
 
-    const today = new LilEpoch();
+    const today = new Epoch();
     const dispatcher = createEventDispatcher();
 
     let el;
     let props;
     let computed;
     let selection = null;
-    let view = new LilEpoch();
+    let view = new Epoch();
 
     export let headers = [ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ];
     export let mode = 'single';
@@ -67,7 +67,7 @@
     $: dispatchEvents(dispatcher, el, 'selection', selection);
     $: dispatchEvents(dispatcher, el, 'view', view);
 
-    $: watchInvalidDates(computed, selection);
+    $: watchInvalidDates(computed);
 
     function dispatchEvents(dispatch, el, key, data) {
         if (data && typeof data.clone === 'function') {
@@ -94,6 +94,7 @@
         tick().then(() => {
             min && min.isAfter(view.clone().endOfMonth()) && goTo(min);
             max && max.isBefore(view) && goTo(max);
+
             if (mode === 'single' && selection) {
                 min && min.isAfter(selection) && select(min);
                 max && max.isBefore(selection) && select(max);
@@ -104,10 +105,6 @@
                 disabled.length && (selection = selection.filter(s => {
                     return !disabled.find(disabled => disabled.isSame(s));
                 }));
-
-                if (mode === 'range' && strict && selection.length === 2) {
-                    disabled.find(disabled => disabled.isBetween(...selection)) && (selection = null);
-                }
             }
         });
     }
@@ -156,16 +153,16 @@
             return a.timestamp() - b.timestamp();
         });
 
-        // if (strict) {
-        //     let [ start, end ] = selection,
-        //         isInvalid = end && !!disabled.find(d => {
-        //             return d.isAfter(start) && d.isBefore(end);
-        //         });
+        if (strict) {
+            let [ start, end ] = selection,
+                isInvalid = end && !!disabled.find(d => {
+                    return d.isAfter(start) && d.isBefore(end);
+                });
 
-        //     if (isInvalid) {
-        //         return null;
-        //     }
-        // }
+            if (isInvalid) {
+                return current;
+            }
+        }
 
         return selection;
     }
@@ -224,11 +221,11 @@
 
     export function makeMyDay(day = null) {
         return day
-            ? (day instanceof LilEpoch)
+            ? (day instanceof Epoch)
                 ? day
                 : Array.isArray(day)
-                    ? new LilEpoch(...day)
-                    : new LilEpoch(day)
+                    ? new Epoch(...day)
+                    : new Epoch(day)
             : null;
     }
 
