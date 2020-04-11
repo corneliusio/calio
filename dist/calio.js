@@ -1070,8 +1070,11 @@ function instance$1($$self, $$props, $$invalidate) {
 
 	onMount(() => {
 		goToSelection();
-		view && dispatchEvents(dispatcher, el, "view", view);
-		selection && dispatchEvents(dispatcher, el, "selection", selection);
+
+		tick().then(() => {
+			view && dispatchEvents(dispatcher, el, "view", view);
+			selection && dispatchEvents(dispatcher, el, "selection", selection);
+		});
 	});
 
 	function watchInvalidDatesMin(min) {

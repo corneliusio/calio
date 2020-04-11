@@ -6066,8 +6066,10 @@ function instance$1($$self, $$props, $$invalidate) {
   var selection = Array.isArray(value) ? value.map(makeMyDay) : makeMyDay(value);
   onMount(function () {
     goToSelection();
-    view && dispatchEvents(dispatcher, el, "view", view);
-    selection && dispatchEvents(dispatcher, el, "selection", selection);
+    tick().then(function () {
+      view && dispatchEvents(dispatcher, el, "view", view);
+      selection && dispatchEvents(dispatcher, el, "selection", selection);
+    });
   });
 
   function watchInvalidDatesMin(min) {
