@@ -1,59 +1,49 @@
 <div class="calio" bind:this={el}>
-    {#each computed.headers as day}
-        <span class="calio-head">
-            {day}
-        </span>
-    {/each}
-    {#each dates as day}
-        <Day {day} {...props} on:select={onSelect} />
-    {/each}
+    <Headers {headers} />
+    <Dates {props} on:select={onSelect} />
 </div>
 
 <script>
-    import { createEventDispatcher, onMount, tick, setContext } from 'svelte';
     import Epoch from '../modules/Epoch';
-    import Day from './Day.svelte';
+    import Dates from './Dates.svelte';
+    import Headers from './Headers.svelte';
+    import { createEventDispatcher, onMount, tick, setContext } from 'svelte';
 
     const today = new Epoch();
     const dispatcher = createEventDispatcher();
 
+    let initial = null;
+
+    export { initial as value };
     export let headers = [ 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' ];
     export let mode = 'single';
     export let strict = false;
     export let disabled = [];
-    export let value = null;
     export let limit = null;
     export let min = null;
     export let max = null;
 
     let el;
+    let value = initial;
     let view = new Epoch();
 
-    $: selection = Array.isArray(value)
-        ? value.map(makeMyDay)
-        : makeMyDay(value);
-
-    onMount(() => {
-        goToSelection();
-        tick().then(() => {
-            view && dispatchEvents(dispatcher, el, 'view', view);
-            selection && dispatchEvents(dispatcher, el, 'selection', selection);
+    if (initial) {
+        onMount(() => {
+            tick().then(() => {
+                view && dispatchEvents(el, 'view', view);
+                selection && dispatchEvents(el, 'selection', selection);
+            });
         });
-    });
+    }
 
     $: computed = {
         min: makeMyDay(min),
         max: makeMyDay(max),
-        headers: headers.length
-            ? new Array(7).fill('', 0, 7).map((n, i) => headers[i] || n)
-            : [],
         disabled: new Array()
             .concat(disabled)
             .filter(Boolean)
             .map(makeMyDay)
     };
-
-    $: dates = makeDates(view, computed.disabled);
 
     $: props = {
         disabled: computed.disabled,
@@ -64,14 +54,139 @@
         mode
     };
 
-    $: dispatchEvents(dispatcher, el, 'selection', selection);
-    $: dispatchEvents(dispatcher, el, 'view', view);
+    $: selection = getSelection(value, computed.min, computed.max, computed.disabled);
 
-    $: watchInvalidDatesMin(computed.min);
-    $: watchInvalidDatesMax(computed.max);
-    $: watchInvalidDatesDisabled(computed.disabled);
+    $: dispatchEvents(el, 'selection', selection);
+    $: dispatchEvents(el, 'view', view);
+    $: dispatchEvents(el, 'disabled', computed.disabled);
+    $: dispatchEvents(el, 'min', computed.min);
+    $: dispatchEvents(el, 'max', computed.max);
 
-    function dispatchEvents(dispatch, el, key, data) {
+    function getSelection(newValue, min, max, disabled) {
+        newValue = Array.isArray(newValue)
+            ? newValue.map(makeMyDay)
+            : makeMyDay(newValue);
+
+        newValue = Array.isArray(newValue) && mode === 'single'
+            ? newValue[0]
+            : newValue;
+
+        switch (mode) {
+            case 'range' :
+                newValue = structureRange(newValue);
+                break;
+            case 'multi' :
+                newValue = structureMulti(newValue, limit);
+                break;
+            default :
+                [ newValue, view ] = structureSingle(newValue, view);
+                break;
+        }
+
+        if (newValue && newValue.length) {
+            newValue = filterInvalidDatesMin(newValue, min);
+            newValue = filterInvalidDatesMax(newValue, max);
+            newValue = filterInvalidDatesDisabled(newValue, disabled);
+        }
+
+        return value = newValue;
+    }
+
+    function filterInvalidDatesMin(newValue, min) {
+        if (min) {
+            min.isAfter(view.clone().endOfMonth()) && goTo(min);
+
+            if (mode === 'single') {
+                if (min.isAfter(newValue)) {
+                    return null;
+                }
+            } else {
+                const valid = newValue.filter(s => s.isAfter(min) || s.isSame(min));
+
+                newValue = valid.length ? valid : null;
+            }
+        }
+
+        return newValue;
+    }
+
+    function filterInvalidDatesMax(newValue, max) {
+        if (max) {
+            max.isBefore(view.clone().endOfMonth()) && goTo(max);
+
+            if (mode === 'single') {
+                if (max.isBefore(newValue)) {
+                    return null;
+                }
+            } else {
+                const valid = newValue.filter(s => s.isBefore(max) || s.isSame(max));
+
+                newValue = valid.length ? valid : null;
+            }
+        }
+
+        return newValue;
+    }
+
+    function filterInvalidDatesDisabled(newValue, disabled) {
+        if (disabled.length && newValue) {
+            if (mode === 'single') {
+                if (disabled.find(d => d.isSame(newValue))) {
+                    return null;
+                }
+            } else {
+                const valid = newValue.filter(s => disabled.find(d => !d.isSame(s)));
+
+                if (mode === 'range' && strict && valid.length === 2) {
+                    if (disabled.find(d => d.isBetween(...valid))) {
+                        return null;
+                    }
+                }
+
+                return valid.length ? valid : null;
+            }
+        }
+
+        return newValue;
+    }
+
+    function structureRange(newValue) {
+        newValue = toCleanArray(newValue);
+
+        if (newValue.length > 2) {
+            newValue = [ newValue.pop() ];
+        }
+
+        newValue = newValue.sort((a, b) => a.timestamp() - b.timestamp());
+
+        return newValue;
+    }
+
+    function structureMulti(newValue, limit) {
+        newValue = toCleanArray(newValue);
+
+        if (limit && newValue.length > limit) {
+            newValue = newValue.splice(0, limit);
+        }
+
+        newValue = newValue.sort((a, b) => a.timestamp() - b.timestamp());
+
+        return newValue;
+    }
+
+    function structureSingle(newValue, newView) {
+        return newValue ? [
+            newValue,
+            !newView.isSameMonth(newValue)
+                ? newValue.clone().startOfMonth()
+                : newView.clone()
+        ] : [
+            null,
+            newView
+        ];
+    }
+
+    function dispatchEvents(el, key, data) {
         if (data && typeof data.clone === 'function') {
             data = data.clone();
         } else if (Array.isArray(data)) {
@@ -85,186 +200,43 @@
             }));
         }
 
-        dispatch(key, data);
+        dispatcher(key, data);
     }
 
-    function watchInvalidDatesMin(min) {
-        if (min) {
-            min.isAfter(view.clone().endOfMonth()) && goTo(min);
-
-            if (selection && selection.length) {
-                if (mode === 'single') {
-                    min.isAfter(selection) && select(min);
-                } else {
-                    const valid = selection.filter(s => s.isAfter(min) || s.isSame(min));
-
-                    valid.length ? tick().then(() => value = valid) : select(min);
-                }
-            }
-        }
-
-        dispatchEvents(dispatcher, el, 'min', min);
-    }
-
-    function watchInvalidDatesMax(max) {
-        if (max) {
-            max.isBefore(view) && goTo(max);
-
-            if (selection && selection.length) {
-                if (mode === 'single') {
-                    max.isBefore(selection) && select(max);
-                } else {
-                    const valid = selection.filter(s => s.isBefore(max) || s.isSame(max));
-
-                    valid.length ? tick().then(() => value = valid) : select(max);
-                }
-            }
-        }
-
-        dispatchEvents(dispatcher, el, 'max', max);
-    }
-
-    function watchInvalidDatesDisabled(disabled) {
-        if (selection && selection.length) {
-            if (mode === 'single') {
-                computed.disabled.find(d => d.isSame(selection)) && select(null);
-            } else {
-                const valid = computed.disabled.length && selection.filter(s => {
-                    return computed.disabled.find(d => !d.isSame(s));
-                });
-
-                valid.length ? tick().then(() => value = valid) : select(null);
-
-                if (mode === 'range' && strict && selection.length === 2) {
-                    computed.disabled.find(d => d.isBetween(...selection)) && select(null);
-                }
-            }
-        }
-
-        dispatchEvents(dispatcher, el, 'disabled', disabled);
-    }
-
-    function makeDates(view, disabled) {
-        let current = view.clone().startOfMonth(),
-            dates = [],
-            dayOfFirst,
-            dayOfLast;
-
-        dayOfFirst = current.dayOfWeek();
-
-        for (let i = 0; i < dayOfFirst; i++) {
-            dates.unshift(current.clone().date(-i));
-        }
-
-        current.endOfMonth();
-
-        for (let i = 1, days = current.date(); i <= days; i++) {
-            dates.push(current.clone().date(i));
-        }
-
-        dayOfLast = current.dayOfWeek();
-        current.startOfMonth().addMonth();
-
-        for (let i = 1; i < (7 - dayOfLast); i++) {
-            dates.push(current.clone().date(i));
-        }
-
-        return dates;
-    }
-
-    function updateRange(day, current, strict, disabled) {
-        let selection = new Array().concat(current).filter(Boolean) || [],
-            index = selection.findIndex(s => s.isSame(day));
-
-        if (index > -1) {
-            selection.splice(index, 1);
-
-            return selection;
-        } else if (selection.length > 1) {
-            return [ day.clone() ];
-        }
-
-        selection = [ ...selection, day.clone() ].sort((a, b) => {
-            return a.timestamp() - b.timestamp();
-        });
-
-        if (strict) {
-            let [ start, end ] = selection,
-                isInvalid = end && !!disabled.find(d => {
-                    return d.isAfter(start) && d.isBefore(end);
-                });
-
-            if (isInvalid) {
-                return current;
-            }
-        }
-
-        return selection;
-    }
-
-    function updateMulti(day, current, limit) {
-        let selection = new Array().concat(current).filter(Boolean) || [],
-            index = selection.findIndex(s => s.isSame(day));
-
-        if (index > -1) {
-            selection.splice(index, 1);
-
-            return selection;
-        } else if (!limit || selection.length < limit) {
-            selection = [ ...selection, day.clone() ].sort((a, b) => {
-                return a.timestamp() - b.timestamp();
-            });
-
-            return selection;
-        }
-
-        return selection;
-    }
-
-    function updateSingle(day, view) {
-        return [
-            day.clone(),
-            !view.isSameMonth(day)
-                ? day.clone().startOfMonth()
-                : view
-        ];
+    function toCleanArray(data) {
+        return new Array().concat(data).filter(Boolean) || [];
     }
 
     function onSelect(event) {
-        return select(event.detail);
+        select(event.detail);
     }
 
-    export async function select(day = null) {
-        await tick();
-        day = makeMyDay(day);
+    export function select(day = null) {
+        let current = toCleanArray(value);
 
-        if (!day) {
-            selection = null;
+        if (mode === 'single') {
+            value = value && value.isSame(day)
+                ? null
+                : day;
+        } else if (current.length) {
+            let index = current.findIndex(s => day.isSame(s));
+
+            if (index > -1) {
+                current.splice(index, 1);
+            } else {
+                current.push(day);
+            }
+
+            value = current;
         } else {
-            if (computed.disabled.find(d => d.isSame(day))
-                || (computed.min && day.isBefore(computed.min))
-                || (computed.max && day.isAfter(computed.max))) {
-                return;
-            }
-
-            switch (mode) {
-                case 'range' :
-                    selection = updateRange(day, selection, strict, computed.disabled);
-                    break;
-                case 'multi' :
-                    selection = updateMulti(day, selection, limit);
-                    break;
-                default :
-                    [ selection, view ] = updateSingle(day, view);
-                    break;
-            }
+            value = day;
         }
     }
 
     export function makeMyDay(day = null) {
         return day
             ? (day instanceof Epoch)
-                ? day
+                ? day.clone()
                 : Array.isArray(day)
                     ? new Epoch(...day)
                     : new Epoch(day)
@@ -339,7 +311,6 @@
         setContext('limit', limit);
         setContext('min', min);
         setContext('max', max);
-        setContext('dates', dates);
     }
 </script>
 

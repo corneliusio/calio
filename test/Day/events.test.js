@@ -8,14 +8,17 @@ afterEach(() => cleanup());
 const today = new Epoch();
 
 const props = {
+    selection: null,
+    view: new Epoch(),
+    mode: 'single',
+    disabled: [],
     min: null,
-    max: null,
-    mode: 'single'
+    max: null
 };
 
 test('fires a "selection" event when clicked', () => {
     const day = render(Day, {
-        props: { ...props, day: today }
+        props: { day: today, props }
     });
 
     day.component.$on('selection', day => {

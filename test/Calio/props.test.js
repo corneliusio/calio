@@ -9,11 +9,11 @@ test('has specific props', () => {
     const calio = render(Calio);
 
     expect(Object.keys(calio.component.$$.props)).toEqual([
+        'value',
         'headers',
         'mode',
         'strict',
         'disabled',
-        'value',
         'limit',
         'min',
         'max',

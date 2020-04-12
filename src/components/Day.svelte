@@ -3,24 +3,24 @@
 </span>
 
 <script>
-    import { createEventDispatcher } from 'svelte';
     import Epoch from '../modules/Epoch';
+    import { createEventDispatcher } from 'svelte';
 
     const today = new Epoch();
     const dispatch = createEventDispatcher();
 
-    export let view = new Epoch();
-    export let selection = [];
-    export let disabled = [];
     export let day;
-    export let min;
-    export let max;
-    export let mode;
+    export let props = {};
+
+    let { selection, disabled, min, max, mode, view } = {};
+
+    $: ({ selection, disabled, min, max, mode, view } = props);
 
     $: isActive = (() => {
-        selection = new Array().concat(selection).filter(Boolean);
-
-        return selection.find(s => day.isSame(s));
+        return new Array()
+            .concat(selection)
+            .filter(Boolean)
+            .find(s => day.isSame(s));
     })();
 
     $: isDisabled = (() => {

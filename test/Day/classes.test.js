@@ -10,9 +10,12 @@ const past = today.clone().subYear();
 const future = today.clone().addYear();
 
 const props = {
+    selection: null,
+    view: new Epoch(),
+    mode: 'single',
+    disabled: [],
     min: null,
-    max: null,
-    mode: 'single'
+    max: null
 };
 
 test('adds "is-today" class if is today', () => {
@@ -21,12 +24,12 @@ test('adds "is-today" class if is today', () => {
 
     render(Day, {
         target: targetA,
-        props: { ...props, day: today }
+        props: { day: today, props }
     });
 
     render(Day, {
         target: targetB,
-        props: { ...props, day: today.clone().addDay() }
+        props: { day: today.clone().addDay(), props }
     });
 
     expect(targetA.querySelector('.calio-day').className)
@@ -38,7 +41,7 @@ test('adds "is-today" class if is today', () => {
 
 test('adds "is-prev" class if is before viewed month', () => {
     render(Day, {
-        props: { ...props, day: past }
+        props: { day: past, props }
     });
 
     expect(query('.calio-day').className)
@@ -47,7 +50,7 @@ test('adds "is-prev" class if is before viewed month', () => {
 
 test('adds "is-next" class if is after viewed month', () => {
     render(Day, {
-        props: { ...props, day: future }
+        props: { day: future, props }
     });
 
     expect(query('.calio-day').className)
@@ -57,9 +60,11 @@ test('adds "is-next" class if is after viewed month', () => {
 test('adds "is-disabled" class if is disabled', () => {
     render(Day, {
         props: {
-            ...props,
             day: today.clone().addDay(),
-            disabled: [ today.clone().addDay() ]
+            props: {
+                ...props,
+                disabled: [ today.clone().addDay() ]
+            }
         }
     });
 
@@ -70,10 +75,12 @@ test('adds "is-disabled" class if is disabled', () => {
 test('adds "is-ranged" class if is within range', () => {
     render(Day, {
         props: {
-            ...props,
-            mode: 'range',
             day: today.clone().addDay(),
-            selection: [ past, future ]
+            props: {
+                ...props,
+                mode: 'range',
+                selection: [ past, future ]
+            }
         }
     });
 
@@ -84,9 +91,11 @@ test('adds "is-ranged" class if is within range', () => {
 test('adds "is-active" class if is selected', () => {
     render(Day, {
         props: {
-            ...props,
             day: today.clone().addDay(),
-            selection: today.clone().addDay()
+            props: {
+                ...props,
+                selection: today.clone().addDay()
+            }
         }
     });
 
