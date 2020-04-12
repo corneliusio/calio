@@ -1,17 +1,14 @@
-import { tick } from 'svelte';
 import { promiseEvent } from '../helpers';
 import Epoch from '../../src/modules/Epoch';
 import Calio from '../../src/components/Calio.svelte';
 import { render } from '@testing-library/svelte';
 
-test('fires component selection and dom calio:selection events when a date is selected', async () => {
+test('fires component selection and dom calio:selection events when a date is selected', () => {
     const target = document.createElement('div');
     const calio = render(Calio, { target });
     const epoch = new Epoch();
 
-    await tick();
-
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('selection', event => {
                 try {
@@ -21,8 +18,6 @@ test('fires component selection and dom calio:selection events when a date is se
                     reject(e);
                 }
             });
-
-            calio.component.select(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:selection', event => {
@@ -33,20 +28,20 @@ test('fires component selection and dom calio:selection events when a date is se
                     reject(e);
                 }
             });
-
-            calio.component.select(epoch);
         })
     ]);
+
+    calio.component.select(epoch);
+
+    return promise;
 });
 
-test('fires component view and dom calio:view events when a new view is loaded', async () => {
+test('fires component view and dom calio:view events when a new view is loaded', () => {
     const target = document.createElement('div');
     const calio = render(Calio, { target });
     const epoch = new Epoch();
 
-    await tick();
-
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('view', event => {
                 try {
@@ -56,8 +51,6 @@ test('fires component view and dom calio:view events when a new view is loaded',
                     reject(e);
                 }
             });
-
-            calio.component.goTo(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:view', event => {
@@ -68,20 +61,20 @@ test('fires component view and dom calio:view events when a new view is loaded',
                     reject(e);
                 }
             });
-
-            calio.component.goTo(epoch);
         })
     ]);
+
+    calio.component.goTo(epoch);
+
+    return promise;
 });
 
-test('fires component view and dom calio:view events in single mode when a date is selected in a new month', async () => {
+test('fires component view and dom calio:view events in single mode when a date is selected in a new month', () => {
     const target = document.createElement('div');
     const calio = render(Calio, { target });
     const epoch = new Epoch(2019, 1);
 
-    await tick();
-
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('view', event => {
                 try {
@@ -91,8 +84,6 @@ test('fires component view and dom calio:view events in single mode when a date 
                     return reject(e);
                 }
             });
-
-            calio.component.select(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:view', event => {
@@ -103,10 +94,12 @@ test('fires component view and dom calio:view events in single mode when a date 
                     return reject(e);
                 }
             });
-
-            calio.component.select(epoch);
         })
     ]);
+
+    calio.component.select(epoch);
+
+    return promise;
 });
 
 test('fires component min and dom calio:min events when min is updated', () => {
@@ -114,7 +107,7 @@ test('fires component min and dom calio:min events when min is updated', () => {
     const calio = render(Calio, { target });
     const epoch = new Epoch();
 
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('min', event => {
                 try {
@@ -124,8 +117,6 @@ test('fires component min and dom calio:min events when min is updated', () => {
                     reject(e);
                 }
             });
-
-            calio.component.setMin(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:min', event => {
@@ -136,10 +127,12 @@ test('fires component min and dom calio:min events when min is updated', () => {
                     reject(e);
                 }
             });
-
-            calio.component.setMin(epoch);
         })
     ]);
+
+    calio.component.setMin(epoch);
+
+    return promise;
 });
 
 test('fires component max and dom calio:max events when max is updated', () => {
@@ -147,7 +140,7 @@ test('fires component max and dom calio:max events when max is updated', () => {
     const calio = render(Calio, { target });
     const epoch = new Epoch();
 
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('max', event => {
                 try {
@@ -157,8 +150,6 @@ test('fires component max and dom calio:max events when max is updated', () => {
                     reject(e);
                 }
             });
-
-            calio.component.setMax(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:max', event => {
@@ -169,10 +160,12 @@ test('fires component max and dom calio:max events when max is updated', () => {
                     reject(e);
                 }
             });
-
-            calio.component.setMax(epoch);
         })
     ]);
+
+    calio.component.setMax(epoch);
+
+    return promise;
 });
 
 test('fires component disabled and dom calio:disabled events when disabled is updated', () => {
@@ -180,7 +173,7 @@ test('fires component disabled and dom calio:disabled events when disabled is up
     const calio = render(Calio, { target });
     const epoch = new Epoch();
 
-    return Promise.all([
+    const promise = Promise.all([
         promiseEvent((resolve, reject) => {
             calio.component.$on('disabled', event => {
                 try {
@@ -190,8 +183,6 @@ test('fires component disabled and dom calio:disabled events when disabled is up
                     reject(e);
                 }
             });
-
-            calio.component.setDisabled(epoch);
         }),
         promiseEvent((resolve, reject) => {
             target.addEventListener('calio:disabled', event => {
@@ -202,8 +193,10 @@ test('fires component disabled and dom calio:disabled events when disabled is up
                     reject(e);
                 }
             });
-
-            calio.component.setDisabled(epoch);
         })
     ]);
+
+    calio.component.setDisabled(epoch);
+
+    return promise;
 });

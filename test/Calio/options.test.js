@@ -226,7 +226,7 @@ test('prevents selection of date in strict range mode if range overlaps disabled
         await tick();
     });
 
-    expect(context(calio, 'selection')).toContainEqual(epoch1);
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('delays dates being generated if non-array passed to disabled', () => {

@@ -1,4 +1,3 @@
-import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';
@@ -14,12 +13,11 @@ test('updates single selection min to if before new min', async () => {
 
     expect(context(calio, 'selection')).toEqual(today);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMin(min);
-        await tick();
     });
 
-    expect(context(calio, 'selection')).toEqual(min);
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('partially invalidates selection if before new min', async () => {
@@ -37,9 +35,8 @@ test('partially invalidates selection if before new min', async () => {
         today.clone().addDay(2)
     ]);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMin(min);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual([
@@ -53,12 +50,11 @@ test('updates single selection max to if after new max', async () => {
 
     expect(context(calio, 'selection')).toEqual(today);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMax(max);
-        await tick();
     });
 
-    expect(context(calio, 'selection')).toEqual(max);
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('partially invalidates selection if after new max', async () => {
@@ -72,13 +68,12 @@ test('partially invalidates selection if after new max', async () => {
     });
 
     expect(context(calio, 'selection')).toEqual([
-        today,
-        today.clone().subDay(2)
+        today.clone().subDay(2),
+        today
     ]);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMax(max);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual([
@@ -92,18 +87,18 @@ test('invalidates selection if equal to new disabled', async () => {
     });
 
     const calio2 = render(Calio, {
-        mode: 'multi',
+        mode: 'range',
         value: today
     });
 
-    // const calio3 = render(Calio, {
-    //     mode: 'multi',
-    //     value: [ today, today.clone().addDay() ]
-    // });
+    const calio3 = render(Calio, {
+        mode: 'multi',
+        value: [ today, today.clone().addDay() ]
+    });
 
     expect(context(calio1, 'selection')).toEqual(today);
-    expect(context(calio2, 'selection')).toEqual(today);
-    // expect(context(calio3, 'selection')).toEqual([ today, today.clone().addDay() ]);
+    expect(context(calio2, 'selection')).toEqual([ today ]);
+    expect(context(calio3, 'selection')).toEqual([ today, today.clone().addDay() ]);
 
     await act(() => {
         calio1.component.setDisabled(today.clone());
@@ -113,11 +108,11 @@ test('invalidates selection if equal to new disabled', async () => {
         calio2.component.setDisabled(today.clone());
     });
 
-    // await act(() => {
-    //     calio3.component.setDisabled(today.clone());
-    // });
+    await act(() => {
+        calio3.component.setDisabled(today.clone());
+    });
 
     expect(context(calio1, 'selection')).toBeNull();
     expect(context(calio2, 'selection')).toBeNull();
-    // expect(context(calio3, 'selection')).toEqual([ today.clone().addDay() ]);
+    expect(context(calio3, 'selection')).toEqual([ today.clone().addDay() ]);
 });
