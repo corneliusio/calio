@@ -5371,15 +5371,12 @@ function instance$3($$self, $$props, $$invalidate) {
   var el;
   var value = initial;
   var view = new Epoch();
-
-  if (initial) {
-    onMount(function () {
-      tick().then(function () {
-        view && dispatchEvents(el, "view", view);
-        selection && dispatchEvents(el, "selection", selection);
-      });
+  onMount(function () {
+    tick().then(function () {
+      view && dispatchEvents(el, "view", view);
+      initial && selection && dispatchEvents(el, "selection", selection);
     });
-  }
+  });
 
   function getSelection(newValue, min, max, disabled) {
     var _structureSingle, _structureSingle2;

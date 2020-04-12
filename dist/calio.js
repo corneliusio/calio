@@ -989,8 +989,8 @@ class Headers extends SvelteComponent {
 
 function add_css$1() {
 	var style = element("style");
-	style.id = "svelte-i8ptc6-style";
-	style.textContent = ".calio{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
+	style.id = "svelte-3fywpp-style";
+	style.textContent = ".calio{display:inline-grid;grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
 	append(document.head, style);
 }
 
@@ -1106,14 +1106,12 @@ function instance$3($$self, $$props, $$invalidate) {
 	let value = initial;
 	let view = new Epoch();
 
-	if (initial) {
-		onMount(() => {
-			tick().then(() => {
-				view && dispatchEvents(el, "view", view);
-				selection && dispatchEvents(el, "selection", selection);
-			});
+	onMount(() => {
+		tick().then(() => {
+			view && dispatchEvents(el, "view", view);
+			initial && selection && dispatchEvents(el, "selection", selection);
 		});
-	}
+	});
 
 	function getSelection(newValue, min, max, disabled) {
 		newValue = Array.isArray(newValue)
@@ -1405,7 +1403,7 @@ function instance$3($$self, $$props, $$invalidate) {
 class Calio extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-i8ptc6-style")) add_css$1();
+		if (!document.getElementById("svelte-3fywpp-style")) add_css$1();
 
 		init(
 			this,
