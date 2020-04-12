@@ -294,12 +294,13 @@ Normalizes any selection value object, `Date` object, or `Date` parsable string/
 
 ```js
 const calio = new Calio(el);
-const { selection } = calio.get();
 const today = calio.makeMyDay(Date.now());
 
-if (selection.isBefore(today)) {
-    // Do something if the selection is before today.
-}
+calio.$on('selection', ({ detail: selection }) => {
+    if (selection.isBefore(today)) {
+        // Do something if the selection is before today.
+    }
+});
 ```
 
 ### setMin(day)
@@ -415,9 +416,10 @@ const calio = new Calio(el, {
         '2018-07-24'
     ]
 });
-const { selection } = calio.get();
 
-calio.goTo(selection[2]); // Will jump to July.
+calio.$on('selection', ({ detail: selection }) => {
+    calio.goTo(selection[2]); // Will jump to July.
+});
 ```
 
 ## Styling
