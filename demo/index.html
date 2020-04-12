@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calio</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="hide-ui">
+    <main>
+        <h4 class="ui">🗓 <strong class="current"></strong></h4>
+        <div id="calio"></div>
+        <p class="ui">
+            <strong style="margin-right: 0.25rem;">Mode:</strong>
+            <button type="button" class="mode is-active" data-mode="single">Single</button>
+            <button type="button" class="mode" data-mode="range">Range</button>
+            <button type="button" class="mode" data-mode="multi">Multi</button>
+        </p>
+        <h4 class="ui"><strong class="selected">&nbsp;</strong></h4>
+    </main>
+    <span class="prev ui">⬅️</span>
+    <span class="next ui">➡️</span>
+    <span class="toggle-ui">👀</span>
+    <script src="/dist/calio.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

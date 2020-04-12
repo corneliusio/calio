@@ -1,6 +1,4 @@
-import Calio from 'calio/polyfilled';
-
-import './index.css';
+/* global Calio */
 
 const current = document.querySelector('.current');
 const selected = document.querySelector('.selected');
@@ -8,8 +6,11 @@ const modes = document.querySelectorAll('[data-mode]');
 
 let calio;
 
-init(new Calio('#calio'));
+init(new Calio('#calio', {
 
+}));
+
+document.body.classList.remove('hide-ui');
 document.querySelector('.toggle-ui').addEventListener('click', event => {
     document.body.classList.toggle('hide-ui');
 });
@@ -21,6 +22,7 @@ modes.forEach(el => {
         selected.innerHTML = '';
         init(new Calio('#calio', {
             mode: event.target.dataset.mode,
+            strict: true,
             limit: 7
         }));
     });
@@ -31,7 +33,7 @@ function init(instance) {
         calio.$destroy();
     }
 
-    calio = instance;
+    window.calio = calio = instance;
 
     calio.$on('view', ({ detail: view }) => {
         current.textContent = view.format('MMMM YYYY');
