@@ -27,14 +27,12 @@
     let value = initial;
     let view = new Epoch();
 
-    if (initial) {
-        onMount(() => {
-            tick().then(() => {
-                view && dispatchEvents(el, 'view', view);
-                selection && dispatchEvents(el, 'selection', selection);
-            });
+    onMount(() => {
+        tick().then(() => {
+            view && dispatchEvents(el, 'view', view);
+            initial && selection && dispatchEvents(el, 'selection', selection);
         });
-    }
+    });
 
     $: computed = {
         min: makeMyDay(min),
