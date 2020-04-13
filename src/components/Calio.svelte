@@ -231,12 +231,12 @@
         }
     }
 
-    export function makeMyDay(day = null) {
+    export function makeMyDay(day = null, ...rest) {
         return day
             ? (day instanceof Epoch)
                 ? day.clone()
-                : Array.isArray(day)
-                    ? new Epoch(...day)
+                : rest.length
+                    ? new Epoch(day, ...rest)
                     : new Epoch(day)
             : null;
     }

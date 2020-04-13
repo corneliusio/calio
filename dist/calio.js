@@ -403,6 +403,8 @@ class Epoch {
             this.value = Y;
         } else if ([ 'number', 'string' ].includes(typeof Y)) {
             this.value = new Date(Y);
+        } else if (Array.isArray(Y)) {
+            this.value = new Date(...Y);
         } else {
             this.value = new Date();
         }
@@ -1083,11 +1085,11 @@ function toCleanArray(data) {
 	return new Array().concat(data).filter(Boolean) || [];
 }
 
-function makeMyDay(day = null) {
+function makeMyDay(day = null, ...rest) {
 	return day
 	? day instanceof Epoch
 		? day.clone()
-		: Array.isArray(day) ? new Epoch(...day) : new Epoch(day)
+		: rest.length ? new Epoch(day, ...rest) : new Epoch(day)
 	: null;
 }
 

@@ -7,18 +7,22 @@ import { render, cleanup, act } from '@testing-library/svelte';
 afterEach(() => cleanup());
 
 test('normalizes a date', () => {
-    const epoch = new Epoch(2018, 0, 1);
+    const epoch = new Epoch(1988, 10, 25);
     const calio = render(Calio);
 
-    let date1 = calio.component.makeMyDay(epoch),
-        date2 = calio.component.makeMyDay([ 2018, 0, 1 ]),
-        date3 = calio.component.makeMyDay('2018-01-01'),
-        date4 = calio.component.makeMyDay();
+    const date1 = calio.component.makeMyDay(epoch);
+    const date2 = calio.component.makeMyDay('1988-11-25');
+    const date3 = calio.component.makeMyDay(1988, 10, 25);
+    const date4 = calio.component.makeMyDay([ 1988, 10, 25 ]);
+    const date5 = calio.component.makeMyDay(new Date(1988, 10, 25, 0, 0, 7, 7));
+    const date6 = calio.component.makeMyDay();
 
     expect(date1).toEqual(epoch);
     expect(date2).toEqual(epoch);
     expect(date3).toEqual(epoch);
-    expect(date4).toBeNull();
+    expect(date4).toEqual(epoch);
+    expect(date5).toEqual(epoch);
+    expect(date6).toBeNull();
 });
 
 test('selects a day', async () => {
