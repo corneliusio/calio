@@ -12,7 +12,7 @@ class Epoch {
             this.value = Y;
         } else if ([ 'number', 'string' ].includes(typeof Y)) {
             this.value = new Date(Y);
-        } else if (Array.isArray(Y)) {
+        } else if (Array.isArray(Y) && Y.filter(Boolean).length) {
             this.value = new Date(...Y);
         } else {
             this.value = new Date();
@@ -156,7 +156,7 @@ class Epoch {
     }
 
     get length() {
-        return this.value ? 1 : 0;
+        return 1;
     }
 }
 

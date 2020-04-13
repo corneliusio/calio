@@ -202,7 +202,7 @@
     }
 
     function toCleanArray(data) {
-        return new Array().concat(data).filter(Boolean) || [];
+        return new Array().concat(data).filter(Boolean);
     }
 
     function onSelect(event) {
@@ -237,7 +237,9 @@
                 ? day.clone()
                 : rest.length
                     ? new Epoch(day, ...rest)
-                    : new Epoch(day)
+                    : Array.isArray(day)
+                        ? day.filter(Boolean).length ? new Epoch(day) : null
+                        : new Epoch(day)
             : null;
     }
 

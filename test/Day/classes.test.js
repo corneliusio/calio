@@ -36,7 +36,7 @@ test('adds "is-today" class if is today', () => {
         .toBe('calio-day is-today');
 
     expect(targetB.querySelector('.calio-day').className)
-        .toBe('calio-day ');
+        .toBe('calio-day');
 });
 
 test('adds "is-prev" class if is before viewed month', () => {

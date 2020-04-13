@@ -5,7 +5,7 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
     extensions: [ '.svlt', '.svelte' ],
     preprocess: {
-        markup: true ? ({ content }) => ({
+        markup: !process.env.NODE_ENV ? ({ content }) => ({
             code: content.replace(/[\n\r\s\t]+(?=<\w|<\/|{#|{:|{\/|{\w)/g, ' ')
         }) : ({ content }) => ({
             code: content
