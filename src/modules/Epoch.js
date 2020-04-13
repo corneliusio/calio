@@ -12,6 +12,8 @@ class Epoch {
             this.value = Y;
         } else if ([ 'number', 'string' ].includes(typeof Y)) {
             this.value = new Date(Y);
+        } else if (Array.isArray(Y)) {
+            this.value = new Date(...Y);
         } else {
             this.value = new Date();
         }

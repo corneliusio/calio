@@ -27,25 +27,33 @@ test('accepts a timestamp', () => {
 });
 
 test('accepts a date string', () => {
-    let date = new Date('2018-01-01');
+    let date = new Date(2018, 0, 1);
 
-    date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
-    date.setMinutes(0);
     date.setSeconds(0);
     date.setMilliseconds(0);
 
     expect(new Epoch('2018-01-01')).toHaveProperty('value', date);
 });
 
-test('resets hours, minutes, seconds, and milliseconds', () => {
-    let date = new Date(2018, 0, 1);
+test('resets, seconds, and milliseconds', () => {
+    let date = new Date(2018, 0, 1, 12, 7);
 
-    date.setHours(0);
-    date.setMinutes(0);
     date.setSeconds(0);
     date.setMilliseconds(0);
 
-    expect(new Epoch(2018, 0, 1)).toHaveProperty('value', date);
+    expect(new Epoch(2018, 0, 1, 12, 7, 7, 7)).toHaveProperty('value', date);
+});
+
+test('normalizes arguments', () => {
+    let date = new Date(1988, 10, 25);
+
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    expect(new Epoch('1988-11-25')).toHaveProperty('value', date);
+    expect(new Epoch(1988, 10, 25)).toHaveProperty('value', date);
+    expect(new Epoch([ 1988, 10, 25 ])).toHaveProperty('value', date);
+    expect(new Epoch(new Date(1988, 10, 25, 0, 0, 7, 7))).toHaveProperty('value', date);
 });
 
 test('gets/set the year', () => {

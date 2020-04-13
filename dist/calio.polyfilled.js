@@ -4504,6 +4504,8 @@ var Epoch = /*#__PURE__*/function () {
       this.value = Y;
     } else if (['number', 'string'].includes(_typeof(Y))) {
       this.value = new Date(Y);
+    } else if (Array.isArray(Y)) {
+      this.value = _construct(Date, _toConsumableArray(Y));
     } else {
       this.value = new Date();
     }
@@ -5346,7 +5348,12 @@ function toCleanArray(data) {
 
 function makeMyDay() {
   var day = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  return day ? day instanceof Epoch ? day.clone() : Array.isArray(day) ? _construct(Epoch, _toConsumableArray(day)) : new Epoch(day) : null;
+
+  for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    rest[_key - 1] = arguments[_key];
+  }
+
+  return day ? day instanceof Epoch ? day.clone() : rest.length ? _construct(Epoch, [day].concat(rest)) : new Epoch(day) : null;
 }
 
 function instance$3($$self, $$props, $$invalidate) {
