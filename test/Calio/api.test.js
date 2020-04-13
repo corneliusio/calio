@@ -1,4 +1,3 @@
-import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';
@@ -29,9 +28,8 @@ test('selects a day', async () => {
     const epoch = new Epoch();
     const calio = render(Calio);
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual(epoch);
@@ -41,9 +39,8 @@ test('can set min', async () => {
     const epoch = new Epoch(2018, 0, 1);
     const calio = render(Calio);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMin(epoch);
-        await tick();
     });
 
     expect(context(calio, 'computed').min).toEqual(epoch);
@@ -53,9 +50,8 @@ test('can set max', async () => {
     const epoch = new Epoch(2018, 0, 1);
     const calio = render(Calio);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setMax(epoch);
-        await tick();
     });
 
     expect(context(calio, 'computed').max).toEqual(epoch);
@@ -65,9 +61,8 @@ test('can set disabled', async () => {
     const epoch = new Epoch(2018, 0, 1);
     const calio = render(Calio);
 
-    await act(async () => {
+    await act(() => {
         calio.component.setDisabled(epoch);
-        await tick();
     });
 
     expect(context(calio, 'computed').disabled).toContainEqual(epoch);
@@ -80,9 +75,8 @@ test('can go to year', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToYear(2000);
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2000, 0));
@@ -95,9 +89,8 @@ test('can go to next year', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToNextYear();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2019, 0));
@@ -110,9 +103,8 @@ test('can go to last year', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToLastYear();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2017, 0));
@@ -125,9 +117,8 @@ test('can go to month', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToMonth(1);
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2018, 0));
@@ -140,9 +131,8 @@ test('can go to next month', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToNextMonth();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2018, 7));
@@ -155,9 +145,8 @@ test('can go to last month', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToLastMonth();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch(2018, 5));
@@ -170,9 +159,8 @@ test('can go to this month', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.goToThisMonth();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(new Epoch().date(1));
@@ -192,10 +180,9 @@ test('can go to current selection in single mode if it exists', async () => {
 
     expect(context(calio, 'view')).toEqual(new Epoch().date(1));
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch);
         calio.component.goToSelection();
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(epoch);
@@ -205,16 +192,14 @@ test('can go to month containing valid day', async () => {
     const epoch = new Epoch(1988, 10, 25);
     const calio = render(Calio);
 
-    await act(async () => {
+    await act(() => {
         calio.component.goTo(epoch);
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(epoch.clone().date(1));
 
-    await act(async () => {
+    await act(() => {
         calio.component.goTo(null);
-        await tick();
     });
 
     expect(context(calio, 'view')).toEqual(epoch.clone().date(1));

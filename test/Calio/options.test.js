@@ -1,4 +1,3 @@
-import { tick } from 'svelte';
 import { context } from '../helpers';
 import Calio from '../../src/components/Calio.svelte';
 import Epoch from '../../src/modules/Epoch';
@@ -38,9 +37,8 @@ test('prevents selection of dates before min', async () => {
         props: { min: epoch }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch.clone().subDay());
-        await tick();
     });
 
     expect(context(calio, 'selection')).toBeNull();
@@ -52,9 +50,8 @@ test('prevents selection of dates after max', async () => {
         props: { max: epoch }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch.clone().addDay());
-        await tick();
     });
 
     expect(context(calio, 'selection')).toBeNull();
@@ -66,9 +63,8 @@ test('prevents selection of disabled dates', async () => {
         props: { disabled: epoch }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toBeNull();
@@ -82,11 +78,10 @@ test('adds selected day to array in multi mode', async () => {
         props: { mode: 'multi' }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
         calio.component.select(epoch2);
         calio.component.select(epoch3);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toContainEqual(epoch1);
@@ -101,17 +96,15 @@ test('toggles date selection if selected date is reselected in multi mode', asyn
         props: { mode: 'multi' }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toHaveLength(1);
     expect(context(calio, 'selection')).toContainEqual(epoch1);
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch2);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toEqual([]);
@@ -130,13 +123,12 @@ test('can limit number of selected dates in multi mode', async () => {
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
         calio.component.select(epoch2);
         calio.component.select(epoch3);
         calio.component.select(epoch4);
         calio.component.select(epoch5);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toHaveLength(3);
@@ -152,10 +144,9 @@ test('adds selected day to array in range mode', async () => {
         props: { mode: 'range' }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
         calio.component.select(epoch2);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toContainEqual(epoch1);
@@ -170,11 +161,10 @@ test('limits selection to two selected days in range mode', async () => {
         props: { mode: 'range' }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
         calio.component.select(epoch2);
         calio.component.select(epoch3);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toHaveLength(1);
@@ -189,11 +179,10 @@ test('toggles date selection if selected date is reselected in range mode', asyn
         props: { mode: 'range' }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
         calio.component.select(epoch2);
         calio.component.select(epoch3);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toHaveLength(1);
@@ -214,16 +203,14 @@ test('prevents selection of date in strict range mode if range overlaps disabled
         }
     });
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch1);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toContainEqual(epoch1);
 
-    await act(async () => {
+    await act(() => {
         calio.component.select(epoch2);
-        await tick();
     });
 
     expect(context(calio, 'selection')).toBeNull();
