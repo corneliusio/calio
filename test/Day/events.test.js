@@ -16,13 +16,13 @@ const props = {
     max: null
 };
 
-test('fires a "selection" event when clicked', () => {
+test('fires a "select" event when clicked', () => {
     const day = render(Day, {
         props: { day: today, props }
     });
 
-    day.component.$on('selection', day => {
-        expect(day).toEqual(today);
+    day.component.$on('select', event => {
+        expect(event.detail).toEqual(today);
     });
 
     fireEvent.click(query('.calio-day'));

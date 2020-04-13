@@ -1,4 +1,4 @@
-<span class="calio-day {classes}" on:click={event => dispatch('select', day)}>
+<span class={classes} on:click={event => dispatch('select', day)}>
     {day.date()}
 </span>
 
@@ -10,9 +10,7 @@
     const dispatch = createEventDispatcher();
 
     export let day;
-    export let props = {};
-
-    let { selection, disabled, min, max, mode, view } = {};
+    export let props;
 
     $: ({ selection, disabled, min, max, mode, view } = props);
 
@@ -42,6 +40,7 @@
     })();
 
     $: classes = [
+        'calio-day',
         day.isSame(today) && 'is-today',
         view && view.endOfMonth().isBefore(day) && 'is-next',
         view && view.startOfMonth().isAfter(day) && 'is-prev',

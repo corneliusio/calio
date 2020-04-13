@@ -4074,6 +4074,51 @@ function custom_event(type, detail) {
   return e;
 }
 
+var HtmlTag = /*#__PURE__*/function () {
+  function HtmlTag(html) {
+    var anchor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+    _classCallCheck(this, HtmlTag);
+
+    this.e = element('div');
+    this.a = anchor;
+    this.u(html);
+  }
+
+  _createClass(HtmlTag, [{
+    key: "m",
+    value: function m(target) {
+      var anchor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      for (var i = 0; i < this.n.length; i += 1) {
+        insert(target, this.n[i], anchor);
+      }
+
+      this.t = target;
+    }
+  }, {
+    key: "u",
+    value: function u(html) {
+      this.e.innerHTML = html;
+      this.n = Array.from(this.e.childNodes);
+    }
+  }, {
+    key: "p",
+    value: function p(html) {
+      this.d();
+      this.u(html);
+      this.m(this.t, this.a);
+    }
+  }, {
+    key: "d",
+    value: function d() {
+      this.n.forEach(detach);
+    }
+  }]);
+
+  return HtmlTag;
+}();
+
 var current_component;
 
 function set_current_component(component) {
@@ -4504,7 +4549,7 @@ var Epoch = /*#__PURE__*/function () {
       this.value = Y;
     } else if (['number', 'string'].includes(_typeof(Y))) {
       this.value = new Date(Y);
-    } else if (Array.isArray(Y)) {
+    } else if (Array.isArray(Y) && Y.filter(Boolean).length) {
       this.value = _construct(Date, _toConsumableArray(Y));
     } else {
       this.value = new Date();
@@ -4667,7 +4712,7 @@ var Epoch = /*#__PURE__*/function () {
   }, {
     key: "length",
     get: function get() {
-      return this.value ? 1 : 0;
+      return 1;
     }
   }]);
 
@@ -4676,7 +4721,7 @@ var Epoch = /*#__PURE__*/function () {
 
 function add_css() {
   var style = element("style");
-  style.id = "svelte-18kp2rj-style";
+  style.id = "svelte-1l2ul15-style";
   style.textContent = ".calio-day{cursor:pointer;color:var(--color, #333)}.calio-day:hover{color:var(--color-hover, var(--color, #333));background:var(--bg-hover, #EEE)}.calio-day.is-today{font-weight:900}.calio-day.is-prev,.calio-day.is-next{color:var(--color-inactive, #CCC);background:var(--bg-inactive, transparent)}.calio-day.is-disabled{pointer-events:none;color:var(--color-disabled, var(--color-inactive, #CCC));background:var(--bg-disabled, transparent);opacity:var(--opacity-disabled, 0.5)}.calio-day.is-ranged{color:var(--color-ranged, var(--color-active, white));background:var(--bg-ranged, var(--bg-active, rgba(100, 149, 237, 0.66)))}.calio-day.is-active{color:var(--color-active, white);background:var(--bg-active, rgb(100, 149, 237))}";
   append(document.head, style);
 }
@@ -4687,13 +4732,12 @@ function create_fragment(ctx) {
   /*day*/
   ctx[0].date() + "";
   var t;
-  var span_class_value;
   var dispose;
   return {
     c: function c() {
       span = element("span");
       t = text(t_value);
-      attr(span, "class", span_class_value = "calio-day " +
+      attr(span, "class",
       /*classes*/
       ctx[1]);
     },
@@ -4717,10 +4761,10 @@ function create_fragment(ctx) {
 
       if (dirty &
       /*classes*/
-      2 && span_class_value !== (span_class_value = "calio-day " +
-      /*classes*/
-      ctx[1])) {
-        attr(span, "class", span_class_value);
+      2) {
+        attr(span, "class",
+        /*classes*/
+        ctx[1]);
       }
     },
     i: noop,
@@ -4736,15 +4780,7 @@ function instance($$self, $$props, $$invalidate) {
   var today = new Epoch();
   var dispatch = createEventDispatcher();
   var day = $$props.day;
-  var _$$props$props = $$props.props,
-      props = _$$props$props === void 0 ? {} : _$$props$props;
-  var _ref3 = {},
-      selection = _ref3.selection,
-      disabled = _ref3.disabled,
-      min = _ref3.min,
-      max = _ref3.max,
-      mode = _ref3.mode,
-      view = _ref3.view;
+  var props = $$props.props;
 
   var click_handler = function click_handler(event) {
     return dispatch("select", day);
@@ -4755,6 +4791,12 @@ function instance($$self, $$props, $$invalidate) {
     if ("props" in $$props) $$invalidate(3, props = $$props.props);
   };
 
+  var selection;
+  var disabled;
+  var min;
+  var max;
+  var mode;
+  var view;
   var isActive;
   var isDisabled;
   var isRanged;
@@ -4811,7 +4853,7 @@ function instance($$self, $$props, $$invalidate) {
     if ($$self.$$.dirty &
     /*day, view, isDisabled, isRanged, isActive*/
     7681) {
-       $$invalidate(1, classes = [day.isSame(today) && "is-today", view && view.endOfMonth().isBefore(day) && "is-next", view && view.startOfMonth().isAfter(day) && "is-prev", isDisabled && "is-disabled", isRanged && "is-ranged", isActive && "is-active"].filter(Boolean).join(" "));
+       $$invalidate(1, classes = ["calio-day", day.isSame(today) && "is-today", view && view.endOfMonth().isBefore(day) && "is-next", view && view.startOfMonth().isAfter(day) && "is-prev", isDisabled && "is-disabled", isRanged && "is-ranged", isActive && "is-active"].filter(Boolean).join(" "));
     }
   };
 
@@ -4829,7 +4871,7 @@ var Day = /*#__PURE__*/function (_SvelteComponent) {
     _classCallCheck(this, Day);
 
     _this = _super.call(this);
-    if (!document.getElementById("svelte-18kp2rj-style")) add_css();
+    if (!document.getElementById("svelte-1l2ul15-style")) add_css();
     init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, {
       day: 0,
       props: 3
@@ -5096,101 +5138,22 @@ var Dates = /*#__PURE__*/function (_SvelteComponent) {
   return Dates;
 }(SvelteComponent);
 
-function get_each_context$1(ctx, list, i) {
-  var child_ctx = ctx.slice();
-  child_ctx[2] = list[i];
-  return child_ctx;
-} // (1:0) {#each days as day}
-
-
-function create_each_block$1(ctx) {
-  var span;
-  var t_value =
-  /*day*/
-  ctx[2] + "";
-  var t;
+function create_fragment$2(ctx) {
+  var html_tag;
   return {
     c: function c() {
-      span = element("span");
-      t = text(t_value);
-      attr(span, "class", "calio-head");
+      html_tag = new HtmlTag(
+      /*markup*/
+      ctx[0], null);
     },
     m: function m(target, anchor) {
-      insert(target, span, anchor);
-      append(span, t);
+      html_tag.m(target, anchor);
     },
     p: noop,
-    d: function d(detaching) {
-      if (detaching) detach(span);
-    }
-  };
-}
-
-function create_fragment$2(ctx) {
-  var each_1_anchor;
-  var each_value =
-  /*days*/
-  ctx[0];
-  var each_blocks = [];
-
-  for (var i = 0; i < each_value.length; i += 1) {
-    each_blocks[i] = create_each_block$1(get_each_context$1(ctx, each_value, i));
-  }
-
-  return {
-    c: function c() {
-      for (var _i = 0; _i < each_blocks.length; _i += 1) {
-        each_blocks[_i].c();
-      }
-
-      each_1_anchor = empty();
-    },
-    m: function m(target, anchor) {
-      for (var _i2 = 0; _i2 < each_blocks.length; _i2 += 1) {
-        each_blocks[_i2].m(target, anchor);
-      }
-
-      insert(target, each_1_anchor, anchor);
-    },
-    p: function p(ctx, _ref) {
-      var _ref2 = _slicedToArray(_ref, 1),
-          dirty = _ref2[0];
-
-      if (dirty &
-      /*days*/
-      1) {
-        each_value =
-        /*days*/
-        ctx[0];
-
-        var _i3;
-
-        for (_i3 = 0; _i3 < each_value.length; _i3 += 1) {
-          var child_ctx = get_each_context$1(ctx, each_value, _i3);
-
-          if (each_blocks[_i3]) {
-            each_blocks[_i3].p(child_ctx, dirty);
-          } else {
-            each_blocks[_i3] = create_each_block$1(child_ctx);
-
-            each_blocks[_i3].c();
-
-            each_blocks[_i3].m(each_1_anchor.parentNode, each_1_anchor);
-          }
-        }
-
-        for (; _i3 < each_blocks.length; _i3 += 1) {
-          each_blocks[_i3].d(1);
-        }
-
-        each_blocks.length = each_value.length;
-      }
-    },
     i: noop,
     o: noop,
     d: function d(detaching) {
-      destroy_each(each_blocks, detaching);
-      if (detaching) detach(each_1_anchor);
+      if (detaching) html_tag.d();
     }
   };
 }
@@ -5200,12 +5163,15 @@ function instance$2($$self, $$props, $$invalidate) {
   var days = headers && headers.length ? new Array(7).fill("", 0, 7).map(function (n, i) {
     return headers[i] || n;
   }) : [];
+  var markup = days.map(function (day) {
+    return "<span class=\"calio-head\">".concat(day, "</span>");
+  }).join("\n");
 
   $$self.$set = function ($$props) {
     if ("headers" in $$props) $$invalidate(1, headers = $$props.headers);
   };
 
-  return [days, headers];
+  return [markup, headers];
 }
 
 var Headers = /*#__PURE__*/function (_SvelteComponent) {
@@ -5230,7 +5196,7 @@ var Headers = /*#__PURE__*/function (_SvelteComponent) {
 
 function add_css$1() {
   var style = element("style");
-  style.id = "svelte-i8ptc6-style";
+  style.id = "svelte-1uuu3r4-style";
   style.textContent = ".calio{display:-ms-inline-grid;display:inline-grid;-ms-grid-columns:(var(--size-x, var(--size, 2.25em)))[7];grid-template-columns:repeat(7, var(--size-x, var(--size, 2.25em)));grid-auto-rows:var(--size-y, var(--size, 2em));line-height:var(--size-y, var(--size, 2em));text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.calio-head{color:var(--color, #333);font-weight:bold}";
   append(document.head, style);
 }
@@ -5343,7 +5309,7 @@ function structureSingle(newValue, newView) {
 }
 
 function toCleanArray(data) {
-  return new Array().concat(data).filter(Boolean) || [];
+  return new Array().concat(data).filter(Boolean);
 }
 
 function makeMyDay() {
@@ -5353,7 +5319,7 @@ function makeMyDay() {
     rest[_key - 1] = arguments[_key];
   }
 
-  return day ? day instanceof Epoch ? day.clone() : rest.length ? _construct(Epoch, [day].concat(rest)) : new Epoch(day) : null;
+  return day ? day instanceof Epoch ? day.clone() : rest.length ? _construct(Epoch, [day].concat(rest)) : Array.isArray(day) ? day.filter(Boolean).length ? new Epoch(day) : null : new Epoch(day) : null;
 }
 
 function instance$3($$self, $$props, $$invalidate) {
@@ -5682,7 +5648,7 @@ var Calio = /*#__PURE__*/function (_SvelteComponent) {
     _classCallCheck(this, Calio);
 
     _this = _super.call(this);
-    if (!document.getElementById("svelte-i8ptc6-style")) add_css$1();
+    if (!document.getElementById("svelte-1uuu3r4-style")) add_css$1();
     init(_assertThisInitialized(_this), options, instance$3, create_fragment$3, safe_not_equal, {
       value: 7,
       headers: 0,

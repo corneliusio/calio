@@ -1,7 +1,7 @@
-import { promiseEvent } from '../helpers';
+import { promiseEvent, query } from '../helpers';
 import Epoch from '../../src/modules/Epoch';
 import Calio from '../../src/components/Calio.svelte';
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 
 test('fires component selection and dom calio:selection events when a date is selected', () => {
     const target = document.createElement('div');
@@ -31,7 +31,7 @@ test('fires component selection and dom calio:selection events when a date is se
         })
     ]);
 
-    calio.component.select(epoch);
+    fireEvent.click(target.querySelector('.calio-day.is-today'));
 
     return promise;
 });

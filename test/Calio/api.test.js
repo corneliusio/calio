@@ -14,7 +14,8 @@ test('normalizes a date', () => {
     const date3 = calio.component.makeMyDay(1988, 10, 25);
     const date4 = calio.component.makeMyDay([ 1988, 10, 25 ]);
     const date5 = calio.component.makeMyDay(new Date(1988, 10, 25, 0, 0, 7, 7));
-    const date6 = calio.component.makeMyDay();
+    const date6 = calio.component.makeMyDay([ null ]);
+    const date7 = calio.component.makeMyDay();
 
     expect(date1).toEqual(epoch);
     expect(date2).toEqual(epoch);
@@ -22,39 +23,62 @@ test('normalizes a date', () => {
     expect(date4).toEqual(epoch);
     expect(date5).toEqual(epoch);
     expect(date6).toBeNull();
+    expect(date7).toBeNull();
 });
 
 test('selects a day', async () => {
     const epoch = new Epoch();
-    const calio = render(Calio);
+    const calio1 = render(Calio);
+    const calio2 = render(Calio);
+
+    await act(() => {
+        calio1.component.select(epoch);
+        calio2.component.select();
+    });
+
+    expect(context(calio1, 'selection')).toEqual(epoch);
+    expect(context(calio2, 'selection')).toBeNull();
+});
+
+test('deselects a selected day', async () => {
+    const epoch = new Epoch();
+    const calio = render(Calio, {
+        value: epoch
+    });
 
     await act(() => {
         calio.component.select(epoch);
     });
 
-    expect(context(calio, 'selection')).toEqual(epoch);
+    expect(context(calio, 'selection')).toBeNull();
 });
 
 test('can set min', async () => {
     const epoch = new Epoch(2018, 0, 1);
-    const calio = render(Calio);
+    const calio1 = render(Calio);
+    const calio2 = render(Calio);
 
     await act(() => {
-        calio.component.setMin(epoch);
+        calio1.component.setMin(epoch);
+        calio2.component.setMin();
     });
 
-    expect(context(calio, 'computed').min).toEqual(epoch);
+    expect(context(calio1, 'computed').min).toEqual(epoch);
+    expect(context(calio2, 'computed').min).toBeNull();
 });
 
 test('can set max', async () => {
     const epoch = new Epoch(2018, 0, 1);
-    const calio = render(Calio);
+    const calio1 = render(Calio);
+    const calio2 = render(Calio);
 
     await act(() => {
-        calio.component.setMax(epoch);
+        calio1.component.setMax(epoch);
+        calio2.component.setMax();
     });
 
-    expect(context(calio, 'computed').max).toEqual(epoch);
+    expect(context(calio1, 'computed').max).toEqual(epoch);
+    expect(context(calio2, 'computed').max).toBeNull();
 });
 
 test('can set disabled', async () => {
