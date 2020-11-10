@@ -1191,6 +1191,10 @@ function instance$3($$self, $$props, $$invalidate) {
 	function select(day = null) {
 		let current = toCleanArray(value);
 
+		if (!day) {
+			return $$invalidate(25, value = null);
+		}
+
 		if (mode === "single") {
 			$$invalidate(25, value = value && value.isSame(day) ? null : day);
 		} else if (current.length) {

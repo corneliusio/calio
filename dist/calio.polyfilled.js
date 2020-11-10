@@ -5475,6 +5475,10 @@ function instance$3($$self, $$props, $$invalidate) {
     var day = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var current = toCleanArray(value);
 
+    if (!day) {
+      return $$invalidate(25, value = null);
+    }
+
     if (mode === "single") {
       $$invalidate(25, value = value && value.isSame(day) ? null : day);
     } else if (current.length) {

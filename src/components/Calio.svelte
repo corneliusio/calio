@@ -212,6 +212,10 @@
     export function select(day = null) {
         let current = toCleanArray(value);
 
+        if (!day) {
+            return value = null;
+        }
+
         if (mode === 'single') {
             value = value && value.isSame(day)
                 ? null

@@ -42,15 +42,20 @@ test('selects a day', async () => {
 
 test('deselects a selected day', async () => {
     const epoch = new Epoch();
-    const calio = render(Calio, {
+    const calio1 = render(Calio, {
+        value: epoch
+    });
+    const calio2 = render(Calio, {
         value: epoch
     });
 
     await act(() => {
-        calio.component.select(epoch);
+        calio1.component.select(epoch);
+        calio2.component.select();
     });
 
-    expect(context(calio, 'selection')).toBeNull();
+    expect(context(calio1, 'selection')).toBeNull();
+    expect(context(calio2, 'selection')).toBeNull();
 });
 
 test('can set min', async () => {
